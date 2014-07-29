@@ -15,7 +15,7 @@ import javax.ejb.Local;
  * @author Armando
  */
 @Local
-public interface CertificadoDao extends GenericDao<Certificado, Integer>{
+public interface CertificadoDao extends GenericDao<Certificado, Long>{
     List<Certificado> obtenerTodosLosCertificados();
     List<Certificado> obtenerCertificadosFiltrados();
 }

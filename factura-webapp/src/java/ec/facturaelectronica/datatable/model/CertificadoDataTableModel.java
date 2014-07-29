@@ -24,7 +24,7 @@ public class CertificadoDataTableModel extends ListDataModel<Certificado> implem
 
     @Override
     public Object getRowKey(Certificado certificado) {
-        return certificado.getId().toString();
+        return certificado.getIdCertificado().toString();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CertificadoDataTableModel extends ListDataModel<Certificado> implem
         List<Certificado> certificados = (List<Certificado>) getWrappedData();
 
         for (Certificado certificado : certificados) {
-            if (certificado.getId().toString().equals(rowKey)) {
+            if (certificado.getIdCertificado().toString().equals(rowKey)) {
                 return certificado;
             }
         }

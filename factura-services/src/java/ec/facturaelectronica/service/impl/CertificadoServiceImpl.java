@@ -79,7 +79,7 @@ public class CertificadoServiceImpl implements CertificadoService{
     }
 
     @Override
-    public Certificado getCertificadoPorId(int id) {
+    public Certificado getCertificadoPorId(Long id) {
         return certificadoDao.load(id);
     }
     
