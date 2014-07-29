@@ -1,0 +1,252 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <ui:define name="content">
+        <h:form id="frmCertificadosId">
+            
+            <div id="main" role="main">
+
+                <div id="content">
+
+                    <section id="widget-grid" class="">
+                        <div class="row">
+                            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="widget-body">
+                                    <p:growl id="growl" showDetail="true"      />  
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                                            <h1 class="page-title txt-color-blueDark">
+                                                <!-- PAGE HEADER -->
+                                                <i class="fa-fw fa fa-user"></i> 
+                                                #{msg['certificados.header']}
+                                                <span>  
+                                                    >Factura Electrónica
+                                                </span>
+                                            </h1>
+                                        </div>
+                                    </div>
+
+                                    <div id="EmpresaId" >
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <h:outputLabel for="empresaNameId" value="Empresa: " />                                        
+                                                </td>
+                                                <td>
+                                                    <p:spacer width="5" />
+                                                </td>
+                                                <td>
+                                                    <h:outputText id="empresaNameId" value="#{certificadoBean.nombreEmpresa}" style="font-weight: bold;"/>                                            
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{certificadoBean.nuevo}" update="@([id$=tabV])"    />
+                                    <p/>
+                                    <p:dataTable  id="dtCertificadoId" resizableColumns="true" value="#{certificadoBean.certificadoModel}" var="_certificado" selection="#{certificadoBean.selectedCertificado}" 
+                                                  rowKey="#{certificadoBean.idSelected}" rows="8"  paginator="true" selectionMode="single">
+
+                                        <p:column headerText="#{msg['certificados.tabla.columna1']}" >
+                                            <h:outputText value="#{_certificado.nombre}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['certificados.tabla.columna2']}" >
+                                            <h:outputText value="#{_certificado.fechaIngreso}" >
+                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['certificados.tabla.columna3']}" >
+                                            <h:outputText value="#{_certificado.fechaCaducidad}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="#{msg['certificados.tabla.columna4']}" >
+                                            <p:commandLink value="#{_certificado.nombreArchivoCertificado}" actionListener="#{certificadoBean.download(_certificado)}" 
+                                                           ajax="false">
+                                                <p:fileDownload value="#{certificadoBean.file}" contentDisposition="inline"/>
+                                            </p:commandLink>
+                                        </p:column>
+                                        <p:column headerText="#{msg['certificados.tabla.resetear.clave']}" style="text-align: center">
+                                            <p:commandButton value="#{msg['certificados.btn.cambiar']}" action="#{certificadoBean.cambiar(_certificado)}" 
+                                                             oncomplete="PF('dlgCambiarClave').show()"/>
+                                        </p:column>
+                                        <p:column headerText="#{msg['certificados.tabla.cambiar.estado']}" style="text-align: center">
+                                            <p:commandButton value="#{msg['certificados.btn.modificar']}" action="#{certificadoBean.cambiar(_certificado)}" 
+                                                             oncomplete="PF('dlgModificarEstado').show()"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['certificados.tabla.columna5']}" style="text-align: center">
+                                            <h:outputText value="#{_certificado.estado.nombreCatalogo}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['certificados.tabla.columna6']}" >
+                                            <h:outputText value="#{_certificado.claveCertificado}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['certificados.tabla.columna7']}" >
+                                            <h:outputText value="#{_certificado.empresa.nombreEmpresa}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['certificados.tabla.dias.disponibles']}" style="text-align: center">
+                                            <p:outputLabel value="#{_certificado.diasDisponibles}" />
+                                        </p:column>
+
+
+                                        <p:column style="width: 90px">
+                                            <p:commandButton value="#{msg['boton.editar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.editar}" update=":formDialogEditarId:gridEditar"   >
+                                                <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoBean.selectedCertificado}"  />
+                                            </p:commandButton>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+                            </article>
+
+
+                        </div>
+                    </section> 
+                </div>
+
+            </div>
+        </h:form>
+
+        <h:form id="formDialogEditarId">
+            <p:dialog id="dlgEditar" widgetVar="dlgEditarCertificado" header="#{msg['certificados.header.editar']}" width="490px" height="320px"  showEffect="explode"  >
+                <p:panelGrid id="gridEditar">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna1']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText  id="nombreCertificado" value="#{certificadoBean.nombreCertificado}" required="true" style="width:190px"  label="#{msg['certificados.tabla.columna1']}" requiredMessage="#{msg['certificados.editar.nombre.mensaje']}" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna2']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:calendar value="#{certificadoBean.fechaIngreso}" mode="popup" showOn="button" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna3']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:calendar value="#{certificadoBean.fechaCaducidad}" mode="popup" showOn="button" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row >
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna4']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:fileUpload fileUploadListener="#{certificadoBean.upload}" allowTypes="/(\.|\/)(p12)$/"
+                                          sizeLimit="100000" label="Seleccionar" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna6']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText  id="nombre" value="#{certificadoBean.claveCertificado}" required="true" style="width:190px"  label="#{msg['certificados.tabla.columna6']}" requiredMessage="#{msg['certificados.editar.clave.mensaje']}" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna7']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{certificadoBean.selectedEmpresa}" converter="EmpresaListModel" panelStyle="width:150px"
+                                             effect="fade" var="emp" style="width:190px"  required="true"   label="#{msg['certificados.editar.empresa']}" requiredMessage="#{msg['certificados.editar.empresa.mensaje']}" >
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItems value="#{certificadoBean.empresas}" var="lsemp" itemLabel="#{lsemp.nombreEmpresa}" itemValue="#{lsemp}"/>
+                                <p:column>
+                                    #{emp.nombreEmpresa}   
+                                </p:column>
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>                    
+                </p:panelGrid>  
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.registrar}" update=":frmCertificadosId:dtCertificadoId, gridEditar" >
+                        <p:resetInput target="gridEditar" />
+                    </p:commandButton>
+                    
+                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this"  action="#{certificadoBean.cancelar}" update="@form">
+                        <p:resetInput target="gridEditar" /> 
+                    </p:commandButton>
+                </f:facet>
+            </p:dialog>
+            
+        </h:form>
+
+        <h:form id="formDialogCambiarClaveId">
+            <p:dialog id="dlgCambiarClaveId" widgetVar="dlgCambiarClave" header="#{msg['certificados.header.editar.clave']}" width="390px" height="120px"  showEffect="explode"  >
+                <p:panelGrid id="grid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.header.editar.clave']}" style="font-weight:bold" />                           
+                        </p:column>
+                        <p:column>
+                            <p:password value="#{certificadoBean.newPass}" />                           
+                        </p:column>
+
+                    </p:row>
+                </p:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.nuevaClave}" update=":frmCertificadosId:dtCertificadoId, grid, :formDialogEditarId:gridEditar" >
+                        <p:resetInput target=":formDialogEditarId:gridEditar" /> 
+                    </p:commandButton>
+
+                </f:facet>
+            </p:dialog> 
+        </h:form>
+        
+        <h:form id="formDialogModificarEstadoId">
+            <p:dialog id="dlgModificarEstadoId" widgetVar="dlgModificarEstado" header="#{msg['certificados.header.modificar.estado']}" width="390px" height="120px"  showEffect="explode"  >
+                <p:panelGrid id="grid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.modificar.estado']}" style="font-weight:bold" />                           
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu value="#{certificadoBean.estadoSelected}" panelStyle="width:150px"
+                                             effect="fade" var="emp" style="width:190px"  required="true"   label="#{msg['certificados.editar.empresa']}" requiredMessage="#{msg['certificados.editar.empresa.mensaje']}" >
+
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItem itemLabel="#{msg['certificados.estado.activo']}" itemValue="1" />
+                                <f:selectItem itemLabel="#{msg['certificados.estado.eliminado']}" itemValue="2" />
+                            </p:selectOneMenu>                            
+                        </p:column>
+
+                    </p:row>
+                </p:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.nuevoEstado}" update=":frmCertificadosId:dtCertificadoId" >
+                        <p:resetInput target="grid" /> 
+                    </p:commandButton>
+
+                </f:facet>
+            </p:dialog> 
+        </h:form>            
+
+    </ui:define>
+</ui:composition>   
+

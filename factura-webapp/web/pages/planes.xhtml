@@ -1,0 +1,189 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <ui:define name="content">
+        <h:form id="fplan">
+
+            <div id="main" role="main">
+
+
+
+                <div id="content">
+
+                    <section id="widget-grid" class="">
+                        <div class="row">
+                            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="widget-body">
+                                    <p:growl id="growl" showDetail="true"      />  
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                                            <h1 class="page-title txt-color-blueDark">
+
+                                                <!-- PAGE HEADER -->
+                                                <i class="fa-fw fa fa-hospital  "></i> 
+                                                #{msg['plan.header']}
+                                                <span>>  
+                                                    Factura Electrónica
+                                                </span>
+                                            </h1>
+                                        </div>
+                                    </div>
+
+                                    <div id="EmpresaId" >
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <h:outputLabel for="empresaNameId" value="Empresa: " />                                        
+                                                </td>
+                                                <td>
+                                                    <p:spacer width="5" />
+                                                </td>
+                                                <td>
+                                                    <h:outputText id="empresaNameId" value="#{planBean.nombreEmpresa}" style="font-weight: bold;"/>                                            
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+
+                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{planBean.nuevo}"  update=":fplan01:grdNuevo"/>
+                                    <p/>
+                                    <p:dataTable resizableColumns="true"  id="dt" value="#{planBean.planModel}"  var="_plan" selection="#{planBean.selectedPlan}" rows="8"  paginator="true" filteredValue="#{planBean.filterPlan}" selectionMode="single"  >
+
+                                        <p:column sortBy="nombrePlan" headerText="#{msg['plan.tabla.columna1']}" filterBy="nombrePlan" filterMatchMode="contains">
+                                            <h:outputText value="#{_plan.nombrePlan}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['plan.tabla.columna2']}" styleClass="centrado">
+                                            <h:outputText value="#{_plan.maxFacturasPlan}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['plan.tabla.columna3']}" styleClass="centrado">
+                                            <h:outputText value="#{_plan.costoPlan}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['plan.tabla.columna4']}" styleClass="centrado">
+                                            <h:outputText value="#{_plan.valorFacturaPlan}"/>
+                                        </p:column>
+                                        <p:column headerText="#{msg['plan.tabla.columna5']}" styleClass="centrado">
+                                            <h:outputText value="#{_plan.idEstado.nombreCatalogo}"/>
+                                        </p:column>
+
+                                        <p:column styleClass="centrado">
+                                            <p:commandButton value="#{msg['boton.editar']}" styleClass="btn btn-info"   action="#{planBean.editar}" update=":fplan01:grdNuevo">
+                                                <f:setPropertyActionListener value="#{_plan}" target="#{planBean.selectedPlan}" />  
+                                            </p:commandButton>
+
+                                        </p:column>
+                                        <p:column styleClass="centrado">
+                                            <p:commandButton value="#{msg['boton.eliminar']}" styleClass="btn btn-warning"  action="#{planBean.eliminar}" update=":form3:lblNombre">
+                                                <f:setPropertyActionListener value="#{_plan}" target="#{planBean.selectedPlan}"  />  
+                                            </p:commandButton>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+                            </article>
+
+                        </div>
+                    </section> 
+                </div>
+
+            </div>
+        </h:form>
+
+        <!--Dialogo crear nuevos planes-->
+        <h:form id="fplan01" >
+            <p:dialog id="dlgNuevo" widgetVar="wdgNew" header="#{msg['plan.header.editar']}" width="490px" height="220px"  showEffect="explode"  >
+                <p:panelGrid id="grdNuevo" style="companyHeaderGrid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['plan.nuevo.nombre']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="nombrePlanId" value="#{planBean.nombrePlan}" label="#{msg['plan.nuevo.nombre']}"
+                                         required="true" requiredMessage="#{msg['plan.editar.campo.requerido.nombre.plan']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['plan.nuevo.hasta']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="hastaPlanId" value="#{planBean.maxFacturasPlan}" label="#{msg['plan.nuevo.hasta']}"
+                                         required="true" requiredMessage="#{msg['plan.editar.campo.requerido.hasta.factura']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['plan.nuevo.costo']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="costoPlanId" value="#{planBean.costoPlan}" label="#{msg['plan.nuevo.costo']}"
+                                         required="true" requiredMessage="#{msg['plan.editar.campo.requerido.costo']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['plan.nuevo.costo.por.factura']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="costoPorFacturaPlanId" value="#{planBean.valorFacturaPlan}" label="#{msg['plan.nuevo.costo.por.factura']}"
+                                         required="true" requiredMessage="#{msg['plan.editar.campo.requerido.costo.factura']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['plan.nuevo.descripcion']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column>
+                            <p:inputTextarea value="#{planBean.descripcionPlan}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:columnGroup type="header">
+                            <p:row>
+                                <p:column colspan="2" headerText="#{msg['plan.nuevo.acciones']}" />
+                            </p:row>
+                        </p:columnGroup>    
+                        <p:column>
+                            <p:commandButton value="#{msg['boton.guardar']}" styleClass="btn btn-info" action="#{planBean.guardar}" update="grdNuevo, :fplan:dt, :fplan:growl" oncomplete="PF('wdgNew').hide()">
+                                <p:resetInput target="grdNuevo" />
+                            </p:commandButton>
+                        </p:column>
+                        <p:column >
+                            <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-warning" action="#{planBean.cancelar}" update="grdNuevo, :fplan:dt" >
+                                <p:resetInput target="grdNuevo" />
+                            </p:commandButton>                            
+                        </p:column>                        
+                    </p:row>
+
+                </p:panelGrid>
+            </p:dialog>
+        </h:form>
+        
+        <h:form id="form3">
+            <p:dialog id="dlgConfirm" header="#{msg['title.eliminar']}" widgetVar="confirm"   showEffect="fade" hideEffect="explode" width="320" height="50"  >
+
+
+                <h:outputText value="#{msg['plan.eliminar']}"/>
+                <h:outputText style="font-weight:  bold" id="lblNombre" value=" #{planBean.selectedPlan.nombrePlan} ?"/>
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.si']}"  styleClass="btn btn-success"  actionListener="#{planBean.desactivar}" update=":fplan:dt"  />
+                    <p:commandButton value="#{msg['boton.no']}"  styleClass="btn btn-danger" onclick="PF('confirm').hide()"/> 	
+
+                </f:facet>
+            </p:dialog>
+        </h:form>
+        
+
+    </ui:define>
+</ui:composition>

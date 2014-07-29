@@ -1,0 +1,277 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+    <ui:define name="content">
+        <h:form id="form">
+
+            <div id="main" role="main">
+
+
+
+                <div id="content">
+
+                    <section id="widget-grid" class="">
+                        <div class="row">
+                            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="widget-body">
+                                    <p:growl id="growl" showDetail="true"      />  
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                                            <h1 class="page-title txt-color-blueDark">
+
+                                                <!-- PAGE HEADER -->
+                                                <i class="fa-fw fa fa-user"></i> 
+                                                #{msg['usuarios.header']}
+                                                <span>>  
+                                                    Factura Electrónica
+                                                </span>
+                                            </h1>
+                                        </div>
+                                    </div>
+
+                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{usuarioBean.nuevo}" update="@([id$=tabV])"    />
+                                    <p/>
+                                    <p:dataTable  id="dt" resizableColumns="true" value="#{usuarioBean.usuarioModel}"  var="obj" selection="#{usuarioBean.selectedUsuario}" rows="8"  paginator="true" filteredValue="#{usuarioBean.filterUsuarios}" selectionMode="single"  >
+
+
+                                        <p:column sortBy="nombreUsuario" headerText="#{msg['usuarios.tabla.columna1']}" filterBy="nombreUsuario" filterMatchMode="contains">
+                                            <h:outputText value="#{obj.nombreUsuario}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['usuarios.tabla.columna2']}" >
+                                            <h:outputText value="#{obj.nickUsuario}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['usuarios.tabla.columna3']}" >
+                                            <h:outputText value="#{obj.idPerfil.nombrePerfil}"/>
+                                        </p:column>
+                                        <p:column headerText="#{msg['usuarios.tabla.columna7']}" >
+                                            <h:outputText value="#{obj.idEmpresa.nombreEmpresa}"/>
+                                        </p:column>
+                                        <p:column headerText="#{msg['usuarios.tabla.columna4']}" >
+                                            <h:outputText value="#{obj.cedulaUsuario}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['usuarios.tabla.columna5']}" >
+                                            <h:outputText value="#{obj.cargoUsuario}"/>
+                                        </p:column>
+
+                                        <p:column headerText="#{msg['usuarios.tabla.columna6']}" >
+                                            <h:outputText value="#{obj.emailUsuario}"/>
+                                        </p:column>
+
+
+                                        <p:column style="width: 90px">
+                                            <p:commandButton value="#{msg['boton.editar']}"  styleClass="btn btn-primary"  action="#{usuarioBean.editar}" update=":form2:grid"   >
+                                                <f:setPropertyActionListener value="#{obj}" target="#{usuarioBean.selectedUsuario}"  />  
+                                            </p:commandButton>
+
+                                        </p:column>
+                                        <p:column style="width: 90px">
+                                            <p:commandButton value="#{msg['usuarios.boton.reset']}"  styleClass="btn bg-color-blueDark " action="#{usuarioBean.cambiarClave}" update=":form3:pnlClave" >
+                                                <f:setPropertyActionListener value="#{obj}" target="#{usuarioBean.selectedUsuario}"  />  
+                                            </p:commandButton>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                </div>
+                            </article>
+
+
+                        </div>
+                    </section> 
+                </div>
+
+
+            </div>
+        </h:form>
+        <h:form id="form2">
+            <p:dialog id="dlgEditar" widgetVar="ventanaEditar" header="#{msg['usuarios.header.editar']}" width="490px" height="320px"  showEffect="explode"  >
+
+                <p:panelGrid id="grid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.nombre']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText  id="nombre" value="#{usuarioBean.nombre}" required="true" style="width:190px"  label="#{msg['usuarios.editar.nombre']}" requiredMessage="#{msg['usuarios.editar.nombre.mensaje']}" />
+                        </p:column>
+
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.nick']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="nick" disabled="#{usuarioBean.editUser}" value="#{usuarioBean.nick}" required="true" style="width:190px"  label="#{msg['usuarios.editar.nick']}" requiredMessage="#{msg['usuarios.editar.nick.mensaje']}" />
+
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.perfil']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{usuarioBean.selectedPerfil}" converter="PerfilListModel" panelStyle="width:150px"
+                                             effect="fade" var="per" style="width:190px"  required="true"   label="#{msg['usuarios.editar.perfil']}" requiredMessage="#{msg['usuarios.editar.perfil.mensaje']}" >
+
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItems value="#{usuarioBean.listPerfiles}" var="lsper" itemLabel="#{lsper.nombrePerfil}" itemValue="#{lsper}"/>
+                                <p:column>
+                                    #{per.nombrePerfil}   
+                                </p:column>
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.empresa']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{usuarioBean.selectedEmpresa}" converter="EmpresaListModel" panelStyle="width:150px"
+                                             effect="fade" var="emp" style="width:190px"  required="true"   label="#{msg['usuarios.editar.empresa']}" requiredMessage="#{msg['usuarios.editar.empresa.mensaje']}" >
+
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItems value="#{usuarioBean.listEmpresas}" var="lsemp" itemLabel="#{lsemp.nombreEmpresa}" itemValue="#{lsemp}"/>
+                                <p:column>
+                                    #{emp.nombreEmpresa}   
+                                </p:column>
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.cedula']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputMask id="cedula" mask="9999999999" value="#{usuarioBean.cedula}"  style="width:190px"   >
+                                <f:validateLength minimum="10" />
+                            </p:inputMask>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.cargo']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="cargo" value="#{usuarioBean.cargo}"  style="width:190px"   />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.email']}"  style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="email" value="#{usuarioBean.email}"   required="true" label="#{msg['usuarios.editar.email']}" requiredMessage="#{msg['usuarios.editar.email.mensaje']}" style="width:190px"   />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.contrasena']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:password id="password" disabled="#{usuarioBean.editUser}" value="#{usuarioBean.clave}" required="true" style="width:190px"  label="#{msg['usuarios.editar.contrasena']}" requiredMessage="#{msg['usuarios.editar.contrasena.mensaje']}" />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['usuarios.editar.rcontrasena']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:password id="rpassword"  value="#{usuarioBean.rclave}" required="true" disabled="#{usuarioBean.editUser}"  style="width:190px"  label="#{msg['usuarios.editar.rcontrasena']}" requiredMessage="#{msg['usuarios.editar.rcontrasena.mensaje']}" />
+                        </p:column>
+                    </p:row>
+
+
+                </p:panelGrid>  
+
+
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action ="#{usuarioBean.registrar}" update="grid,:form:dt"   >
+                        <p:resetInput target="grid" /> 
+                    </p:commandButton>
+                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this"  action="#{usuarioBean.cancelar}">
+                        <p:resetInput target="grid" /> 
+                    </p:commandButton>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+
+        <h:form id="form3">
+            <p:dialog id="dlgClave" widgetVar="ventanaClave" header="#{msg['usuarios.header.editar']}" width="400px" height="200px"  showEffect="explode"  >
+
+                <p:panelGrid id="pnlClave">
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['usuarios.editar.nombre']}" style="font-weight:bold"/>
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel value="#{usuarioBean.nombre}" />
+
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['usuarios.editar.nick']}" style="font-weight:bold"/>
+                        </p:column>
+                        <p:column>
+                            <h:outputLabel value="#{usuarioBean.nick}" />
+
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['usuarios.editar.ncontrasena']}" style="font-weight:bold"/>
+
+                        </p:column>
+
+                        <p:column>
+                            <p:password id="npassword" value="#{usuarioBean.nclave}" required="true" requiredMessage="#{msg['usuarios.editar.contrasena.mensaje']}"  />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel value="#{msg['usuarios.editar.nrcontrasena']}" style="font-weight:bold"/>
+                        </p:column>
+
+                        <p:column>
+                            <p:password id="rnpassword" value="#{usuarioBean.rnclave}" required="true" requiredMessage="#{msg['usuarios.editar.rcontrasena.mensaje']}"/>
+                        </p:column>
+                    </p:row>
+
+
+
+                </p:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}" styleClass="btn btn-primary" action="#{usuarioBean.resetClave}" update="pnlClave :form2:grid :form:dt"/>
+                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this"  action="#{usuarioBean.cancelarPassword}" update=":form2:grid">
+                        <p:resetInput target=":form2:grid" /> 
+                    </p:commandButton>  
+                </f:facet>
+
+
+
+
+
+            </p:dialog>
+        </h:form>
+
+
+
+
+    </ui:define>
+
+</ui:composition>

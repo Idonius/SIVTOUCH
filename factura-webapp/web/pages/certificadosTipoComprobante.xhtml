@@ -1,0 +1,145 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <ui:define name="content">
+        <h:form id="formId">
+
+            <div id="main" role="main">
+
+                <div id="content">
+
+                    <section id="widget-grid" class="">
+                        <div class="row">
+                            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="widget-body">
+                                    <p:growl id="growl" showDetail="true"      />  
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                                            <h1 class="page-title txt-color-blueDark">
+                                                <!-- PAGE HEADER -->
+                                                <i class="fa-fw fa fa-user"></i> 
+                                                #{msg['certificadoTipoComprobante.header']}
+                                                <span>  
+                                                    >Factura Electrónica
+                                                </span>
+                                            </h1>
+                                        </div>
+                                    </div>
+                                    <!--Aqui empieza todo-->
+                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{certificadoTipoComprobanteBean.nuevo}" update="@([id$=tabV])"    />
+                                    <p/>
+                                    <p:dataTable  id="dtId" resizableColumns="true" value="#{certificadoTipoComprobanteBean.certificadoTipoComprobanteDataTableModel}" var="_certificado" selection="#{certificadoTipoComprobanteBean.selectedCertificadoTipoComprobante}" 
+                                                  rows="8"  paginator="true" filteredValue="#{certificadoTipoComprobanteBean.filterCertificadoTipoComprobante}" selectionMode="single">
+                                        <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna1']}">
+                                            <h:outputText value="#{_certificado.certificado.nombre}" />
+                                        </p:column>
+                                        <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna2']}">
+                                            <h:outputText value="#{_certificado.tipoComprobante.nombreTipoComprobante}" />
+                                        </p:column>
+                                        <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna3']}">
+                                            <h:outputText value="#{_certificado.catalogo.nombreCatalogo}" />
+                                        </p:column>    
+                                        <p:column styleClass="centrado">
+                                            <p:commandButton value="#{msg['boton.editar']}" styleClass="btn btn-info"   action="#{certificadoTipoComprobanteBean.editar}"   >
+                                                <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoTipoComprobanteBean.selectedCertificadoTipoComprobante}"  />  
+                                            </p:commandButton>
+
+                                        </p:column>
+                                        <p:column styleClass="centrado">
+                                            <p:commandButton value="#{msg['boton.eliminar']}" styleClass="btn btn-warning"  action="#{certificadoTipoComprobanteBean.eliminar}" >
+                                                <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoTipoComprobanteBean.selectedCertificadoTipoComprobante}"  />  
+                                            </p:commandButton>
+
+                                        </p:column>
+
+                                    </p:dataTable>
+
+                                    <!--Aqui termina todo-->
+                                </div>
+                            </article>
+                        </div>
+                    </section> 
+                </div>
+            </div>
+        </h:form>
+
+        <h:form id="f01" >
+            <p:dialog id="dlgEditar" widgetVar="wdgEdit" header="#{msg['certificadoTipoComprobante.editar']}" width="490px" height="220px"  showEffect="explode"  >
+                <p:panelGrid id="grdEditar" style="companyHeaderGrid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificadoTipoComprobante.editar.certificado']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{certificadoTipoComprobanteBean.selectedCertificado}" converter="CertificadoListModel" panelStyle="width:150px"
+                                             effect="fade" var="_certificado" style="width:190px"  required="true" label="#{msg['certificadoTipoComprobante.editar.certificado']}" requiredMessage="#{msg['certificadoTipoComprobante.editar.tipoComprobante.mensaje.requerido']}" >
+                                <f:selectItem itemLabel="Seleccione una opcion" itemValue="" />
+                                <f:selectItems value="#{certificadoTipoComprobanteBean.certificados}" var="lstcert"
+                                               itemLabel="#{lstcert.nombre}" itemValue="#{lstcert}" />
+                                <p:column>
+                                    #{_certificado.nombre}
+                                </p:column>
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificadoTipoComprobante.editar.tipoComprobante']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{certificadoTipoComprobanteBean.selectedTipoComprobante}" converter="TipoComprobanteListModel" panelStyle="width:150px"
+                                             effect="fade" var="_tipoComprobante" style="width:190px"  required="true" label="#{msg['certificadoTipoComprobante.editar.tipoComprobante']}" requiredMessage="#{msg['certificadoTipoComprobante.editar.tipoComprobante.mensaje.requerido']}" >
+
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItems value="#{certificadoTipoComprobanteBean.tiposComprobante}" var="lsttcmp" itemLabel="#{lsttcmp.nombreTipoComprobante}" itemValue="#{lsttcmp}"/>
+                                <p:column>
+                                    #{_tipoComprobante.nombreTipoComprobante}  
+                                </p:column>
+                            </p:selectOneMenu>
+
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:columnGroup type="header">
+                            <p:row>
+                                <p:column colspan="2" headerText="#{msg['certificadoTipoComprobante.nuevo.acciones']}" />
+                            </p:row>
+                        </p:columnGroup>    
+                        <p:column>
+                            <p:commandButton value="#{msg['boton.guardar']}" styleClass="btn btn-info" process="@this"
+                                             action="#{certificadoTipoComprobanteBean.guardar}" update="grdEditar, :formId:dtId, :formId:growl" oncomplete="PF('wdgEdit').hide()">
+                                <p:resetInput target="grdEditar" />
+                            </p:commandButton>
+                        </p:column>
+                        <p:column >
+                            <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-warning" action="#{planBean.cancelar}" update="grdEditar, :formId:dtId" >
+                                <p:resetInput target="grdEditar" />
+                            </p:commandButton>                            
+                        </p:column>                        
+                    </p:row>
+                </p:panelGrid>
+            </p:dialog>
+        </h:form>
+        <h:form id="form3">
+            <p:dialog id="dlgConfirm" header="#{msg['title.eliminar']}" widgetVar="confirm"   showEffect="fade" hideEffect="explode" width="320" height="50"  >
+
+
+                <h:outputText value="#{msg['empresa.eliminar']}"/>
+                <h:outputText style="font-weight:  bold" id="lblNombre" value=" #{empresaBean.selectedEmpresa.nombreEmpresa} ?"/>
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.si']}"  styleClass="btn btn-success"  actionListener="#{empresaBean.desactivar}" update=":formId:dtId"  />
+                    <p:commandButton value="#{msg['boton.no']}"  styleClass="btn btn-danger" onclick="PF('confirm').hide()"/> 	
+
+                </f:facet>
+            </p:dialog>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

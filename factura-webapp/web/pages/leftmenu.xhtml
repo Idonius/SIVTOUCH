@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+
+    </h:head>
+    <h:body>
+        <aside id="left-panel">
+
+            <!-- User info -->
+
+            <div class="login-info">
+                <span> <!-- User image size is adjusted inside CSS, it should stay as it --> <i class="fa fa-user fa-lg"></i> <a href="#" id="show-shortcut"> #{loginAccessBean.usuarioLogin.nombreUsuario}  <i class="fa fa-angle-down"></i></a></span>
+            </div>
+            <!-- end user info -->
+
+            <!-- NAVIGATION : This navigation is also responsive
+
+            To make this navigation dynamic please make sure to link the node
+            (the reference to the nav > ul) after page load. Or the navigation
+            will not initialize.
+
+            -->
+
+            <nav>
+                <!-- NOTE: Notice the gaps after each icon usage <i></i>..
+                Please note that these links work a bit different than
+                traditional hre="" links. See documentation for details.
+                -->
+                <h:outputFormat value="#{menuBean.menuDym}" escape="false"/>
+
+
+                -->
+            </nav>
+            <span class="minifyme"> <i class="fa fa-arrow-circle-left hit"></i> </span>
+
+        </aside>
+
+
+
+
+
+
+    </h:body>
+</html>
+
+
+

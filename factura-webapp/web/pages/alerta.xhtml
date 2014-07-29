@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <title>Facelet Title</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="../css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="../css/font-awesome.min.css"/>
+
+        <!-- SmartAdmin Styles : Please note (smartadmin-production.css) was created using LESS variables -->
+        <link rel="stylesheet" type="text/css" media="screen" href="../css/smartadmin-production.css"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="../css/smartadmin-skins.css"/> 
+    </h:head>
+    <h:body>
+        <article class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="jarviswidget" id="wid-id-1" data-widget-editbutton="false">
+                <header>
+                    <span class="widget-icon"> <i class="fa fa-bar-chart-o"></i> </span>
+                    <h2>Normal Bar Graph</h2>
+
+                </header>
+
+                <!-- widget div-->
+                <div>
+
+                    <!-- widget edit box -->
+                    <div class="jarviswidget-editbox">
+                        <!-- This area used as dropdown edit box -->
+
+                    </div>
+                    <!-- end widget edit box -->
+
+                    <!-- widget content -->
+                    <div class="widget-body no-padding">
+
+                        <div id="normal-bar-graph" class="chart no-padding"></div>
+
+                    </div>
+                    <!-- end widget content -->
+
+                </div>
+            </div>
+        </article>
+        <!-- BOOTSTRAP JS -->
+        <script src="../js/bootstrap/bootstrap.min.js"></script>
+
+        <!-- CUSTOM NOTIFICATION -->
+        <script src="../js/notification/SmartNotification.min.js"></script>
+
+        <!-- JARVIS WIDGETS -->
+        <script src="../js/smartwidgets/jarvis.widget.min.js"></script>
+
+        <!-- EASY PIE CHARTS -->
+        <script src="../js/plugin/easy-pie-chart/jquery.easy-pie-chart.min.js"></script>
+
+        <!-- SPARKLINES -->
+        <script src="../js/plugin/sparkline/jquery.sparkline.min.js"></script>
+
+        <!-- JQUERY VALIDATE -->
+        <script src="../js/plugin/jquery-validate/jquery.validate.min.js"></script>
+
+        <!-- JQUERY MASKED INPUT -->
+        <script src="../js/plugin/masked-input/jquery.maskedinput.min.js"></script>
+
+        <!-- JQUERY SELECT2 INPUT -->
+        <script src="../js/plugin/select2/select2.min.js"></script>
+
+        <!-- JQUERY UI + Bootstrap Slider -->
+        <!--  <script src="js/plugin/bootstrap-slider/bootstrap-slider.min.js"></script>-->
+
+        <!-- browser msie issue fix -->
+        <script src="../js/plugin/msie-fix/jquery.mb.browser.min.js"></script>
+
+        <!-- SmartClick: For mobile devices -->
+        <script src="../js/plugin/smartclick/smartclick.js"></script>
+
+        <!--[if IE 7]>
+
+        <h1>Your browser is out of date, please update your browser by going to www.microsoft.com/download</h1>
+
+        <![endif]-->
+
+      
+
+        <!-- PAGE RELATED PLUGIN(S) -->
+        <script src="../js/plugin/morris/raphael.2.1.0.min.js"></script>
+        <script src="../js/plugin/morris/morris.min.js"></script>
+        <!-- Flot Chart Plugin: Flot Engine, Flot Resizer, Flot Tooltip -->
+        <script src="../js/plugin/flot/jquery.flot.cust.js"></script>
+        <script src="../js/plugin/flot/jquery.flot.resize.js"></script>
+        <script src="../js/plugin/flot/jquery.flot.tooltip.js"></script>
+
+        <!-- Vector Maps Plugin: Vectormap engine, Vectormap language -->
+        <script src="../js/plugin/vectormap/jquery-jvectormap-1.2.2.min.js"></script>
+        <script src="../js/plugin/vectormap/jquery-jvectormap-world-mill-en.js"></script>
+
+        <!-- Full Calendar -->
+        <script src="../js/plugin/fullcalendar/jquery.fullcalendar.min.js"></script>
+
+        <script type="text/javascript">
+            // Use Morris.Bar
+            if ($('#normal-bar-graph').length) {
+
+                Morris.Bar({
+                    element: 'normal-bar-graph',
+                    data: [{
+                            x: '2011 Q1',
+                            y: 3,
+                            z: 2,
+                            a: 3
+                        }, {
+                            x: '2011 Q2',
+                            y: 2,
+                            z: null,
+                            a: 1
+                        }, {
+                            x: '2011 Q3',
+                            y: 0,
+                            z: 2,
+                            a: 4
+                        }, {
+                            x: '2011 Q4',
+                            y: 2,
+                            z: 4,
+                            a: 3
+                        }],
+                    xkey: 'x',
+                    ykeys: ['y', 'z', 'a'],
+                    labels: ['Y', 'Z', 'A']
+                });
+
+            }
+        </script>
+
+
+    </h:body>
+</html>
+
