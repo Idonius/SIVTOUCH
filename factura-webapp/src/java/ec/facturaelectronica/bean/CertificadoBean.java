@@ -170,7 +170,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
                 catalogo.setIdCatalogo(EstadosGeneralesEnum.Activo.getOrden());                
                 cert.setEstado(catalogo);
                 cert.setClaveCertificado(Util.md5(claveCertificado));
-                cert.setEmpresa(selectedEmpresa);
+                cert.setEmpresa(certificadoService.getEmpresaPorId(loginBean.getUsuarioLogin().getIdEmpresa().getIdEmpresa()));
                 
                 if (cert.getId() == null) {
                     certificadoService.registrarCertificado(cert);

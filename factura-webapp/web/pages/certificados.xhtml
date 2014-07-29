@@ -85,14 +85,6 @@
                                             <h:outputText value="#{_certificado.estado.nombreCatalogo}"/>
                                         </p:column>
 
-                                        <p:column headerText="#{msg['certificados.tabla.columna6']}" >
-                                            <h:outputText value="#{_certificado.claveCertificado}"/>
-                                        </p:column>
-
-                                        <p:column headerText="#{msg['certificados.tabla.columna7']}" >
-                                            <h:outputText value="#{_certificado.empresa.nombreEmpresa}"/>
-                                        </p:column>
-
                                         <p:column headerText="#{msg['certificados.tabla.dias.disponibles']}" style="text-align: center">
                                             <p:outputLabel value="#{_certificado.diasDisponibles}" />
                                         </p:column>
@@ -167,21 +159,6 @@
                         </p:column>
                     </p:row>
                     
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel value="#{msg['certificados.tabla.columna7']}" style="font-weight:bold" />
-                        </p:column>
-                        <p:column >
-                            <p:selectOneMenu value="#{certificadoBean.selectedEmpresa}" converter="EmpresaListModel" panelStyle="width:150px"
-                                             effect="fade" var="emp" style="width:190px"  required="true"   label="#{msg['certificados.editar.empresa']}" requiredMessage="#{msg['certificados.editar.empresa.mensaje']}" >
-                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
-                                <f:selectItems value="#{certificadoBean.empresas}" var="lsemp" itemLabel="#{lsemp.nombreEmpresa}" itemValue="#{lsemp}"/>
-                                <p:column>
-                                    #{emp.nombreEmpresa}   
-                                </p:column>
-                            </p:selectOneMenu>
-                        </p:column>
-                    </p:row>                    
                 </p:panelGrid>  
 
                 <f:facet name="footer">
@@ -205,13 +182,13 @@
                             <p:outputLabel value="#{msg['certificados.header.editar.clave']}" style="font-weight:bold" />                           
                         </p:column>
                         <p:column>
-                            <p:password value="#{certificadoBean.newPass}" />                           
+                            <p:password value="#{certificadoBean.newPass}" required="true" requiredMessage="#{msg['certificadoTipoComprobante.campo.editar.clave.requerido']}" />
                         </p:column>
 
                     </p:row>
                 </p:panelGrid>
                 <f:facet name="footer">
-                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.nuevaClave}" update=":frmCertificadosId:dtCertificadoId, grid, :formDialogEditarId:gridEditar" >
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.nuevaClave}" update="grid, :formDialogEditarId:gridEditar, :frmCertificadosId:growl" >
                         <p:resetInput target=":formDialogEditarId:gridEditar" /> 
                     </p:commandButton>
 
