@@ -34,14 +34,16 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Certificado.findAll", query = "SELECT c FROM Certificado c"),
-    @NamedQuery(name = "Certificado.filtered", query = "SELECT c FROM Certificado c WHERE c.estado.idCatalogo = 1")
+    @NamedQuery(name = "Certificado.filtered", query = "SELECT c FROM Certificado c"),
+    
+    
 })
 public class Certificado implements Serializable{
     @Id
     @SequenceGenerator(sequenceName = "seq_certificado", name = "seq_certificado_gen", initialValue = 1, allocationSize = 1)
     @GeneratedValue(generator = "seq_certificado_gen")
     @Column(name = "id_certificado")
-    private Integer id;
+    private Long idCertificado;
     
     @Column(name = "nombre_certificado", length = 30)
     private String nombre;
@@ -71,12 +73,12 @@ public class Certificado implements Serializable{
     @Transient
     private int diasDisponibles;
 
-    public Integer getId() {
-        return id;
+    public Long getIdCertificado() {
+        return idCertificado;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setIdCertificado(Long idCertificado) {
+        this.idCertificado = idCertificado;
     }
 
     public String getNombre() {
@@ -152,7 +154,7 @@ public class Certificado implements Serializable{
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (idCertificado != null ? idCertificado.hashCode() : 0);
         return hash;
     }
 
@@ -163,7 +165,7 @@ public class Certificado implements Serializable{
             return false;
         }
         Certificado other = (Certificado) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.idCertificado == null && other.idCertificado != null) || (this.idCertificado != null && !this.idCertificado.equals(other.idCertificado))) {
             return false;
         }
         return true;
@@ -171,7 +173,7 @@ public class Certificado implements Serializable{
 
     @Override
     public String toString() {
-        return "ec.facturaelectronica.model.Certificado[ id=" + id + " ]";
+        return "ec.facturaelectronica.model.Certificado[ id=" + idCertificado + " ]";
     }
     
     

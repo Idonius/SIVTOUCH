@@ -19,7 +19,7 @@ import javax.persistence.Query;
  * @author Armando
  */
 @Stateless
-public class CertificadoDaoImpl extends GenericDaoImpl<Certificado, Integer> implements CertificadoDao{
+public class CertificadoDaoImpl extends GenericDaoImpl<Certificado, Long> implements CertificadoDao{
     private final static Logger LOGGER = Logger.getLogger(CertificadoDaoImpl.class.getName());
     public CertificadoDaoImpl() {
         super(Certificado.class);
