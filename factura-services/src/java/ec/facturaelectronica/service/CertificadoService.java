@@ -24,5 +24,5 @@ public interface CertificadoService {
     Catalogo getCatalogoPorId(final Long idCatalogo);
     List<Certificado> getCertificadosFiltrados();
     Empresa getEmpresaPorId(final int idEmpresa);
-    Certificado getCertificadoPorId(final int id);
+    Certificado getCertificadoPorId(Long id);
 }
