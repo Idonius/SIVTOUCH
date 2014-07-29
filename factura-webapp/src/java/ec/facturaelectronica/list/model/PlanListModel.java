@@ -44,7 +44,7 @@ public class PlanListModel implements Converter {
             return "";
         } else {
             return String.valueOf(((Plan) value).getId());
-        }        
+        }
     }
 
 }

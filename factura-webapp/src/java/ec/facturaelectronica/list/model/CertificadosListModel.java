@@ -15,10 +15,10 @@ import javax.faces.convert.FacesConverter;
 
 /**
  *
- * @author Armando
+ * @author Christian
  */
-@FacesConverter(forClass = Certificado.class, value = "CertificadoListModel")
-public class CertificadoListModel implements Converter{
+@FacesConverter(forClass = Certificado.class, value = "CertificadosListModel")
+public class CertificadosListModel implements Converter {
     
     public static List<Certificado> certificadoModel;
 
@@ -29,7 +29,7 @@ public class CertificadoListModel implements Converter{
         } else {
 
             for (Certificado obj : certificadoModel) {
-                if (obj.getId().toString().equals(submittedValue)) {
+                if (obj.getIdCertificado().toString().equals(submittedValue)) {
                     return obj;
                 }
             }
@@ -37,7 +37,6 @@ public class CertificadoListModel implements Converter{
 
 
         return null;
-        
     }
 
     @Override
@@ -45,9 +44,7 @@ public class CertificadoListModel implements Converter{
         if (value == null || value.equals("")) {
             return "";
         } else {
-            return String.valueOf(((Certificado) value).getId());
+            return String.valueOf(((Certificado) value).getIdCertificado());
         }
-        
     }
-    
 }

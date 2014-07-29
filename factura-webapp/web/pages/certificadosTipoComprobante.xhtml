@@ -30,33 +30,8 @@
                                         </div>
                                     </div>
                                     <!--Aqui empieza todo-->
-                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{certificadoTipoComprobanteBean.nuevo}" update="@([id$=tabV])"    />
+                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{certificadoTipoComprobanteBean.nuevo}" update=":f01:grdEditar"    />
                                     <p/>
-                                    <p:dataTable  id="dtId" resizableColumns="true" value="#{certificadoTipoComprobanteBean.certificadoTipoComprobanteDataTableModel}" var="_certificado" selection="#{certificadoTipoComprobanteBean.selectedCertificadoTipoComprobante}" 
-                                                  rows="8"  paginator="true" filteredValue="#{certificadoTipoComprobanteBean.filterCertificadoTipoComprobante}" selectionMode="single">
-                                        <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna1']}">
-                                            <h:outputText value="#{_certificado.certificado.nombre}" />
-                                        </p:column>
-                                        <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna2']}">
-                                            <h:outputText value="#{_certificado.tipoComprobante.nombreTipoComprobante}" />
-                                        </p:column>
-                                        <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna3']}">
-                                            <h:outputText value="#{_certificado.catalogo.nombreCatalogo}" />
-                                        </p:column>    
-                                        <p:column styleClass="centrado">
-                                            <p:commandButton value="#{msg['boton.editar']}" styleClass="btn btn-info"   action="#{certificadoTipoComprobanteBean.editar}"   >
-                                                <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoTipoComprobanteBean.selectedCertificadoTipoComprobante}"  />  
-                                            </p:commandButton>
-
-                                        </p:column>
-                                        <p:column styleClass="centrado">
-                                            <p:commandButton value="#{msg['boton.eliminar']}" styleClass="btn btn-warning"  action="#{certificadoTipoComprobanteBean.eliminar}" >
-                                                <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoTipoComprobanteBean.selectedCertificadoTipoComprobante}"  />  
-                                            </p:commandButton>
-
-                                        </p:column>
-
-                                    </p:dataTable>
 
                                     <!--Aqui termina todo-->
                                 </div>
@@ -75,55 +50,33 @@
                             <p:outputLabel value="#{msg['certificadoTipoComprobante.editar.certificado']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
-                            <p:selectOneMenu value="#{certificadoTipoComprobanteBean.selectedCertificado}" converter="CertificadoListModel" panelStyle="width:150px"
-                                             effect="fade" var="_certificado" style="width:190px"  required="true" label="#{msg['certificadoTipoComprobante.editar.certificado']}" requiredMessage="#{msg['certificadoTipoComprobante.editar.tipoComprobante.mensaje.requerido']}" >
-                                <f:selectItem itemLabel="Seleccione una opcion" itemValue="" />
-                                <f:selectItems value="#{certificadoTipoComprobanteBean.certificados}" var="lstcert"
-                                               itemLabel="#{lstcert.nombre}" itemValue="#{lstcert}" />
-                                <p:column>
-                                    #{_certificado.nombre}
-                                </p:column>
-                            </p:selectOneMenu>
-                        </p:column>
-                    </p:row>
 
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel value="#{msg['certificadoTipoComprobante.editar.tipoComprobante']}" style="font-weight:bold" />
-                        </p:column>
-                        <p:column >
-                            <p:selectOneMenu value="#{certificadoTipoComprobanteBean.selectedTipoComprobante}" converter="TipoComprobanteListModel" panelStyle="width:150px"
-                                             effect="fade" var="_tipoComprobante" style="width:190px"  required="true" label="#{msg['certificadoTipoComprobante.editar.tipoComprobante']}" requiredMessage="#{msg['certificadoTipoComprobante.editar.tipoComprobante.mensaje.requerido']}" >
+                            <p:selectOneMenu value="#{certificadoTipoComprobanteBean.selectedCertificado}" converter="CertificadosListModel" panelStyle="width:150px"
+                                             effect="fade" var="_plan" style="width:190px"  required="true"   label="#{msg['empresa.editar.plan']}" requiredMessage="#{msg['empresa.editar.plan.mensaje.requerido']}" >
 
                                 <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
-                                <f:selectItems value="#{certificadoTipoComprobanteBean.tiposComprobante}" var="lsttcmp" itemLabel="#{lsttcmp.nombreTipoComprobante}" itemValue="#{lsttcmp}"/>
+                                <f:selectItems value="#{certificadoTipoComprobanteBean.listaCertificados}" var="lsplan" itemLabel="#{lsplan.nombre}" itemValue="#{lsplan}"/>
                                 <p:column>
-                                    #{_tipoComprobante.nombreTipoComprobante}  
+                                    #{_plan.nombre}   
                                 </p:column>
                             </p:selectOneMenu>
 
                         </p:column>
                     </p:row>
 
-                    <p:row>
-                        <p:columnGroup type="header">
-                            <p:row>
-                                <p:column colspan="2" headerText="#{msg['certificadoTipoComprobante.nuevo.acciones']}" />
-                            </p:row>
-                        </p:columnGroup>    
-                        <p:column>
-                            <p:commandButton value="#{msg['boton.guardar']}" styleClass="btn btn-info" process="@this"
-                                             action="#{certificadoTipoComprobanteBean.guardar}" update="grdEditar, :formId:dtId, :formId:growl" oncomplete="PF('wdgEdit').hide()">
-                                <p:resetInput target="grdEditar" />
-                            </p:commandButton>
-                        </p:column>
-                        <p:column >
-                            <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-warning" action="#{planBean.cancelar}" update="grdEditar, :formId:dtId" >
-                                <p:resetInput target="grdEditar" />
-                            </p:commandButton>                            
-                        </p:column>                        
-                    </p:row>
+                  
                 </p:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.guardar']}" styleClass="btn btn-info" process="@this"
+                                     action="#{certificadoTipoComprobanteBean.guardar}" update="grdEditar" oncomplete="PF('wdgEdit').hide()">
+                        <p:resetInput target="grdEditar" />
+                    </p:commandButton>
+                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-warning" action="#{planBean.cancelar}" update="grdEditar" >
+                        <p:resetInput target="grdEditar" />
+                    </p:commandButton>     
+                    <p:commandButton value="test" action="#{certificadoTipoComprobanteBean.validar}" process="@this"/>
+
+                </f:facet>
             </p:dialog>
         </h:form>
         <h:form id="form3">
@@ -134,7 +87,7 @@
                 <h:outputText style="font-weight:  bold" id="lblNombre" value=" #{empresaBean.selectedEmpresa.nombreEmpresa} ?"/>
 
                 <f:facet name="footer">
-                    <p:commandButton value="#{msg['boton.si']}"  styleClass="btn btn-success"  actionListener="#{empresaBean.desactivar}" update=":formId:dtId"  />
+                    <p:commandButton value="#{msg['boton.si']}"  styleClass="btn btn-success"  actionListener="#{empresaBean.desactivar}"  />
                     <p:commandButton value="#{msg['boton.no']}"  styleClass="btn btn-danger" onclick="PF('confirm').hide()"/> 	
 
                 </f:facet>

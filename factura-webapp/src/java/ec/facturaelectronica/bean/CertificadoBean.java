@@ -160,7 +160,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
                 cert = new Certificado();
                 cert.setNombreArchivoCertificado(getNombreArchivoCertificado());
             }else{
-                Certificado oldCertificado = certificadoService.getCertificadoPorId(cert.getId());
+                Certificado oldCertificado = certificadoService.getCertificadoPorId(cert.getIdCertificado());
                 cert.setNombreArchivoCertificado(oldCertificado.getNombreArchivoCertificado());
             }
             if (fechasValidate(fechaIngreso, fechaCaducidad)) {
@@ -172,7 +172,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
                 cert.setClaveCertificado(Util.md5(claveCertificado));
                 cert.setEmpresa(selectedEmpresa);
                 
-                if (cert.getId() == null) {
+                if (cert.getIdCertificado()== null) {
                     certificadoService.registrarCertificado(cert);
                 } else {
                     certificadoService.actualizarCertificado(cert);

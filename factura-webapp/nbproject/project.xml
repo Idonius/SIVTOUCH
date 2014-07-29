@@ -6,10 +6,6 @@
             <name>factura-webapp</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <web-module-libraries>
-                <library dirs="200">
-                    <file>${libs.PrimeFaces 5.0.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
                 <library dirs="100">
                     <file>${reference.factura-services.dist}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
@@ -19,19 +15,19 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.primefaces-5.0.jar}</file>
+                    <file>${libs.PrimeFaces 5.0.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.log4j-1.2-api-2.0-rc2.jar-1}</file>
+                    <file>${file.reference.log4j-1.2-api-2.0-rc2.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.log4j-api-2.0-rc2.jar-1}</file>
+                    <file>${file.reference.log4j-api-2.0-rc2.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.log4j-core-2.0-rc2.jar-1}</file>
+                    <file>${file.reference.log4j-core-2.0-rc2.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
