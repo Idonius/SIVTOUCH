@@ -33,8 +33,6 @@
                                         <p:password id="txtClave" styleClass="form-control" placeholder="#{msg['login.clave']}" value="#{loginAccessBean.loginVo.clave}" required="true" requiredMessage="#{msg['login.clave.error']}"/>
                                     </div>
                                     <p:commandButton styleClass="ui-button-primary" value="#{msg['login.botonacceso']}" action="#{loginAccessBean.validarUsuario}" process="@this,txtNick,txtClave" update="message" />
-                                        
-                                 
 
                                 </fieldset>
                             </div>

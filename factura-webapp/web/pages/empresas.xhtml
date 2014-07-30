@@ -86,6 +86,7 @@
 
             </div>
         </h:form>
+        
         <h:form id="form2">
             <p:dialog id="dlgEditar" widgetVar="ventanaEditar" header="#{msg['empresa.header.editar']}" width="490px" height="220px"  showEffect="explode"  >
 
@@ -126,7 +127,7 @@
                             <p:inputText id="ruc" value="#{empresaBean.ruc}" label="Ruc" required="true"  style="width:190px"   />
                         </p:column>
                         <p:column >
-                            <p:message for="ruc" styleClass="label-danger"  display="text" />
+                            <p:message for="ruc" display="text" />
                             <h:outputText value="#{empresaBean.ruc}" />
                         </p:column>
 
