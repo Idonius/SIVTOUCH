@@ -4,18 +4,10 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-
                 xmlns:c="http://java.sun.com/jsp/jstl/core">
-
-
     <ui:define name="content">
-
-
         <h:form id="form">
-
             <div id="main" role="main">
-
-
 
                 <div id="content">
 
@@ -24,7 +16,6 @@
                             <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                                 <div class="widget-body">
                                     <p:growl id="growl" showDetail="true" /> 
-
                                     <div class="row">
                                         <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
                                             <h1 class="page-title txt-color-blueDark">
@@ -38,34 +29,99 @@
                                             </h1>
                                         </div>
                                     </div>
+                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{certificadoTipoBean.nuevo}" update=":f01:gridEditar" />
+                                    <p/>
 
+                                    <p:dataTable  id="dtCertificadoId" resizableColumns="true" value="#{certificadoTipoBean.certificadoModel}" var="_certificado" selection="#{certificadoTipoBean.selectedCertificado}" 
+                                                  rows="8"  paginator="true" selectionMode="single">
 
-
-
-                                    <p:selectOneMenu value="#{certificadoTipoBean.selectedCertificado}" converter="CertificadosListModel" panelStyle="width:150px"
-                                                     effect="fade" var="_plan" style="width:190px"  required="true"   label="#{msg['empresa.editar.plan']}" requiredMessage="#{msg['empresa.editar.plan.mensaje.requerido']}" >
-
-                                        <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
-                                        <f:selectItems value="#{certificadoTipoBean.listaCertificados}" var="lsplan" itemLabel="#{lsplan.nombre}" itemValue="#{lsplan}"/>
-                                        <p:column>
-                                            #{_plan.nombre}   
+                                        <p:column headerText="#{msg['certificados.tabla.columna1']}" styleClass="centrado">
+                                            <h:outputText value="#{_certificado.certificado.nombre}"/>
                                         </p:column>
-                                    </p:selectOneMenu>
 
-                                    <p:commandButton value="test" action="#{certificadoTipoBean.validar}" />
+                                        <p:column headerText="#{msg['certificados.tabla.columna1']}" styleClass="centrado">
+                                            <h:outputText value="#{_certificado.tipoComprobante.nombreTipoComprobante}"/>
+                                        </p:column>                                        
+
+                                        <p:column headerText="#{msg['certificados.tabla.columna1']}" styleClass="centrado">
+                                            <h:outputText value="#{_certificado.catalogo.nombreCatalogo}"/>
+                                        </p:column> 
+
+                                        <p:column headerText="#{msg['certificados.tabla.columna1']}" styleClass="centrado">
+                                            <p:panelGrid columns="2">
+                                                <p:commandButton value="#{msg['boton.editar']}"  styleClass="btn btn-primary"  action="#{certificadoTipoBean.editar}" update=":f01:gridEditar"   >
+                                                    <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoTipoBean.selectedCertificado}"  />
+                                                </p:commandButton>
+                                                <p:commandButton value="#{msg['boton.eliminar']}"  styleClass="btn btn-danger"  action="#{certificadoTipoBean.eliminar}" update=":f01:gridEditar"   >
+                                                    <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoTipoBean.selectedCertificado}"  />
+                                                </p:commandButton>                                                
+                                            </p:panelGrid>
+                                        </p:column> 
 
 
+                                    </p:dataTable>
 
                                 </div>
                             </article>
 
-
                         </div>
                     </section> 
                 </div>
-
-
             </div>
+        </h:form>
+
+        <h:form id="f01">
+            <p:dialog id="dlgEditar" widgetVar="dlgEditarCertificado" header="#{msg['certificados.header.editar']}" width="490px" height="320px"  showEffect="explode"  >
+                <p:panelGrid id="gridEditar">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna1']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{certificadoTipoBean.selectedCertificado}" converter="CertificadosListModel" panelStyle="width:150px"
+                                             effect="fade" var="_plan" style="width:190px"  required="true"   label="#{msg['empresa.editar.plan']}" requiredMessage="#{msg['empresa.editar.plan.mensaje.requerido']}" >
+
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItems value="#{certificadoTipoBean.listaCertificados}" var="lsplan" itemLabel="#{lsplan.nombre}" itemValue="#{lsplan}"/>
+                                <p:column>
+                                    #{_plan.nombre}   
+                                </p:column>
+                            </p:selectOneMenu>
+
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna2']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:selectOneMenu value="#{certificadoTipoBean.tipoComprobanteSelected}" converter="TipoComprobanteListModel" panelStyle="width:150px"
+                                             effect="fade" var="_tpoComprobante" style="width:190px"  required="true"   label="#{msg['empresa.editar.plan']}" requiredMessage="#{msg['empresa.editar.plan.mensaje.requerido']}" >
+
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItems value="#{certificadoTipoBean.listaTipoComprobante}" var="lstcp" itemLabel="#{lstcp.nombreTipoComprobante}" itemValue="#{lstcp}"/>
+                                <p:column>
+                                    #{_tpoComprobante.nombreTipoComprobante}   
+                                </p:column>
+                            </p:selectOneMenu>
+
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>  
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoTipoBean.editar}" update=":form:dtCertificadoId" process="@this">
+                        <p:resetInput target="gridEditar" />
+                    </p:commandButton>
+
+                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this"  action="#{certificadoTipoBean.cancelar}" update="@form">
+                        <p:resetInput target="gridEditar" /> 
+                    </p:commandButton>
+                </f:facet>
+            </p:dialog>
+
         </h:form>
 
 
