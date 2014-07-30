@@ -85,7 +85,6 @@ public class CertificadoTipoComprobanteServiceImpl implements CertificadoTipoCom
         
         try{
             result = tipoComprobanteDao.obtenerTipoComprobanteList();
-            System.err.println("Cantidad " + result);
         }catch(Exception ex){
             throw new ServicesException(ex.getMessage());
         }
