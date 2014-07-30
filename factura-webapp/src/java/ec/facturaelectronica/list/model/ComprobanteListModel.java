@@ -7,7 +7,6 @@ package ec.facturaelectronica.list.model;
 
 import ec.facturaelectronica.bean.application.ComprobanteApplication;
 import ec.facturaelectronica.model.Comprobante;
-import java.util.List;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
