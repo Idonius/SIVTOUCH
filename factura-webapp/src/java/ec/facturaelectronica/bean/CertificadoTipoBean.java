@@ -5,16 +5,22 @@
  */
 package ec.facturaelectronica.bean;
 
-import ec.facturaelectronica.list.model.CertificadosListModel;
-import ec.facturaelectronica.list.model.PlanListModel;
+import ec.facturaelectronica.datatable.model.CertificadoTipoComprobanteDataTableModel;
+import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.Certificado;
+import ec.facturaelectronica.model.CertificadoTipoComprobante;
+import ec.facturaelectronica.model.TipoComprobante;
 import ec.facturaelectronica.service.CertificadoService;
+import ec.facturaelectronica.service.CertificadoTipoComprobanteService;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -29,22 +35,50 @@ public class CertificadoTipoBean implements Serializable {
      */
     @EJB
     private CertificadoService certificadoService;
+    
+    @EJB
+    private CertificadoTipoComprobanteService certificadoTipoComprobanteService;
 
     private List<Certificado> listaCertificados;
-    private Certificado selectedCertificado;
+    private List<CertificadoTipoComprobante> listaTipoCertificado;
+    private List<TipoComprobante> listaTipoComprobante;
+    private CertificadoTipoComprobante selectedCertificado;
+    private TipoComprobante tipoComprobanteSelected;
+    private CertificadoTipoComprobanteDataTableModel certificadoModel;
 
     public CertificadoTipoBean() {
     }
 
     @PostConstruct
     public void init() {
-        System.err.println("entra init");
-        listaCertificados = certificadoService.getCertificadosFiltrados();
-        CertificadosListModel.certificadoModel = listaCertificados;
+        try {
+            System.err.println("Entre en init");
+            listaCertificados = certificadoService.getCertificadosFiltrados();
+            listaTipoComprobante = certificadoTipoComprobanteService.obtenerTipoComprobanteList();
+            
+            listaTipoCertificado = certificadoTipoComprobanteService.obtenerCertificadoTipoComprobanteServiceList();
+            certificadoModel = new CertificadoTipoComprobanteDataTableModel(listaTipoCertificado);
+                       
+        } catch (ServicesException ex) {
+            Logger.getLogger(CertificadoTipoBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void editar(){
+        System.err.println("Dame el certificado selecto: " + selectedCertificado);
+        System.err.println("Dame el tipo comprobante selecto: " + tipoComprobanteSelected);
+    }
+    
+    public void eliminar(){
+        
     }
 
-    public void validar() {
-        System.err.println(selectedCertificado);
+    public void nuevo() {
+        RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').show()");
+    }
+    
+    public void cancelar(){
+        
     }
 
     /**
@@ -64,15 +98,47 @@ public class CertificadoTipoBean implements Serializable {
     /**
      * @return the selectedCertificado
      */
-    public Certificado getSelectedCertificado() {
+    public CertificadoTipoComprobante getSelectedCertificado() {
         return selectedCertificado;
     }
 
     /**
      * @param selectedCertificado the selectedCertificado to set
      */
-    public void setSelectedCertificado(Certificado selectedCertificado) {
+    public void setSelectedCertificado(CertificadoTipoComprobante selectedCertificado) {
         this.selectedCertificado = selectedCertificado;
     }
 
+    public CertificadoTipoComprobanteDataTableModel getCertificadoModel() {
+        return certificadoModel;
+    }
+
+    public void setCertificadoModel(CertificadoTipoComprobanteDataTableModel certificadoModel) {
+        this.certificadoModel = certificadoModel;
+    }
+
+    public List<CertificadoTipoComprobante> getListaTipoCertificado() {
+        return listaTipoCertificado;
+    }
+
+    public void setListaTipoCertificado(List<CertificadoTipoComprobante> listaTipoCertificado) {
+        this.listaTipoCertificado = listaTipoCertificado;
+    }
+
+    public List<TipoComprobante> getListaTipoComprobante() {
+        return listaTipoComprobante;
+    }
+
+    public void setListaTipoComprobante(List<TipoComprobante> listaTipoComprobante) {
+        this.listaTipoComprobante = listaTipoComprobante;
+    }
+
+    public TipoComprobante getTipoComprobanteSelected() {
+        return tipoComprobanteSelected;
+    }
+
+    public void setTipoComprobanteSelected(TipoComprobante tipoComprobanteSelected) {
+        this.tipoComprobanteSelected = tipoComprobanteSelected;
+    }
+    
 }
