@@ -7,6 +7,7 @@
 package ec.facturaelectronica.dao.impl;
 
 import ec.facturaelectronica.dao.PagoDao;
+import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.Pago;
 import java.util.Collections;
 import java.util.List;
@@ -35,5 +36,20 @@ public class PagoDaoImpl extends GenericDaoImpl<Pago, Integer> implements PagoDa
         }
         return result;
     }
+
+    @Override
+    public List<Pago> obtenerPagosPorEmpresaPorMes(Empresa empresa, int mes) {
+        List<Pago> result = Collections.emptyList();
+        
+        Query qry = em.createNamedQuery("Pago.findByEmpresaByMes");
+        if(qry != null){
+            qry.setParameter("emp", empresa)
+               .setParameter("mes", mes);
+            result = qry.getResultList();
+        }
+        return result;
+    }
+    
+    
     
 }
