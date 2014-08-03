@@ -35,7 +35,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Comprobante.findByEmpresa", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta order by c.fechaComprobante desc"),
-    @NamedQuery(name = "Comprobante.findByArchivoComprobante", query = "SELECT c FROM Comprobante c WHERE c.archivoComprobante = :archivoComprobante")})
+    @NamedQuery(name = "Comprobante.findByArchivoComprobante", query = "SELECT c FROM Comprobante c WHERE c.archivoComprobante = :archivoComprobante"),
+    @NamedQuery(name = "Comprobante.findByEmpresaByEstadoByFechas", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.estadoComprobante=:estado and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta order by c.fechaComprobante desc"),
+    @NamedQuery(name = "Comprobante.findByTipoComprobante", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.estadoComprobante=:estado and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta and c.idTipoComprobante=:tipo order by c.fechaComprobante desc")
+})
+
 public class Comprobante implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -84,6 +88,9 @@ public class Comprobante implements Serializable {
     @JoinColumn(name = "id_empresa", referencedColumnName = "id_empresa")
     @ManyToOne
     private Empresa idEmpresa;
+    @JoinColumn(name = "id_tipo_comprobante", referencedColumnName = "id_tipo_comprobante")
+    @ManyToOne
+    private TipoComprobante idTipoComprobante;
 
     public Comprobante() {
     }
@@ -210,6 +217,14 @@ public class Comprobante implements Serializable {
 
     public void setIdEmpresa(Empresa idEmpresa) {
         this.idEmpresa = idEmpresa;
+    }
+
+    public TipoComprobante getIdTipoComprobante() {
+        return idTipoComprobante;
+    }
+
+    public void setIdTipoComprobante(TipoComprobante idTipoComprobante) {
+        this.idTipoComprobante = idTipoComprobante;
     }
 
     @Override

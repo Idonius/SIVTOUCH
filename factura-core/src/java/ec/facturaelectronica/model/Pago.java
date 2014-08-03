@@ -52,7 +52,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Pago.findByTotalPago", query = "SELECT p FROM Pago p WHERE p.totalPago = :totalPago"),
     @NamedQuery(name = "Pago.findByFechaCancelaPago", query = "SELECT p FROM Pago p WHERE p.fechaCancelaPago = :fechaCancelaPago"),
     @NamedQuery(name = "Pago.findByFechaApruebaPago", query = "SELECT p FROM Pago p WHERE p.fechaApruebaPago = :fechaApruebaPago"),
-    @NamedQuery(name = "Pago.findByObservacionesPago", query = "SELECT p FROM Pago p WHERE p.observacionesPago = :observacionesPago")})
+    @NamedQuery(name = "Pago.findByObservacionesPago", query = "SELECT p FROM Pago p WHERE p.observacionesPago = :observacionesPago"),
+    @NamedQuery(name = "Pago.findByEmpresaByMes", query = "SELECT p FROM Pago p WHERE p.empresa=:emp and p.mesPago=:mes")})
 public class Pago implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
