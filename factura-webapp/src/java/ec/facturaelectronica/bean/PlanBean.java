@@ -66,6 +66,7 @@ public class PlanBean extends RecursosServices implements Serializable {
     }
 
     public void nuevo() {
+        limpiar();
         RequestContext.getCurrentInstance().execute("PF('wdgNew').show()");
     }
 
@@ -83,6 +84,7 @@ public class PlanBean extends RecursosServices implements Serializable {
         costoPlan = BigDecimal.ZERO;
         valorFacturaPlan = BigDecimal.ZERO;
         descripcionPlan = "";
+        plan = null;
     }
 
     public void desactivar() {

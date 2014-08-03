@@ -12,7 +12,6 @@ import ec.facturaelectronica.list.model.TipoComprobanteListModel;
 import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Certificado;
 import ec.facturaelectronica.model.CertificadoTipoComprobante;
-import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.TipoComprobante;
 import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.CertificadoService;
