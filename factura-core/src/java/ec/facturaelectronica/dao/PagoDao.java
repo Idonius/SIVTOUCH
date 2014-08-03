@@ -6,6 +6,7 @@
 
 package ec.facturaelectronica.dao;
 
+import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.Pago;
 import java.util.List;
 import javax.ejb.Local;
@@ -17,4 +18,5 @@ import javax.ejb.Local;
 @Local
 public interface PagoDao extends GenericDao<Pago, Integer>{
     List<Pago> obtenerTodosLosPagos();
+    List<Pago> obtenerPagosPorEmpresaPorMes(final Empresa empresa, final int mes);
 }
