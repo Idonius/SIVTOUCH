@@ -8,6 +8,7 @@ package ec.facturaelectronica.dao.impl;
 import ec.facturaelectronica.dao.CatalogoDao;
 import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.GrupoCatalogo;
+import java.util.Collections;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
@@ -35,6 +36,23 @@ public class CatalogoDaoImpl  extends GenericDaoImpl<Catalogo, Long> implements 
         catologos = q.getResultList();
 
         return catologos;
-    }    
+    }  
+
+    @Override
+    public List<Catalogo> getCatalogoByGrupoByNombre(final GrupoCatalogo grupo, final String nombreCatalogo) {
+        List<Catalogo> result = Collections.emptyList();
+        System.out.println(String.format("Grupo: %s, NombreCatalogo: %s", grupo.getIdGrpCatalogo(), nombreCatalogo));
+        Query qry = em.createNamedQuery("Catalogo.findByGrpCatalogoByNombreCatalogo");
+        if(qry != null){
+            qry
+                    .setParameter("grpCatalogo", grupo)
+                    .setParameter("nombre", nombreCatalogo);
+            result = qry.getResultList();
+            System.out.println("Cantidad de registros: " + result.size());
+        }
+        return result;
+    }
+    
+    
     
 }
