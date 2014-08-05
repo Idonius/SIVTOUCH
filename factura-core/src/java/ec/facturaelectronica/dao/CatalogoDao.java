@@ -17,5 +17,6 @@ import javax.ejb.Local;
 @Local
 public interface CatalogoDao extends GenericDao<Catalogo , Long>{
     public List<Catalogo> getCatalogoByGrupo(GrupoCatalogo grupo);
+    List<Catalogo> getCatalogoByGrupoByNombre(GrupoCatalogo grupo, String nombreCatalogo);
     
 }
