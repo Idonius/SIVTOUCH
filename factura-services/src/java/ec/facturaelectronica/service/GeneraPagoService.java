@@ -7,8 +7,10 @@
 package ec.facturaelectronica.service;
 
 import ec.facturaelectronica.exception.ServicesException;
+import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Comprobante;
 import ec.facturaelectronica.model.Empresa;
+import ec.facturaelectronica.model.GrupoCatalogo;
 import ec.facturaelectronica.model.Pago;
 import ec.facturaelectronica.model.TipoComprobante;
 import java.util.Date;
@@ -28,4 +30,5 @@ public interface GeneraPagoService {
     List<TipoComprobante> obtenerTiposComprobante() throws ServicesException;
     List<Comprobante> obtenerLosComprobantesPorTipo(Empresa empresa, String estado, TipoComprobante tipo) throws ServicesException;
     List<Pago> obtenerPagosPorEmpresaPorMes(Empresa empresa, int mes) throws ServicesException;
+    List<Catalogo> obtenerCatalogoPorGrupoCatalogoPorNombreCatalogo(GrupoCatalogo grupo, String nombreCatalogo) throws ServicesException;
 }
