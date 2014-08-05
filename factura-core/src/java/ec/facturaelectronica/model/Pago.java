@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -97,9 +98,9 @@ public class Pago implements Serializable {
     @Size(max = 1000)
     @Column(name = "observaciones_pago")
     private String observacionesPago;
-    @OneToMany(mappedBy = "idPago")
+    @OneToMany(mappedBy = "idPago", cascade = CascadeType.PERSIST)
     private List<DetallePago> detallePagoList;
-    @OneToMany(mappedBy = "idPago")
+    @OneToMany(mappedBy = "idPago", cascade = CascadeType.PERSIST)
     private List<TipoComprobantePago> tipoComprobantePagoList;
     @JoinColumn(name = "id_empresa", referencedColumnName = "id_empresa")
     @ManyToOne

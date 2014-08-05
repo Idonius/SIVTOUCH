@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Catalogo.findByIdCatalogo", query = "SELECT c FROM Catalogo c WHERE c.idCatalogo = :idCatalogo"),
     @NamedQuery(name = "Catalogo.findByNombreCatalogo", query = "SELECT c FROM Catalogo c WHERE c.nombreCatalogo = :nombreCatalogo"),
     @NamedQuery(name = "Catalogo.findByAbrCatalogo", query = "SELECT c FROM Catalogo c WHERE c.abrCatalogo = :abrCatalogo"),
-    @NamedQuery(name = "Catalogo.findByIdGrpCatalogo", query = "SELECT c FROM Catalogo c WHERE c.grupoCatalogo.idGrpCatalogo = :idGrpCatalogo")
+    @NamedQuery(name = "Catalogo.findByIdGrpCatalogo", query = "SELECT c FROM Catalogo c WHERE c.grupoCatalogo.idGrpCatalogo = :idGrpCatalogo"),
+    @NamedQuery(name = "Catalogo.findByGrpCatalogoByNombreCatalogo", query = "SELECT c FROM Catalogo c WHERE c.grupoCatalogo = :grpCatalogo and c.nombreCatalogo=:nombre")
 })
 public class Catalogo implements Serializable {
     private static final long serialVersionUID = 1L;
