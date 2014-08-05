@@ -5,16 +5,22 @@
  */
 package ec.facturaelectronica.service.impl;
 
+import ec.facturaelectronica.dao.CatalogoDao;
 import ec.facturaelectronica.dao.EmpresaDao;
 import ec.facturaelectronica.dao.ComprobanteDao;
 import ec.facturaelectronica.dao.TipoComprobanteDao;
 import ec.facturaelectronica.dao.PagoDao;
 import ec.facturaelectronica.exception.ServicesException;
+import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Comprobante;
+import ec.facturaelectronica.model.DetallePago;
 import ec.facturaelectronica.model.Empresa;
+import ec.facturaelectronica.model.GrupoCatalogo;
 import ec.facturaelectronica.model.Pago;
 import ec.facturaelectronica.model.TipoComprobante;
+import ec.facturaelectronica.model.TipoComprobantePago;
 import ec.facturaelectronica.service.GeneraPagoService;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -22,7 +28,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 /**
  *
@@ -46,6 +52,8 @@ enum tipoFecha {
 
 @Stateless
 public class GeneraPagoServiceImpl implements GeneraPagoService {
+    private final Long GRUPO_CATALOGO_PAGO = 2L;
+    private final String ESTADO_CATALOGO_PAGADO = "Pagado";
 
     @EJB
     private EmpresaDao empresaDao;
@@ -55,9 +63,12 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
 
     @EJB
     private TipoComprobanteDao tipoComprobanteDao;
-    
+
     @EJB
     private PagoDao pagoDao;
+    
+    @EJB
+    private CatalogoDao catalogoDao;
 
     private final String FORMATO_FECHA = "dd-MM-yyyy";
 
@@ -67,9 +78,11 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
 
     @Override
     public Pago generarPago(Empresa empresa, Date fecha) throws ServicesException {
+        GrupoCatalogo grupoCatalogo = new GrupoCatalogo(GRUPO_CATALOGO_PAGO);
+        List<Catalogo> catalogos;
+                
         Calendar calendar = new GregorianCalendar();
         calendar.setTime(fecha);
-        System.out.println("Fecha: " + new SimpleDateFormat("dd-MMM-yyyy").format(fecha));
         Pago pago = new Pago();
         //generar las fechas desde hasta
 
@@ -79,6 +92,9 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
         pago.setMesPago(calendar.get(Calendar.MONTH) + 1);
         pago.setEmpresa(empresa);
         pago.setFechaGeneracionPago(fecha);
+        catalogos = catalogoDao.getCatalogoByGrupoByNombre(grupoCatalogo, ESTADO_CATALOGO_PAGADO);
+        pago.setEstado(catalogos.get(0));
+        pago.setCostoFactPlanPago(BigDecimal.ZERO);
 
         //validar que no existe pagos para esa empresa en esa fchas
         //consulta los comprobnates de esa empresa que esten autorizados por las fechas desde y hasta
@@ -98,9 +114,33 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
 
     @Override
     public void guardarPago(Pago pago) throws ServicesException {
+        List<Comprobante> comprobantes = obtenerLosComprobantesPorEmpresaPorEstadoPorFechas(pago.getEmpresa(), "AUTORIZADO");
+        List<TipoComprobante> tiposComprobante = tipoComprobanteDao.obtenerTipoComprobanteList();
+        List<TipoComprobantePago> tipoComprobantePagoList = new ArrayList<TipoComprobantePago>();
+        List<DetallePago> detallePagoList = new ArrayList<DetallePago>();
+    
+        for (Comprobante comprobante : comprobantes) {
+            DetallePago detallePago = new DetallePago();
+            detallePago.setComprobante(comprobante);
+            detallePago.setIdPago(pago);
+            detallePagoList.add(detallePago);
+        }
+        pago.setDetallePagoList(detallePagoList);
         
-        //persitencia pagoDao.insert(pago);
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (TipoComprobante tipoComprobante : tiposComprobante) {
+            List<Comprobante> comprobantesPorTipo = obtenerLosComprobantesPorTipo(pago.getEmpresa(), "AUTORIZADO", tipoComprobante);
+            TipoComprobantePago tipoComprobantePago = new TipoComprobantePago();
+            int contador = 0;
+            for (Comprobante comprobante : comprobantesPorTipo) {
+                contador++;
+                tipoComprobantePago.setNumeroComprobantesTipo(contador);
+            }
+            tipoComprobantePago.setIdPago(pago);
+            tipoComprobantePago.setTipoComprobante(tipoComprobante);
+            tipoComprobantePagoList.add(tipoComprobantePago);
+        }
+        pago.setTipoComprobantePagoList(tipoComprobantePagoList);
+        pagoDao.insert(pago);
     }
 
     private Date obtenerRangosFechaPrevia(final tipoFecha valor) {
@@ -136,7 +176,6 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
         List<Comprobante> result = Collections.emptyList();
         try {
             result = comprobanteDao.obtenerComprobantesPorEmpresaPorEstadoPorFechas(empresa, estado, obtenerRangosFechaPrevia(tipoFecha.INICIO), obtenerRangosFechaPrevia(tipoFecha.FIN));
-            System.out.println("Cantidad comprobantes: " + result.size());
         } catch (Exception ex) {
             throw new ServicesException("Error al obtener el listado de comprobantes...");
         }
@@ -159,7 +198,6 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
         List<Comprobante> result = Collections.emptyList();
         try {
             result = comprobanteDao.obtenerComprobantesPorEmpresaPorEstadoPorFechasPorTipo(empresa, estado, obtenerRangosFechaPrevia(tipoFecha.INICIO), obtenerRangosFechaPrevia(tipoFecha.FIN), tipo);
-            System.out.println("Cantidad comprobantes: " + result.size());
         } catch (Exception ex) {
             throw new ServicesException("Error al obtener el listado de comprobantes...");
         }
@@ -169,15 +207,24 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
     @Override
     public List<Pago> obtenerPagosPorEmpresaPorMes(Empresa empresa, int mes) throws ServicesException {
         List<Pago> result = Collections.emptyList();
-        
-        try{
+
+        try {
             result = pagoDao.obtenerPagosPorEmpresaPorMes(empresa, mes);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             throw new ServicesException("Error al obtener el listado de pagos...");
-        }       
+        }
         return result;
     }
-    
-    
+
+    @Override
+    public List<Catalogo> obtenerCatalogoPorGrupoCatalogoPorNombreCatalogo(final GrupoCatalogo grupo, final String nombreCatalogo) throws ServicesException {
+        List<Catalogo> result = Collections.emptyList();
+        try {
+            result = catalogoDao.getCatalogoByGrupoByNombre(grupo, nombreCatalogo);
+        } catch (Exception ex) {
+            throw new ServicesException("Error al obtener el listado de catalogos..");
+        }
+        return result;
+    }
 
 }
