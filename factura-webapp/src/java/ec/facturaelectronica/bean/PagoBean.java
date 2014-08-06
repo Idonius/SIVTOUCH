@@ -17,22 +17,16 @@ import ec.facturaelectronica.service.GeneraPagoService;
 import ec.facturaelectronica.util.RecursosServices;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -73,8 +67,7 @@ public class PagoBean extends RecursosServices implements Serializable {
             empresas = pagoService.obtenerTodasLasEmpresasActivas();
             EmpresaListModel.empresaModel = empresas;
         } catch (ServicesException ex) {
-//            TODO Mensajeria JSF
-            ex.getMessage();
+            errorMessages(recurso.getString("pago.header"), ex.getMessage(), "form:growl");
         }
     }
 
@@ -117,9 +110,12 @@ public class PagoBean extends RecursosServices implements Serializable {
     }
 
     public void generar() throws ServicesException {
-        FacesMessage msg;
+        if(totalComprobantes == 0){
+            setTotalComprobantes(pagoService.obtenerLosComprobantesPorEmpresaPorEstadoPorFechas(empresaSelected, COMPROBANTE_ESTADO).size());
+        }
+        int excedente = new BigDecimal(totalComprobantes).subtract(empresaSelected.getPlan().getValorFacturaPlan()).intValue(); 
         pago = pagoService.generarPago(empresaSelected, fechaGeneracion);
-        pago.setExcedenteComprobantesPago(getExedente());
+        pago.setExcedenteComprobantesPago(excedente);
         pago.setCostoFactPlanPago(empresaSelected.getPlan().getValorFacturaPlan());
         pago.setCostoPlanPago(empresaSelected.getPlan().getCostoPlan());
         pago.setUsuario(loginAccessBean.getUsuarioLogin());
@@ -129,12 +125,10 @@ public class PagoBean extends RecursosServices implements Serializable {
         pago.setTotalPago(new BigDecimal(getValorAPagar())); 
         if (pagoService.obtenerPagosPorEmpresaPorMes(empresaSelected, pago.getMesPago()).isEmpty()) {
             getComprobanteList();
+            infoMessages(recurso.getString("pago.header"), recurso.getString("pago.detalles.exito"), "form:growl");
             setVisible(true);
         }else{
-//            Arreglar recurso
-            msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("empresa.header"), "El pago ha sido efectuado con anterioridad");
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            RequestContext.getCurrentInstance().update("form:growl");           
+            warnMessages(recurso.getString("pago.header"), recurso.getString("pago.detalles.generado"), "form:growl");
             setVisible(false);   
         }
     }
@@ -142,20 +136,33 @@ public class PagoBean extends RecursosServices implements Serializable {
     public void guardarPago(){
         try {
             pagoService.guardarPago(pago);
+            infoMessages(recurso.getString("pago.header"), recurso.getString("pago.detalles.guardado.exito"), "form:growl");
         } catch (ServicesException ex) {
-            Logger.getLogger(PagoBean.class.getName()).log(Level.SEVERE, null, ex);
+            errorMessages(recurso.getString("pago.header"), ex.getMessage(), "form:growl");
         }
+    }
+    
+    private int obtenerComprobanteList(){
+        int result = 0;
+        try {      
+            comprobantes = pagoService.obtenerLosComprobantesPorEmpresaPorEstadoPorFechas(pago.getEmpresa(), COMPROBANTE_ESTADO);
+            if(comprobantes != null){
+                result = comprobantes.size();
+            }
+        } catch (ServicesException ex) {
+            errorMessages(recurso.getString("pago.header"), ex.getMessage(), "form:growl");            
+        }
+        return result;
     }
 
     private void getComprobanteList() {
         try {
-            comprobantes = pagoService.obtenerLosComprobantesPorEmpresaPorEstadoPorFechas(pago.getEmpresa(), COMPROBANTE_ESTADO);
-            setTotalComprobantes(comprobantes.size());
+            setTotalComprobantes(obtenerComprobanteList());
             comprobanteModel = new ComprobanteDataTableModel(comprobantes);
             tiposConmprobante = pagoService.obtenerTiposComprobante();
             tipoComprobanteModel = new TipoComprobanteDataTableModel(tiposConmprobante);
         } catch (ServicesException ex) {
-            ex.getMessage();
+            errorMessages(recurso.getString("pago.header"), ex.getMessage(), "form:growl");
         }
     }
 
@@ -174,14 +181,14 @@ public class PagoBean extends RecursosServices implements Serializable {
         try {
             result = pagoService.obtenerLosComprobantesPorTipo(pago.getEmpresa(), COMPROBANTE_ESTADO, tipo).size();
         } catch (ServicesException ex) {
-            ex.getMessage();
+            errorMessages(recurso.getString("pago.header"), ex.getMessage(), "form:growl");
         }
         return result;
     }
 
     public int getExedente() {
         int result;
-        result = totalComprobantes - empresaSelected.getPlan().getValorFacturaPlan().intValue();
+        result = new BigDecimal(totalComprobantes).subtract(empresaSelected.getPlan().getValorFacturaPlan()).intValue();
         return result > 0 ? result : result * -1;
     }
 

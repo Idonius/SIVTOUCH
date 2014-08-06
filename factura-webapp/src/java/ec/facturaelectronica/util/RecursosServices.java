@@ -5,8 +5,11 @@
 package ec.facturaelectronica.util;
 
 import java.util.ResourceBundle;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -22,6 +25,29 @@ public class RecursosServices {
     public ResourceBundle getRecurso() {
         return recurso;
     }
+    
+    protected void errorMessages(String mensaje, String detalle, String objeto){
+        FacesMessage msg;
+        msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, mensaje, detalle);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        RequestContext.getCurrentInstance().update(objeto);                   
+    }
+    
+    protected void warnMessages(String mensaje, String detalle, String objeto){
+        FacesMessage msg;
+        msg = new FacesMessage(FacesMessage.SEVERITY_WARN, mensaje, detalle);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        RequestContext.getCurrentInstance().update(objeto);                   
+    }
+    
+    protected void infoMessages(String mensaje, String detalle, String objeto){
+        FacesMessage msg;
+        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, mensaje, detalle);
+        FacesContext.getCurrentInstance().addMessage(null, msg);
+        RequestContext.getCurrentInstance().update(objeto);                   
+    }
+    
+    
 
     public void setRecurso(ResourceBundle recurso) {
         this.recurso = recurso;
