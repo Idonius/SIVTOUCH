@@ -26,7 +26,7 @@
 
                                                 <!-- PAGE HEADER -->
                                                 <i class="fa-fw fa fa-hospital  "></i> 
-                                                Generar Pagos
+                                                #{msg['pago.header']}
                                                 <span>>  
                                                     Factura Electrónica
                                                 </span>
@@ -35,13 +35,13 @@
                                     </div>
                                     <!--Inicio-->
                                     <p:panel style="width: 100%;height: 1450px" >
-                                        <p:panel id="pnlSeleccion" header="Seleccion Datos Primarios" >
+                                        <p:panel id="pnlSeleccion" header="#{msg['pago.seleccion.datos.primarios']}" >
                                             <p:panelGrid id="pnlPrimaryData" columns="3" >
-                                                <p:outputLabel for="cboEmpresas" value="Empresa" />
+                                                <p:outputLabel for="cboEmpresas" value="#{msg['empresa.header.editar']}" />
 
                                                 <p:selectOneMenu id="cboEmpresas" value="#{pagoBean.empresaSelected}" converter="EmpresaListModel" panelStyle="width:150px"
-                                                                 effect="fade" var="_empresa" style="width:190px"  required="true" label="Editar certificado" requiredMessage="Debe elegir la empresa" >
-                                                    <f:selectItem itemLabel="Seleccione una empresa..." itemValue="" />
+                                                                 effect="fade" var="_empresa" style="width:190px"  required="true" label="#{msg['pago.editar.certificado']}" requiredMessage="#{msg['pago.editar.campo.empresa.requerido']}" >
+                                                    <f:selectItem itemLabel="#{msg['lista.mensaje']}" noSelectionOption="true" />
                                                     <f:selectItems value="#{pagoBean.empresas}" var="lsemp" itemLabel="#{lsemp.nombreEmpresa}" itemValue="#{lsemp}" />
 
                                                     <p:column>
@@ -50,8 +50,9 @@
                                                 </p:selectOneMenu>
                                                 <p:message for="cboEmpresas" />
 
-                                                <p:outputLabel for="dtpGeneracion" value="Fecha Generacion" />
-                                                <p:calendar id="dtpGeneracion" value="#{pagoBean.fechaGeneracion}" showOn="button" >
+                                                <p:outputLabel for="dtpGeneracion" value="#{msg['pago.fecha.generacion']}" />
+                                                <p:calendar id="dtpGeneracion" value="#{pagoBean.fechaGeneracion}" showOn="button" required="true"
+                                                            requiredMessage="#{msg['pago.editar.campo.requerido.fecha.pago']}">
                                                     <p:ajax event="dateSelect" listener="#{pagoBean.onDateSelect}" />
                                                 </p:calendar>
                                                 <p:message for="dtpGeneracion" />
@@ -60,48 +61,48 @@
 
                                         </p:panel>
                                         <br/>
-                                        <p:commandButton value="Generar" styleClass="btn btn-success" action="#{pagoBean.generar}" update="@form"/>
+                                        <p:commandButton value="#{msg['boton.generar']}" styleClass="btn btn-success" action="#{pagoBean.generar}" update="@form"/>
                                         <br/>
                                         <br/>
-                                        <p:panel id="pnlGralData" header="Datos Generacion de pago" rendered="#{pagoBean.visible}" >
+                                        <p:panel id="pnlGralData" header="#{msg['pago.datos.generacion.pago']}" rendered="#{pagoBean.visible}" >
                                             <p:panelGrid columns="2">
-                                                <p:outputLabel for="fechaDesde" value="DESDE: " />
+                                                <p:outputLabel for="fechaDesde" value="#{msg['pago.fecha.desde']}" />
                                                 <h:outputText id="fechaDesde" value="#{pagoBean.pago.fechaDesdePago}" >
                                                     <f:convertDateTime pattern="dd-MM-yyyy" />
                                                 </h:outputText>
 
-                                                <p:outputLabel for="fechaHasta" value="HASTA: " />
+                                                <p:outputLabel for="fechaHasta" value="#{msg['pago.fecha.hasta']}" />
                                                 <h:outputText id="fechaHasta" value="#{pagoBean.pago.fechaHastaPago}" >
                                                     <f:convertDateTime pattern="dd-MM-yyyy" />
                                                 </h:outputText>
 
-                                                <p:outputLabel for="fechaMes" value="MES: " />
+                                                <p:outputLabel for="fechaMes" value="#{msg['fecha.mes']}" />
                                                 <h:outputText id="fechaMes" value="#{pagoBean.mes}" />
 
-                                                <p:outputLabel for="fechaAnio" value="AÑO: " />
+                                                <p:outputLabel for="fechaAnio" value="#{msg['fecha.anio']}" />
                                                 <h:outputText id="fechaAnio" value="#{pagoBean.pago.anioPago}" />
                                             </p:panelGrid>
                                         </p:panel>
                                         <br/>
-                                        <p:panel id="pnlComprobante" header="Informacion tipo comprobante" rendered="#{pagoBean.visible}" >
+                                        <p:panel id="pnlComprobante" header="#{msg['pago.info.tipo.comprobante']}" rendered="#{pagoBean.visible}" >
                                             <p:dataTable id="dt" value="#{pagoBean.comprobanteModel}" var="_comprobante" selection="#{pagoBean.comprobanteSelected}" rows="8"  paginator="true" filteredValue="#{pagoBean.comprobanteFiltered}" selectionMode="single"  >
-                                                <p:column headerText="TIPO">
+                                                <p:column headerText="#{msg['pago.nombre.tipo.comprobante']}">
                                                     <h:outputText value="#{_comprobante.idTipoComprobante.nombreTipoComprobante}"/>
                                                 </p:column>
-                                                <p:column headerText="NUMERO AUTORIZACION" styleClass="centrado">
+                                                <p:column headerText="#{msg['pago.numero.autorizacion.comprobante']}" styleClass="centrado">
                                                     <h:outputText value="#{_comprobante.numeroAutorizacionComprobante}"/>
                                                 </p:column>
-                                                <p:column headerText="ESTADO" styleClass="centrado">
+                                                <p:column headerText="#{msg['pago.estado.comprobante']}" styleClass="centrado">
                                                     <h:outputText value="#{_comprobante.estadoComprobante}"/>
                                                 </p:column>
 
-                                                <p:column headerText="FECHA DE ENVIO" styleClass="centrado">
+                                                <p:column headerText="#{msg['pago.fecha.envio.comprobante']}" styleClass="centrado">
                                                     <h:outputText value="#{_comprobante.fechaComprobante}">
                                                         <f:convertDateTime pattern="dd-MM-yyyy" />
                                                     </h:outputText>
                                                 </p:column>
 
-                                                <p:column headerText="FECHA AUTOR" styleClass="centrado">
+                                                <p:column headerText="#{msg['pago.fecha.sistema.comprobante']}" styleClass="centrado">
                                                     <h:outputText value="#{_comprobante.fechaSistemaComprobante}">
                                                         <f:convertDateTime pattern="dd-MM-yyyy" />
                                                     </h:outputText>
@@ -109,7 +110,7 @@
 
                                                 <p:columnGroup type="footer" >
                                                     <p:row>
-                                                        <p:column style="text-align: center; font-weight: bold;" footerText="TOTAL COMPROBANTES: " />
+                                                        <p:column style="text-align: center; font-weight: bold;" footerText="#{msg['pago.total.comprobante']} " />
                                                         <p:column colspan="4" style="text-align: center; font-weight: bold; color: red" footerText="#{pagoBean.totalComprobantes}" /> 
                                                     </p:row>
                                                 </p:columnGroup>
@@ -118,7 +119,7 @@
                                         </p:panel>
                                         <br/>
                                         <p:outputLabel for="pnlAgrupado" value="Detalles" rendered="#{pagoBean.visible}" style="font-weight: bold;"/>
-                                        <p:panel id="pnlAgrupado" header="Detalles" toggleable="true" toggleOrientation="horizontal" rendered="#{pagoBean.visible}" collapsed="true" toggleTitle="Detalles" style="width: 100%">
+                                        <p:panel id="pnlAgrupado" header="#{msg['pago.detalles']}" toggleable="true" toggleOrientation="horizontal" rendered="#{pagoBean.visible}" collapsed="true" toggleTitle="#{msg['pago.detalles']}" style="width: 100%">
                                             <p:dataTable id="tblDetalle" value="#{pagoBean.tipoComprobanteModel}" var="_tipoComprobante" selection="#{pagoBean.tipoComprobanteSelected}" rows="8"  
                                                          paginator="true" filteredValue="#{pagoBean.tiposComprobanteFiltered}" selectionMode="single"  >
                                                 <f:facet name="header">
@@ -128,20 +129,20 @@
                                                     <f:facet name="header">
                                                         <h:outputText value="#{_tipoComprobante.nombreTipoComprobante}" style="font-weight: bold;"/>
                                                     </f:facet>
-                                                    <p:column headerText="NUMERO AUTORIZACION" styleClass="centrado">
+                                                    <p:column headerText="#{msg['pago.numero.autorizacion.comprobante']}" styleClass="centrado">
                                                         <h:outputText value="#{_comprobante.numeroAutorizacionComprobante}"/>
                                                     </p:column>
-                                                    <p:column headerText="ESTADO" styleClass="centrado">
+                                                    <p:column headerText="#{msg['pago.estado.comprobante']}" styleClass="centrado">
                                                         <h:outputText value="#{_comprobante.estadoComprobante}"/>
                                                     </p:column>
 
-                                                    <p:column headerText="FECHA DE ENVIO" styleClass="centrado">
+                                                    <p:column headerText="#{msg['pago.fecha.envio.comprobante']}" styleClass="centrado">
                                                         <h:outputText value="#{_comprobante.fechaComprobante}">
                                                             <f:convertDateTime pattern="dd-MM-yyyy" />
                                                         </h:outputText>
                                                     </p:column>
 
-                                                    <p:column headerText="FECHA AUTOR" styleClass="centrado">
+                                                    <p:column headerText="#{msg['pago.fecha.sistema.comprobante']}" styleClass="centrado">
                                                         <h:outputText value="#{_comprobante.fechaSistemaComprobante}">
                                                             <f:convertDateTime pattern="dd-MM-yyyy" />
                                                         </h:outputText>
@@ -149,7 +150,7 @@
                                                     
                                                     <p:columnGroup type="footer" >
                                                         <p:row>
-                                                            <p:column style="text-align: center; font-weight: bold;" footerText="SUBTOTAL: " />
+                                                            <p:column style="text-align: center; font-weight: bold;" footerText="#{msg['pago.subtotal']} " />
                                                             <p:column colspan="4" style="text-align: center; font-weight: bold; color: red" footerText="#{pagoBean.getCantidadComprobantesPorTipo(_tipoComprobante)}" /> 
                                                         </p:row>
                                                     </p:columnGroup>
@@ -158,31 +159,31 @@
                                             </p:dataTable>
                                         </p:panel>
                                         <br/>
-                                        <p:panel id="plan" header="PLAN" rendered="#{pagoBean.visible}" >
+                                        <p:panel id="plan" header="#{msg['plan.en.mayusculas']}" rendered="#{pagoBean.visible}" >
                                             <p:panelGrid id="gridPlan" columns="2" >
-                                                <p:outputLabel for="nombrePlan" value="Nombre: " />
+                                                <p:outputLabel for="nombrePlan" value="#{msg['plan.nuevo.nombre.seguido']}" />
                                                 <h:outputText id="nombrePlan" value="#{pagoBean.empresaSelected.plan.nombrePlan}" />
-                                                <p:outputLabel for="valorPlan" value="Valor Plan: " />
+                                                <p:outputLabel for="valorPlan" value="#{msg['plan.valor.seguido']}" />
                                                 <h:outputText id="valorPlan" value="#{pagoBean.empresaSelected.plan.valorFacturaPlan}" />
-                                                <p:outputLabel for="costoFactura" value="Costo por Factura: " />
+                                                <p:outputLabel for="costoFactura" value="#{msg['plan.costo.por.factura.seguido']}" />
                                                 <h:outputText id="costoFactura" value="#{pagoBean.empresaSelected.plan.costoPlan}" />                                                
                                             </p:panelGrid>
                                         </p:panel>  
                                         <br/>                                        
-                                        <p:panel id="totales" header="TOTALES" rendered="#{pagoBean.visible}" >
+                                        <p:panel id="totales" header="#{msg['pago.totales']}" rendered="#{pagoBean.visible}" >
                                             <p:panelGrid id="gridTotales" columns="2" >
-                                                <p:outputLabel for="numComprobantes" value="Numero Comprobantes: " />
+                                                <p:outputLabel for="numComprobantes" value="#{msg['pago.numero.comprobantes.seguido']}" />
                                                 <h:outputText id="numComprobantes" value="#{pagoBean.totalComprobantes}" />
-                                                <p:outputLabel for="excedenteId" value="Excedente: " />
+                                                <p:outputLabel for="excedenteId" value="#{msg['pago.excedente.seguido']}" />
                                                 <h:outputText id="excedenteId" value="#{pagoBean.exedente}" />
-                                                <p:outputLabel for="valorAPagar" value="TOTAL VALOR A PAGAR: " />
+                                                <p:outputLabel for="valorAPagar" value="#{msg['pago.a.pagar.seguido']}" />
                                                 <h:outputText id="valorAPagar" value="#{pagoBean.valorAPagar}" >
                                                     <f:convertNumber pattern="#.00" />
                                                 </h:outputText>
                                                 
                                             </p:panelGrid>
                                         </p:panel>
-                                        <p:commandButton value="GUARDAR PAGO" rendered="#{pagoBean.visible}" styleClass="btn btn-success" action="#{pagoBean.guardarPago}" />
+                                        <p:commandButton value="#{msg['boton.guardar']}" rendered="#{pagoBean.visible}" styleClass="btn btn-success" action="#{pagoBean.guardarPago}" />
                                     </p:panel>
                                     <!--Fin-->
                                 </div>
