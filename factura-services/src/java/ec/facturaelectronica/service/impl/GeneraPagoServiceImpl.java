@@ -53,7 +53,7 @@ enum tipoFecha {
 @Stateless
 public class GeneraPagoServiceImpl implements GeneraPagoService {
     private final Long GRUPO_CATALOGO_PAGO = 2L;
-    private final String ESTADO_CATALOGO_PAGADO = "Pagado";
+    private final String ESTADO_CATALOGO_GENERADO = "Generado";
 
     @EJB
     private EmpresaDao empresaDao;
@@ -69,12 +69,6 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
     
     @EJB
     private CatalogoDao catalogoDao;
-
-    private final String FORMATO_FECHA = "dd-MM-yyyy";
-
-    private int getPreviousMonth(final int mes) {
-        return mes == 1 ? 12 : mes - 1;
-    }
 
     @Override
     public Pago generarPago(Empresa empresa, Date fecha) throws ServicesException {
@@ -92,22 +86,9 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
         pago.setMesPago(calendar.get(Calendar.MONTH) + 1);
         pago.setEmpresa(empresa);
         pago.setFechaGeneracionPago(fecha);
-        catalogos = catalogoDao.getCatalogoByGrupoByNombre(grupoCatalogo, ESTADO_CATALOGO_PAGADO);
+        catalogos = catalogoDao.getCatalogoByGrupoByNombre(grupoCatalogo, ESTADO_CATALOGO_GENERADO);
         pago.setEstado(catalogos.get(0));
         pago.setCostoFactPlanPago(BigDecimal.ZERO);
-
-        //validar que no existe pagos para esa empresa en esa fchas
-        //consulta los comprobnates de esa empresa que esten autorizados por las fechas desde y hasta
-        //foreach
-//        DetallePago detaPago = new DetallePago();
-//        pago.getDetallePagoList().add(detaPago);
-        //fin for each
-        //consulta de los tipos compronates fact,notas de venta,retenciones
-        //for each de tipos coprobante
-        //conulta de comprobnates de la empresa que esten autorizados por as fechas desde hasta y el tipo de compronate
-//        TipoComprobantePago tipoComprobantePago = new TipoComprobantePago();
-//        pago.getTipoComprobantePagoList().add(tipoComprobantePago);
-        //end for
         return pago;
 
     }
