@@ -8,6 +8,7 @@ package ec.facturaelectronica.service;
 
 import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.CertificadoTipoComprobante;
+import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.TipoComprobante;
 import java.util.List;
 import javax.ejb.Local;
@@ -23,4 +24,5 @@ public interface CertificadoTipoComprobanteService {
     void actualizarCertificadoTipoComprobanteService(final CertificadoTipoComprobante certificadoTipoComprobante) throws ServicesException;
     void eliminarCertificadoTipoComprobanteService(CertificadoTipoComprobante certificadoTipoComprobante) throws ServicesException;
     List<TipoComprobante> obtenerTipoComprobanteList() throws ServicesException;
+    List<TipoComprobante> obtenerCertificadoTipoComprobante(Empresa empresa, TipoComprobante tipoComprobante) throws ServicesException;
 }
