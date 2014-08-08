@@ -218,8 +218,11 @@ public class CertificadoBean extends RecursosServices implements Serializable {
         if (certificado != null) {
             certificado.setEstado(catalogo);
             certificadoService.actualizarCertificado(certificado);
+        }        
+        init();
+        if(estadoSelected == 2){
+            infoMessages(recurso.getString("certificados.header"), recurso.getString("certificados.mensaje"), "frmCertificadosId:growl");
         }
-        certificados = certificadoService.getCertificadosFiltrados();
         RequestContext.getCurrentInstance().execute("PF('dlgModificarEstado').hide()");
     }
 

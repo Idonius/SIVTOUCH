@@ -254,7 +254,16 @@ public class UsuarioBean extends RecursosServices implements Serializable {
 
     public void nuevo() {
 
-        //reset
+        nombre = "";
+        usuario = null;
+        nick = "";
+        clave = "";
+        rclave = "";
+        cedula = "";
+        cargo = "";
+        email = "";
+        editUser = false;
+        selectedPerfil = null;
 
         RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
     }

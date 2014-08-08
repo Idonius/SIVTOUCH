@@ -1,0 +1,184 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="main.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+
+    <ui:define name="content">
+        <h:form id="frmCobros">
+
+            <div id="main" role="main">
+
+
+
+                <div id="content">
+
+                    <section id="widget-grid" class="">
+                        <div class="row">
+                            <article class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                                <div class="widget-body">
+                                    <p:growl id="growl" showDetail="true"      />  
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                                            <h1 class="page-title txt-color-blueDark">
+
+                                                <!-- PAGE HEADER -->
+                                                <i class="fa-fw fa fa-hospital  "></i> 
+                                                #{msg['empresa.header']}
+                                                <span>>  
+                                                    Factura Electrónica
+                                                </span>
+                                            </h1>
+                                        </div>
+                                    </div>
+                                    <!--Inicio-->
+                                    <p:panel id="pnlPago" header="Pagos" >
+                                        <p:dataTable id="dtbl" value="#{cobroPagoBean.pagoModel}" var="_pago" selection="#{cobroPagoBean.pagoSelected}"
+                                                     rows="8"  paginator="true" filteredValue="#{cobroPagoBean.filterPagos}" selectionMode="single"  >
+
+                                            <p:column headerText="Nombre Empresa" >
+                                                <h:outputText value="#{_pago.empresa.nombreEmpresa}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Plan" >
+                                                <h:outputText value="#{_pago.plan.nombrePlan}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Anio" >
+                                                <h:outputText value="#{_pago.anioPago}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Mes" >
+                                                <h:outputText value="#{_pago.mesPago}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Fecha Generacion" >
+                                                <h:outputText value="#{_pago.fechaGeneracionPago}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Numero de Comprobantes" >
+                                                <h:outputText value="#{_pago.numeroComprobantesPago}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Excedente" >
+                                                <h:outputText value="#{_pago.excedenteComprobantesPago}"/>
+                                            </p:column>
+
+                                            <p:column headerText="A Pagar" >
+                                                <h:outputText value="#{_pago.totalPago}"/>
+                                            </p:column>
+
+                                            <p:column style="width: 90px">
+                                                <p:commandButton value="Validar Pago"  styleClass="btn btn-primary"  action="#{cobroPagoBean.validarPago}" update=":formDialogEditarId:gridEditar"   >
+                                                    <f:setPropertyActionListener value="#{_pago}" target="#{cobroPagoBean.pagoSelected}" />
+                                                </p:commandButton>
+
+                                            </p:column>
+
+                                        </p:dataTable>
+                                    </p:panel>
+                                    <!--Fin-->
+                                </div>
+                            </article>
+                        </div>
+                    </section> 
+                </div>
+
+
+            </div>
+        </h:form>
+        
+          <h:form id="formDialogEditarId">
+            <p:dialog id="dlgEditar" widgetVar="dlgEditarCertificado" header="#{msg['certificados.header.editar']}" width="490px" height="320px"  showEffect="explode"  >
+                <p:panelGrid id="gridEditar">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna1']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText  id="nombreCertificado" value="#{certificadoBean.nombreCertificado}" required="true" style="width:190px"  label="#{msg['certificados.tabla.columna1']}" requiredMessage="#{msg['certificados.editar.nombre.mensaje']}" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna2']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:calendar value="#{certificadoBean.fechaIngreso}" mode="popup" showOn="button" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna3']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:calendar value="#{certificadoBean.fechaCaducidad}" mode="popup" showOn="button" />
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row >
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna4']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:fileUpload fileUploadListener="#{certificadoBean.upload}" mode="advanced" auto="true"
+                                          allowTypes="/(\.|\/)(p12)$/" sizeLimit="100000" label="Seleccionar" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.tabla.columna6']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText  id="nombre" value="#{certificadoBean.claveCertificado}" required="true" style="width:190px"  label="#{msg['certificados.tabla.columna6']}" requiredMessage="#{msg['certificados.editar.clave.mensaje']}" />
+                        </p:column>
+                    </p:row>
+                    
+                </p:panelGrid>  
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.registrar}" update=":frmCobros:dtbl, gridEditar" >
+                        <p:resetInput target="gridEditar" />
+                    </p:commandButton>
+                    
+                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this"  action="#{certificadoBean.cancelar}" update="@form">
+                        <p:resetInput target="gridEditar" /> 
+                    </p:commandButton>
+                </f:facet>
+            </p:dialog>
+            
+        </h:form>
+
+        <h:form id="formDialogCambiarClaveId">
+            <p:dialog id="dlgCambiarClaveId" widgetVar="dlgCambiarClave" header="#{msg['certificados.header.editar.clave']}" width="390px" height="120px"  showEffect="explode"  >
+                <p:panelGrid id="grid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['certificados.header.editar.clave']}" style="font-weight:bold" />                           
+                        </p:column>
+                        <p:column>
+                            <p:password value="#{certificadoBean.newPass}" required="true" requiredMessage="#{msg['certificadoTipoComprobante.campo.editar.clave.requerido']}" />
+                        </p:column>
+
+                    </p:row>
+                </p:panelGrid>
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.nuevaClave}" update="grid, :formDialogEditarId:gridEditar, :frmCobros:growl" >
+                        <p:resetInput target=":formDialogEditarId:gridEditar" /> 
+                    </p:commandButton>
+
+                </f:facet>
+            </p:dialog> 
+        </h:form>
+      
+
+    </ui:define>
+
+</ui:composition>
