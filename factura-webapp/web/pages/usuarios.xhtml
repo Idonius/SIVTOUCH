@@ -36,7 +36,7 @@
                                         </div>
                                     </div>
 
-                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{usuarioBean.nuevo}" update="@([id$=tabV])"    />
+                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{usuarioBean.nuevo}" update=":form2:grid"    />
                                     <p/>
                                     <p:dataTable  id="dt" resizableColumns="true" value="#{usuarioBean.usuarioModel}"  var="obj" selection="#{usuarioBean.selectedUsuario}" rows="8"  paginator="true" filteredValue="#{usuarioBean.filterUsuarios}" selectionMode="single"  >
 

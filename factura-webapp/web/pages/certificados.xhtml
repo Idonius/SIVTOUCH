@@ -145,8 +145,8 @@
                             <p:outputLabel value="#{msg['certificados.tabla.columna4']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
-                            <p:fileUpload fileUploadListener="#{certificadoBean.upload}" allowTypes="/(\.|\/)(p12)$/"
-                                          sizeLimit="100000" label="Seleccionar" />
+                            <p:fileUpload fileUploadListener="#{certificadoBean.upload}" mode="advanced" auto="true"
+                                          allowTypes="/(\.|\/)(p12)$/" sizeLimit="100000" label="Seleccionar" />
                         </p:column>
                     </p:row>
 
@@ -216,7 +216,7 @@
                     </p:row>
                 </p:panelGrid>
                 <f:facet name="footer">
-                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.nuevoEstado}" update=":frmCertificadosId:dtCertificadoId" >
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action="#{certificadoBean.nuevoEstado}" update=":frmCertificadosId:dtCertificadoId, grid" >
                         <p:resetInput target="grid" /> 
                     </p:commandButton>
 
