@@ -129,6 +129,10 @@ public class CobroPagoBean extends RecursosServices implements Serializable{
     }
     
     public void cancelar(){
+        RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
+    }
+    
+    public void cancelacionPago(){
         RequestContext.getCurrentInstance().execute("PF('ventanaCancelar').hide()");
     }
     

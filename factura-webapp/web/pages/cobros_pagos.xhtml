@@ -86,7 +86,7 @@
         </h:form>
 
         <h:form id="form2">
-            <p:dialog id="dlgEditar" widgetVar="ventanaEditar" header="Validar Pago" width="490px" height="220px"  showEffect="explode"  >
+            <p:dialog id="dlgEditar" widgetVar="ventanaEditar" header="Validar Pago" width="490px" height="170px"  showEffect="explode" resizable="false" >
 
                 <p:panelGrid id="grid" style="companyHeaderGrid">
                     <p:row>
@@ -146,7 +146,8 @@
         </h:form>
         
         <h:form id="form3">
-            <p:dialog id="dlgCancelar" widgetVar="ventanaCancelar" header="Cancelar Pago" width="490px" height="220px"  showEffect="explode"  >
+            <p:dialog id="dlgCancelar" widgetVar="ventanaCancelar" header="Cancelar Pago" width="290px" height="100px"  showEffect="explode"  
+                      resizable="false" >
 
                 <p:panelGrid id="gridCancelar" columns="2" style="companyHeaderGrid">
                     <p:outputLabel value="Observacion" />
@@ -154,7 +155,7 @@
                     <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  actionListener="#{cobroPagoBean.cancelarPago}" process="@this" update="gridCancelar, :frmCobros:growl, :frmCobros:tbl" oncomplete="PF('ventanaCancelar').hide()" >
                         <p:resetInput target="gridCancelar" />
                     </p:commandButton>
-                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this" action="#{cobroPagoBean.cancelar}">
+                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this" action="#{cobroPagoBean.cancelacionPago}">
                         <p:resetInput target="gridCancelar" />
                     </p:commandButton>                    
                 </p:panelGrid>
