@@ -13,16 +13,14 @@ import org.primefaces.model.SelectableDataModel;
 
 /**
  *
- * @author Armando
+ * @author armando
  */
-public class PagoDataTableModel extends ListDataModel<Pago> implements SelectableDataModel<Pago>{
-    public PagoDataTableModel() {
-    }
+public class PagoDataTableModel extends ListDataModel<Pago> implements SelectableDataModel<Pago> {
 
     public PagoDataTableModel(List<Pago> data) {
         super(data);
     }
- 
+
     @Override
     public Object getRowKey(Pago pago) {
         return pago.getIdPago().toString();
@@ -30,15 +28,14 @@ public class PagoDataTableModel extends ListDataModel<Pago> implements Selectabl
 
     @Override
     public Pago getRowData(String rowKey) {
-        List<Pago> pagos = (List<Pago>) getWrappedData();
-
+        List<Pago> pagos = (List<Pago>)getWrappedData();
+        
         for (Pago pago : pagos) {
-            if (pago.getIdPago().toString().equals(rowKey)) {
+            if(pago.getIdPago().toString().equals(rowKey)){
                 return pago;
             }
         }
         return null;
-
     }
     
 }
