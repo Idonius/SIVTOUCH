@@ -101,7 +101,8 @@
 
         <!--Dialogo crear nuevos planes-->
         <h:form id="fplan01" >
-            <p:dialog id="dlgNuevo" widgetVar="wdgNew" header="#{msg['plan.header.editar']}" width="490px" height="220px"  showEffect="explode"  >
+            <p:dialog id="dlgNuevo" widgetVar="wdgNew" header="#{msg['plan.header.editar']}" width="380px" height="270px"  showEffect="explode"  
+                      resizable="false">
                 <p:panelGrid id="grdNuevo" style="companyHeaderGrid">
                     <p:row>
                         <p:column>
@@ -153,22 +154,23 @@
                                 <p:column colspan="2" headerText="#{msg['plan.nuevo.acciones']}" />
                             </p:row>
                         </p:columnGroup>    
+
                         <p:column>
                             <p:commandButton value="#{msg['boton.guardar']}" styleClass="btn btn-info" action="#{planBean.guardar}" update="grdNuevo, :fplan:dt, :fplan:growl" oncomplete="PF('wdgNew').hide()">
                                 <p:resetInput target="grdNuevo" />
                             </p:commandButton>
                         </p:column>
                         <p:column >
-                            <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-warning" action="#{planBean.cancelar}" update="grdNuevo, :fplan:dt" >
+                            <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" action="#{planBean.cancelar}" update="grdNuevo, :fplan:dt" >
                                 <p:resetInput target="grdNuevo" />
                             </p:commandButton>                            
-                        </p:column>                        
+                        </p:column>                                                
                     </p:row>
 
                 </p:panelGrid>
             </p:dialog>
         </h:form>
-        
+
         <h:form id="form3">
             <p:dialog id="dlgConfirm" header="#{msg['title.eliminar']}" widgetVar="confirm"   showEffect="fade" hideEffect="explode" width="320" height="50"  >
 
@@ -179,11 +181,10 @@
                 <f:facet name="footer">
                     <p:commandButton value="#{msg['boton.si']}"  styleClass="btn btn-success"  actionListener="#{planBean.desactivar}" update=":fplan:dt"  />
                     <p:commandButton value="#{msg['boton.no']}"  styleClass="btn btn-danger" onclick="PF('confirm').hide()"/> 	
-
                 </f:facet>
             </p:dialog>
         </h:form>
-        
+
 
     </ui:define>
 </ui:composition>
