@@ -151,7 +151,7 @@
                 <p:panelGrid id="gridCancelar" columns="2" style="companyHeaderGrid">
                     <p:outputLabel value="Observacion" />
                     <p:inputTextarea id="txtObservaciones" value="#{cobroPagoBean.observaciones}"/>
-                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  actionListener="#{cobroPagoBean.cancelarPago}" process="@this" update="gridCancelar, :frmCobros:growl, :frmCobros:tbl" oncomplete="PF('ventanaEditar').hide()" >
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  actionListener="#{cobroPagoBean.cancelarPago}" process="@this" update="gridCancelar, :frmCobros:growl, :frmCobros:tbl" oncomplete="PF('ventanaCancelar').hide()" >
                         <p:resetInput target="gridCancelar" />
                     </p:commandButton>
                     <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this" action="#{cobroPagoBean.cancelar}">

@@ -125,6 +125,7 @@ public class CobroPagoBean extends RecursosServices implements Serializable{
             pagoSelected.setEstado(catalogo);
             pagoSelected.setObservacionesPago(observaciones);
             pagoService.actualizarPago(pagoSelected);
+            init();
     }
     
     public void cancelar(){
