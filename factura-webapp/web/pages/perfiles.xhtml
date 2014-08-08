@@ -3,8 +3,7 @@
                 xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                >
+                xmlns:p="http://primefaces.org/ui" >
 
 
     <ui:define name="content">
@@ -43,13 +42,13 @@
                                         <p:column style="width: 70%" sortBy="nombrePerfil" headerText="#{msg['perfiles.tabla.columna1']}"  filterMatchMode="contains" >
                                             <h:outputText value="#{obj.nombrePerfil}"/>
                                         </p:column>
-                                        <p:column  >
+                                        <p:column  style="width: 70px" styleClass="centrado">
                                             <p:commandButton value="#{msg['boton.editar']}" styleClass="btn btn-info" action="#{perfilesBean.editar}" process="@this" update=":form:nombre" >
                                                 <f:setPropertyActionListener value="#{obj}" target="#{perfilesBean.selectedPerfil}"  />  
                                             </p:commandButton>
 
                                         </p:column>
-                                        <p:column >
+                                        <p:column style="width: 85px" styleClass="centrado">
                                             <p:commandButton value="#{msg['boton.eliminar']}" styleClass="btn btn-warning" action="#{perfilesBean.eliminar}" process="@this" update="@([id$=dlgConfirm])" >
                                                 <f:setPropertyActionListener value="#{obj}" target="#{perfilesBean.selectedPerfil}" />  
 
@@ -59,7 +58,7 @@
                                     </p:dataTable>
 
 
-                                    <p:dialog id="dlgEditar"  widgetVar="ventanaEditar" header="#{msg['perfiles.header.editar']}" width="400px" height="80px"   >
+                                    <p:dialog id="dlgEditar"  widgetVar="ventanaEditar" header="#{msg['perfiles.header.editar']}" width="370px" height="60px" resizable="false">
                                        
                                             <table style="companyHeaderGrid">
                                                 <tr>
@@ -99,10 +98,6 @@
 
 
             </div>
-        </h:form>
-
-        <h:form id="form2">
-
         </h:form>
 
     </ui:define>

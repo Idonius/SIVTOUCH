@@ -65,7 +65,7 @@
                                             </p:commandButton>
 
                                         </p:column>
-                                        <p:column >
+                                        <p:column style="width: 85px" >
                                             <p:commandButton value="#{msg['boton.eliminar']}" styleClass="btn btn-warning"  action="#{empresaBean.eliminar}" update=":form3:lblNombre" >
                                                 <f:setPropertyActionListener value="#{obj}" target="#{empresaBean.selectedEmpresa}"  />  
                                             </p:commandButton>
@@ -150,8 +150,6 @@
                         </p:column>
                     </p:row>
                 </p:panelGrid>  
-
-
 
                 <f:facet name="footer">
                     <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action ="#{empresaBean.registrar}" update="grid,:form:dt"   >
