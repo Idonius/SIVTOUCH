@@ -123,6 +123,13 @@ public class GeneraPagoServiceImpl implements GeneraPagoService {
         pago.setTipoComprobantePagoList(tipoComprobantePagoList);
         pagoDao.insert(pago);
     }
+    
+    @Override
+    public void actualizarPago(final Pago pago){
+        if(pago != null){
+            pagoDao.update(pago);
+        }
+    }
 
     private Date obtenerRangosFechaPrevia(final tipoFecha valor) {
         Date hoy = new Date();

@@ -31,4 +31,5 @@ public interface GeneraPagoService {
     List<Comprobante> obtenerLosComprobantesPorTipo(Empresa empresa, String estado, TipoComprobante tipo) throws ServicesException;
     List<Pago> obtenerPagosPorEmpresaPorMes(Empresa empresa, int mes) throws ServicesException;
     List<Catalogo> obtenerCatalogoPorGrupoCatalogoPorNombreCatalogo(GrupoCatalogo grupo, String nombreCatalogo) throws ServicesException;
+    void actualizarPago(final Pago pago);
 }
