@@ -52,6 +52,17 @@ public class CatalogoDaoImpl  extends GenericDaoImpl<Catalogo, Long> implements 
         }
         return result;
     }
+
+    @Override
+    public List<Catalogo> getCatalogoByGrupoTrans() {
+        List<Catalogo> result = Collections.emptyList();
+        
+        Query qry = em.createNamedQuery("Catalogo.findAllByTrans");
+        if(qry != null){
+            result = qry.getResultList();
+        }
+        return result;
+    }
     
     
     

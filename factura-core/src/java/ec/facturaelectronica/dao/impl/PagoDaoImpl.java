@@ -49,6 +49,20 @@ public class PagoDaoImpl extends GenericDaoImpl<Pago, Integer> implements PagoDa
         }
         return result;
     }
+
+    @Override
+    public List<Pago> obtenerPagosGenerados() {
+        List<Pago> result = Collections.emptyList();
+        
+        Query qry = em.createNamedQuery("Pago.findAllByTypeGenerado");
+        System.out.println("Cuantos pagos: " + qry.getResultList().size());
+        if(qry != null){
+            result = qry.getResultList();
+        }
+        return result;
+    }
+    
+    
     
     
     

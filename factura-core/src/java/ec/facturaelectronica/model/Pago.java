@@ -39,6 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Pago.findAll", query = "SELECT p FROM Pago p"),
     @NamedQuery(name = "Pago.findAllActive", query = "SELECT p FROM Pago p WHERE p.estado.nombreCatalogo='Activo'"),
+    @NamedQuery(name = "Pago.findAllByTypeGenerado", query="SELECT p FROM Pago p WHERE p.estado.idCatalogo=3L"),
     @NamedQuery(name = "Pago.findByIdPago", query = "SELECT p FROM Pago p WHERE p.idPago = :idPago"),
     @NamedQuery(name = "Pago.findByFechaGeneracionPago", query = "SELECT p FROM Pago p WHERE p.fechaGeneracionPago = :fechaGeneracionPago"),
     @NamedQuery(name = "Pago.findByFechaDesdePago", query = "SELECT p FROM Pago p WHERE p.fechaDesdePago = :fechaDesdePago"),

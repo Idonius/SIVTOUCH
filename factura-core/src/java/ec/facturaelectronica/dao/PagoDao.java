@@ -19,4 +19,5 @@ import javax.ejb.Local;
 public interface PagoDao extends GenericDao<Pago, Integer>{
     List<Pago> obtenerTodosLosPagos();
     List<Pago> obtenerPagosPorEmpresaPorMes(final Empresa empresa, final int mes);
+    List<Pago> obtenerPagosGenerados();
 }
