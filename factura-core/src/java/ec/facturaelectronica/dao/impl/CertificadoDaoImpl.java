@@ -47,8 +47,7 @@ public class CertificadoDaoImpl extends GenericDaoImpl<Certificado, Long> implem
             return result;
         }
         return Collections.emptyList();        
-    }
-    
+    }    
     
     
 }
