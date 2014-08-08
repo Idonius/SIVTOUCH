@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Certificado.findAll", query = "SELECT c FROM Certificado c"),
-    @NamedQuery(name = "Certificado.filtered", query = "SELECT c FROM Certificado c"),
+    @NamedQuery(name = "Certificado.filtered", query = "SELECT c FROM Certificado c WHERE c.estado.nombreCatalogo='Activo'"),
     
     
 })
