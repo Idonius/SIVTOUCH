@@ -40,8 +40,8 @@
                                     <p/>
                                     <p:dataTable  id="dt" resizableColumns="true" value="#{usuarioBean.usuarioModel}"  var="obj" selection="#{usuarioBean.selectedUsuario}" rows="8"  paginator="true" filteredValue="#{usuarioBean.filterUsuarios}" selectionMode="single"  >
 
-
-                                        <p:column sortBy="nombreUsuario" headerText="#{msg['usuarios.tabla.columna1']}" filterBy="nombreUsuario" filterMatchMode="contains">
+                                        <p:column sortBy="nombreUsuario" headerText="#{msg['usuarios.tabla.columna1']}" 
+                                                  filterBy="nombreUsuario" filterMatchMode="contains" width="14">
                                             <h:outputText value="#{obj.nombreUsuario}"/>
                                         </p:column>
 
@@ -68,13 +68,13 @@
                                         </p:column>
 
 
-                                        <p:column style="width: 90px">
+                                        <p:column style="width: 90px" styleClass="centrado">
                                             <p:commandButton value="#{msg['boton.editar']}"  styleClass="btn btn-primary"  action="#{usuarioBean.editar}" update=":form2:grid"   >
                                                 <f:setPropertyActionListener value="#{obj}" target="#{usuarioBean.selectedUsuario}"  />  
                                             </p:commandButton>
 
                                         </p:column>
-                                        <p:column style="width: 90px">
+                                        <p:column style="width: 90px" styleClass="centrado">
                                             <p:commandButton value="#{msg['usuarios.boton.reset']}"  styleClass="btn bg-color-blueDark " action="#{usuarioBean.cambiarClave}" update=":form3:pnlClave" >
                                                 <f:setPropertyActionListener value="#{obj}" target="#{usuarioBean.selectedUsuario}"  />  
                                             </p:commandButton>
