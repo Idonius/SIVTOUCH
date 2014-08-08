@@ -11,9 +11,8 @@ import javax.ejb.Local;
 
 /**
  *
- * @author Armando
+ * @author armando
  */
 @Local
 public interface CobroPagoDao extends GenericDao<CobroPago, Integer>{
-    
 }

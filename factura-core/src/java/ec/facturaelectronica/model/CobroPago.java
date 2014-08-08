@@ -11,7 +11,6 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,8 +40,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class CobroPago implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
-    @SequenceGenerator(name = "seq_cobro_pago", sequenceName = "seq_cobro_pago", initialValue = 1, allocationSize = 1)
-    @GeneratedValue(generator = "seq_cobro_pago", strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(name = "seq_cobro_pago_gen", sequenceName = "seq_cobro_pago", initialValue = 1, allocationSize = 1)
+    @GeneratedValue(generator = "seq_cobro_pago_gen")
     @Column(name = "id_cobro_pago")
     private Integer idCobroPago;
     

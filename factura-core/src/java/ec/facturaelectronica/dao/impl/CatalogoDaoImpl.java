@@ -31,7 +31,7 @@ public class CatalogoDaoImpl  extends GenericDaoImpl<Catalogo, Long> implements 
         
         Query q = em.createNamedQuery("Catalogo.findAllByGrupo");
      
-        q.setParameter("idGrpCatalogo", grupo);
+        q.setParameter("grupo", grupo);
      
         catologos = q.getResultList();
 
