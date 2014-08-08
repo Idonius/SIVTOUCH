@@ -7,6 +7,8 @@
 package ec.facturaelectronica.dao;
 
 import ec.facturaelectronica.model.CertificadoTipoComprobante;
+import ec.facturaelectronica.model.Empresa;
+import ec.facturaelectronica.model.TipoComprobante;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -17,4 +19,5 @@ import javax.ejb.Local;
 @Local
 public interface CertificadoTipoComprobanteDao extends GenericDao<CertificadoTipoComprobante, Integer>{
     List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobanteList();
+    List<TipoComprobante> obtenerCertificadoPorEmpresaYTipoComprobante(Empresa empresa, TipoComprobante tipoComprobante);
 }
