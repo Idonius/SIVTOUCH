@@ -108,10 +108,9 @@ public class CobroPagoBean extends RecursosServices implements Serializable{
             cobroPago.setFacturaCobro(getFacturaCobro());
             cobroPagoService.guardarCobroPago(cobroPago);
             init();
-//        TODO Arreglar info
-            infoMessages("Cobros y Pagos", "El pago se ha realizado con exito", ":frmCobros:growl");
+            infoMessages(recurso.getString("cobro.header"), recurso.getString("cobro.mensaje.pago.exitoso"), ":frmCobros:growl");
         } catch (ServicesException ex) {
-            errorMessages("Cobros y Pagos", ex.getMessage(), ":frmCobros:growl");
+            errorMessages(recurso.getString("cobro.header"), ex.getMessage(), ":frmCobros:growl");
         }
         
     }
@@ -120,16 +119,17 @@ public class CobroPagoBean extends RecursosServices implements Serializable{
             Catalogo catalogo = new Catalogo(ESTADO_CANCELADO);
             
             setUserLogged(loginAccessBean.getUsuarioLogin());
-            pagoSelected.setUsuarioApruebaPago(getUserLogged());
+            pagoSelected.setUsuarioCancelaPago(getUserLogged());
             pagoSelected.setFechaCancelaPago(new Date());
             pagoSelected.setEstado(catalogo);
             pagoSelected.setObservacionesPago(observaciones);
             pagoService.actualizarPago(pagoSelected);
             init();
+            infoMessages(recurso.getString("cobro.header"), recurso.getString("cobro.mensaje.cancelacion.exitosa"), ":frmCobros:growl");
     }
     
     public void cancelar(){
-        RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
+        RequestContext.getCurrentInstance().execute("PF('ventanaCancelar').hide()");
     }
     
 //    Getters & Setters
