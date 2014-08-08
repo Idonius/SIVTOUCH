@@ -12,6 +12,7 @@ import ec.facturaelectronica.dao.TipoComprobanteDao;
 import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.CertificadoTipoComprobante;
+import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.TipoComprobante;
 import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.CertificadoTipoComprobanteService;
@@ -90,5 +91,19 @@ public class CertificadoTipoComprobanteServiceImpl implements CertificadoTipoCom
         }
         return result;
     }
+
+    @Override
+    public List<TipoComprobante> obtenerCertificadoTipoComprobante(final Empresa empresa, final TipoComprobante tipoComprobante) throws ServicesException{
+        List<TipoComprobante> result = Collections.emptyList();
+        
+        try{
+            result = certificadoTipoComprobanteDao.obtenerCertificadoPorEmpresaYTipoComprobante(empresa, tipoComprobante);
+        }catch(Exception ex){
+            throw new ServicesException("Error al obtener el certificado");
+        }
+        return result;
+    }
+    
+    
         
 }
