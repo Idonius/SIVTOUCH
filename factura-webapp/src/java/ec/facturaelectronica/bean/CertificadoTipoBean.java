@@ -12,6 +12,7 @@ import ec.facturaelectronica.list.model.TipoComprobanteListModel;
 import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Certificado;
 import ec.facturaelectronica.model.CertificadoTipoComprobante;
+import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.TipoComprobante;
 import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.CertificadoService;
@@ -24,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import org.apache.logging.log4j.LogManager;
@@ -43,6 +45,9 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
 
     @EJB
     private CertificadoTipoComprobanteService certificadoTipoComprobanteService;
+
+    @ManagedProperty(value = "#{loginAccessBean}")
+    private LoginAccessBean loginAccessBean;
 
     private final static Logger LOGGER = LogManager.getLogger();
 
@@ -95,35 +100,41 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
         tipoComprobanteSelected = null;
         RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
     }
-    
+
     public void registrar() {
 
         FacesMessage msg;
-        Catalogo catalogo =new Catalogo(EstadosGeneralesEnum.Activo.getOrden());
+        Catalogo catalogo = new Catalogo(EstadosGeneralesEnum.Activo.getOrden());
+        Empresa empresaLogueada = loginAccessBean.getUsuarioLogin().getIdEmpresa();
 
         try {
+            if (certificadoTipoComprobanteService.obtenerCertificadoTipoComprobante(empresaLogueada, tipoComprobanteSelected).isEmpty()) {
+                if (certificadoTipoComprobante == null) {
+                    certificadoTipoComprobante = new CertificadoTipoComprobante();
+                }
 
-            if (certificadoTipoComprobante == null) {
-                certificadoTipoComprobante = new CertificadoTipoComprobante();
+                certificadoTipoComprobante.setCertificado(certificadoSelected);
+                certificadoTipoComprobante.setTipoComprobante(tipoComprobanteSelected);
+                certificadoTipoComprobante.setCatalogo(catalogo);
+
+                if (certificadoTipoComprobante.getId() == null) {
+
+                    certificadoTipoComprobanteService.agregarCertificadoTipoComprobanteService(certificadoTipoComprobante);
+                } else {
+                    certificadoTipoComprobanteService.actualizarCertificadoTipoComprobanteService(certificadoTipoComprobante);
+                }
+
+                RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
+                init();
+
+                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("empresa.header"), recurso.getString("editar.mensaje"));
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                RequestContext.getCurrentInstance().update("form:growl");
+            }else{
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("empresa.header"), recurso.getString("certificadoTipoComprobante.editar.mensaje.ya.existe"));
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                RequestContext.getCurrentInstance().update("form:growl");                
             }
-
-            certificadoTipoComprobante.setCertificado(certificadoSelected);
-            certificadoTipoComprobante.setTipoComprobante(tipoComprobanteSelected);
-            certificadoTipoComprobante.setCatalogo(catalogo);
-
-            if (certificadoTipoComprobante.getId() == null) {
-
-                certificadoTipoComprobanteService.agregarCertificadoTipoComprobanteService(certificadoTipoComprobante);
-            } else {
-                certificadoTipoComprobanteService.actualizarCertificadoTipoComprobanteService(certificadoTipoComprobante);
-            }
-
-            RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
-            init();
-
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("empresa.header"), recurso.getString("editar.mensaje"));
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            RequestContext.getCurrentInstance().update("form:growl");
 
         } catch (ServicesException ex) {
             certificadoTipoComprobante = null;
@@ -139,11 +150,10 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
         }
 
     }
-    
-    public void cancelar(){
+
+    public void cancelar() {
         RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
     }
-    
 
     /**
      * Para la eliminacion del certificado elegido
@@ -240,6 +250,10 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
 
     public void setFilterCertificadosTipo(List<CertificadoTipoComprobante> filterCertificadosTipo) {
         this.filterCertificadosTipo = filterCertificadosTipo;
+    }
+
+    public void setLoginAccessBean(LoginAccessBean loginAccessBean) {
+        this.loginAccessBean = loginAccessBean;
     }
 
 }
