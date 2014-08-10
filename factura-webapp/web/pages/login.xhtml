@@ -9,6 +9,7 @@
         <link rel="stylesheet" type="text/css" media="screen" href="../css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" media="screen" href="../css/smartadmin-production.css"/>
         <link rel="stylesheet" type="text/css" media="screen" href="../css/smartadmin-skins.css"/> 
+        <link href="../css/custom-primefaces.css" rel="stylesheet" type="text/css"/>
         <link href="../css/logincss.css" rel="stylesheet"/>
     </h:head>
     <h:body>
@@ -32,7 +33,7 @@
                                     <div class="form-group">
                                         <p:password id="txtClave" styleClass="form-control" placeholder="#{msg['login.clave']}" value="#{loginAccessBean.loginVo.clave}" required="true" requiredMessage="#{msg['login.clave.error']}"/>
                                     </div>
-                                    <p:commandButton styleClass="ui-button-primary" value="#{msg['login.botonacceso']}" action="#{loginAccessBean.validarUsuario}" process="@this,txtNick,txtClave" update="message" />
+                                    <p:commandButton styleClass="btn-primary btn-sm" value="#{msg['login.botonacceso']}" action="#{loginAccessBean.validarUsuario}" process="@this,txtNick,txtClave" update="message" />
 
                                 </fieldset>
                             </div>

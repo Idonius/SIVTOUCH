@@ -43,7 +43,7 @@
                                             <h:outputText value="#{obj.nombrePerfil}"/>
                                         </p:column>
                                         <p:column  style="width: 70px" styleClass="centrado">
-                                            <p:commandButton value="#{msg['boton.editar']}" styleClass="btn btn-info" action="#{perfilesBean.editar}" process="@this" update=":form:nombre" >
+                                            <p:commandButton value="#{msg['boton.editar']}" styleClass="btn-info" action="#{perfilesBean.editar}" process="@this" update=":form:nombre" >
                                                 <f:setPropertyActionListener value="#{obj}" target="#{perfilesBean.selectedPerfil}"  />  
                                             </p:commandButton>
 

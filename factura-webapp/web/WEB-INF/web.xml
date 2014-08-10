@@ -6,7 +6,7 @@
     </context-param>
     <context-param>
         <param-name>primefaces.THEME</param-name>
-        <param-value>none</param-value>
+        <param-value>bootstrap</param-value>
     </context-param>   
     <filter>
         <filter-name>PrimeFaces FileUpload Filter</filter-name>
