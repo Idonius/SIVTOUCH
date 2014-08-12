@@ -55,7 +55,6 @@ public class PagoDaoImpl extends GenericDaoImpl<Pago, Integer> implements PagoDa
         List<Pago> result = Collections.emptyList();
         
         Query qry = em.createNamedQuery("Pago.findAllByTypeGenerado");
-        System.out.println("Cuantos pagos: " + qry.getResultList().size());
         if(qry != null){
             result = qry.getResultList();
         }
