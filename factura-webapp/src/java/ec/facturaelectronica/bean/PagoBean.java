@@ -137,6 +137,9 @@ public class PagoBean extends RecursosServices implements Serializable {
         try {
             pagoService.guardarPago(pago);
             infoMessages(recurso.getString("pago.header"), recurso.getString("pago.detalles.guardado.exito"), "form:growl");
+            this.empresaSelected = null;
+            this.fechaGeneracion = null;
+            this.setVisible(false);
         } catch (ServicesException ex) {
             errorMessages(recurso.getString("pago.header"), ex.getMessage(), "form:growl");
         }
