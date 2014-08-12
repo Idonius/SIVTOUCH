@@ -34,7 +34,7 @@
                                         </div>
                                     </div>
                                     <!--Inicio-->
-                                    <p:panel style="width: 100%;height: 1450px" >
+                                    <p:panel style="width: 100%;height: 1600px" >
                                         <p:panel id="pnlSeleccion" header="#{msg['pago.seleccion.datos.primarios']}" >
                                             <p:panelGrid id="pnlPrimaryData" columns="3" >
                                                 <p:outputLabel for="cboEmpresas" value="#{msg['empresa.header.editar']}" />
@@ -183,7 +183,7 @@
                                                 
                                             </p:panelGrid>
                                         </p:panel>
-                                        <p:commandButton value="#{msg['boton.guardar']}" rendered="#{pagoBean.visible}" styleClass="btn btn-success" action="#{pagoBean.guardarPago}" />
+                                        <p:commandButton value="#{msg['boton.guardar']}" rendered="#{pagoBean.visible}" styleClass="btn btn-success" action="#{pagoBean.guardarPago}" update="@form"/>
                                     </p:panel>
                                     <!--Fin-->
                                 </div>
