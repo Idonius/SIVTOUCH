@@ -60,13 +60,11 @@ public class CobroPagoServiceImpl implements CobroPagoService {
         List<Catalogo> result = Collections.emptyList();
         GrupoCatalogo grupoCatalogo = new GrupoCatalogo(3L);
         try{
-            result = catalogoDao.getCatalogoByGrupo(grupoCatalogo);       
+            result = catalogoDao.getCatalogoByGrupo(grupoCatalogo);
         }catch(Exception ex){
             throw new ServicesException("Error. La lista catalogos no pudo ser obtenida");
         }
         return result;
     }
     
-    
-
 }
