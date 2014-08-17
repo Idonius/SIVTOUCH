@@ -145,7 +145,6 @@ public class EmpresaBean extends RecursosServices implements Serializable {
         FacesMessage msg;
 
         try {
-
             limpiar();
             listEmpresas = admService.getEmpresas();
             empresaModel = new EmpresaDataTableModel(listEmpresas);

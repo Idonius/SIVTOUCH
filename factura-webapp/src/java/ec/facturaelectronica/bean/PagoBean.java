@@ -122,14 +122,14 @@ public class PagoBean extends RecursosServices implements Serializable {
         pago.setFechaRegistroPago(new Date());
         pago.setNumeroComprobantesPago(totalComprobantes);
         pago.setPlan(empresaSelected.getPlan());
-        pago.setTotalPago(new BigDecimal(getValorAPagar())); 
+        pago.setTotalPago(new BigDecimal(getValorAPagar()));
         if (pagoService.obtenerPagosPorEmpresaPorMes(empresaSelected, pago.getMesPago()).isEmpty()) {
             getComprobanteList();
             infoMessages(recurso.getString("pago.header"), recurso.getString("pago.detalles.exito"), "form:growl");
             setVisible(true);
         }else{
             warnMessages(recurso.getString("pago.header"), recurso.getString("pago.detalles.generado"), "form:growl");
-            setVisible(false);   
+            setVisible(false);
         }
     }
     
