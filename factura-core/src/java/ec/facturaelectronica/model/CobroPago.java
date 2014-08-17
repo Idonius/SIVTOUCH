@@ -70,6 +70,8 @@ public class CobroPago implements Serializable {
     public CobroPago(Integer idCobroPago) {
         this.idCobroPago = idCobroPago;
     }
+    
+    //Getters & Setters
 
     public Integer getIdCobroPago() {
         return idCobroPago;
@@ -118,6 +120,8 @@ public class CobroPago implements Serializable {
     public void setIdPago(Pago idPago) {
         this.idPago = idPago;
     }
+    
+    //Inherited by Object
 
     @Override
     public int hashCode() {

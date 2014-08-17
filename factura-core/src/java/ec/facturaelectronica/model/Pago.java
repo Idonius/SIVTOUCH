@@ -91,10 +91,10 @@ public class Pago implements Serializable {
     @Column(name = "total_pago")
     private BigDecimal totalPago;
     @Column(name = "fecha_cancela_pago")
-    @Temporal(TemporalType.TIME)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaCancelaPago;
     @Column(name = "fecha_aprueba_pago")
-    @Temporal(TemporalType.TIME)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date fechaApruebaPago;
     @Size(max = 1000)
     @Column(name = "observaciones_pago")
