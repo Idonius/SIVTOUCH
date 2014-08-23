@@ -42,7 +42,7 @@ public class CertificadoTipoComprobanteDaoImpl extends GenericDaoImpl<Certificad
     @Override
     public List<TipoComprobante> obtenerCertificadoPorEmpresaYTipoComprobante(Empresa empresa, TipoComprobante tipoComprobante) {
         List<TipoComprobante> result = Collections.emptyList();
-        String valorQuery = "SELECT ctc FROM CertificadoTipoComprobante ctc WHERE ctc.certificado.empresa=:empresa AND ctc.tipoComprobante=:tipoComprobante";
+        String valorQuery = "SELECT ctc FROM CertificadoTipoComprobante ctc WHERE ctc.certificado.empresa=:empresa AND ctc.tipoComprobante=:tipoComprobante AND ctc.catalogo.idCatalogo=1L";
         Query qry = em.createQuery(valorQuery);        
         if(qry != null){
             qry.setParameter("empresa", empresa)
