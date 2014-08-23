@@ -46,10 +46,10 @@
                                         </table>
                                     </div>
 
-                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{certificadoBean.nuevo}" update="@([id$=tabV])"    />
+                                    <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{certificadoBean.nuevo}" update=":formDialogEditarId:gridEditar" />
                                     <p/>
-                                    <p:dataTable  id="dtCertificadoId" resizableColumns="true" value="#{certificadoBean.certificadoModel}" var="_certificado" selection="#{certificadoBean.selectedCertificado}" 
-                                                  rowKey="#{certificadoBean.idSelected}" rows="8"  paginator="true" selectionMode="single">
+                                    <p:dataTable  id="dtCertificadoId" resizableColumns="true" value="#{certificadoBean.certificadoModel}" 
+                                                  var="_certificado" rows="8"  paginator="true" selectionMode="single">
 
                                         <p:column headerText="#{msg['certificados.tabla.columna1']}" >
                                             <h:outputText value="#{_certificado.nombre}"/>
@@ -73,12 +73,14 @@
                                             </p:commandLink>
                                         </p:column>
                                         <p:column headerText="#{msg['certificados.tabla.resetear.clave']}" style="text-align: center">
-                                            <p:commandButton value="#{msg['certificados.btn.cambiar']}" action="#{certificadoBean.cambiar(_certificado)}" 
-                                                             oncomplete="PF('dlgCambiarClave').show()"/>
+                                            <p:commandButton value="#{msg['certificados.btn.cambiar']}" actionListener="#{certificadoBean.resetearClave}" >
+                                                <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoBean.selectedCertificado}" />
+                                            </p:commandButton>
                                         </p:column>
                                         <p:column headerText="#{msg['certificados.tabla.cambiar.estado']}" style="text-align: center">
-                                            <p:commandButton value="#{msg['certificados.btn.modificar']}" action="#{certificadoBean.cambiar(_certificado)}" 
-                                                             oncomplete="PF('dlgModificarEstado').show()"/>
+                                            <p:commandButton value="#{msg['certificados.btn.modificar']}" actionListener="#{certificadoBean.cambiar}" update=":formDialogModificarEstadoId:grid">
+                                                <f:setPropertyActionListener value="#{_certificado}" target="#{certificadoBean.selectedCertificado}" />
+                                            </p:commandButton>
                                         </p:column>
 
                                         <p:column headerText="#{msg['certificados.tabla.columna5']}" style="text-align: center">
@@ -140,9 +142,9 @@
                         </p:column>
                     </p:row>
                     
-                    <p:row >
+                    <p:row rendered="#{certificadoBean.isVisible}">
                         <p:column>
-                            <p:outputLabel value="#{msg['certificados.tabla.columna4']}" style="font-weight:bold" />
+                            <p:outputLabel value="#{msg['certificados.mensaje.cargar.archivo']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
                             <p:fileUpload fileUploadListener="#{certificadoBean.upload}" mode="advanced" auto="true"
@@ -150,12 +152,12 @@
                         </p:column>
                     </p:row>
 
-                    <p:row>
+                    <p:row rendered="#{certificadoBean.isVisible}">
                         <p:column>
                             <p:outputLabel value="#{msg['certificados.tabla.columna6']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
-                            <p:inputText  id="nombre" value="#{certificadoBean.claveCertificado}" required="true" style="width:190px"  label="#{msg['certificados.tabla.columna6']}" requiredMessage="#{msg['certificados.editar.clave.mensaje']}" />
+                            <p:password  id="nombre" value="#{certificadoBean.claveCertificado}" required="true" style="width:190px"  label="#{msg['certificados.tabla.columna6']}" requiredMessage="#{msg['certificados.editar.clave.mensaje']}" />
                         </p:column>
                     </p:row>
                     

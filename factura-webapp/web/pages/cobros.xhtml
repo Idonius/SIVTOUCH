@@ -4,7 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-
+                xmlns:pe="http://primefaces.org/ui/extensions"
                 xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 
@@ -150,7 +150,7 @@
                             <p:outputLabel for="nroDeposito" value="#{msg['cobro.mensaje.numero.deposito']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
-                            <p:inputText id="nroDeposito"  value="#{cobrosBean.numeroTransaccion}" required="true" style="width:190px"  label="#{msg['empresa.editar.telefono']}" requiredMessage="#{msg['empresa.editar.telefono.mensaje']}" />
+                            <pe:inputNumber id="nroDeposito"  value="#{cobrosBean.numeroTransaccion}" required="true" style="width:190px"  label="#{msg['empresa.editar.telefono']}" requiredMessage="#{msg['empresa.editar.telefono.mensaje']}" />
                         </p:column>
                     </p:row>
 
@@ -159,7 +159,7 @@
                             <p:outputLabel for="nroFactura" value="#{msg['cobro.mensaje.numero.factura']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
-                            <p:inputText id="nroFactura" value="#{cobrosBean.nroFactura}" label="#{msg['cobro.mensaje.numero.factura']}" required="true"  
+                            <pe:inputNumber id="nroFactura" value="#{cobrosBean.nroFactura}" label="#{msg['cobro.mensaje.numero.factura']}" required="true"  
                                          requiredMessage="#{msg['cobro.mensaje.numero.factura.requerido']}" style="width:190px"   />
                         </p:column>
                     </p:row>                    

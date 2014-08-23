@@ -4,7 +4,6 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-
                 xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 
@@ -164,9 +163,9 @@
                                                 <p:outputLabel for="nombrePlan" value="#{msg['plan.nuevo.nombre.seguido']}" />
                                                 <h:outputText id="nombrePlan" value="#{pagoBean.empresaSelected.plan.nombrePlan}" />
                                                 <p:outputLabel for="valorPlan" value="#{msg['plan.valor.seguido']}" />
-                                                <h:outputText id="valorPlan" value="#{pagoBean.empresaSelected.plan.valorFacturaPlan}" />
+                                                <h:outputText id="valorPlan" value="#{pagoBean.empresaSelected.plan.costoPlan}" />
                                                 <p:outputLabel for="costoFactura" value="#{msg['plan.costo.por.factura.seguido']}" />
-                                                <h:outputText id="costoFactura" value="#{pagoBean.empresaSelected.plan.costoPlan}" />                                                
+                                                <h:outputText id="costoFactura" value="#{pagoBean.empresaSelected.plan.valorFacturaPlan}" />                                                
                                             </p:panelGrid>
                                         </p:panel>  
                                         <br/>                                        
