@@ -191,16 +191,16 @@ public class PagoBean extends RecursosServices implements Serializable {
 
     public int getExedente() {
         int result;
-        result = new BigDecimal(totalComprobantes).subtract(empresaSelected.getPlan().getValorFacturaPlan()).intValue();
-        return result > 0 ? result : result * -1;
+        result = new BigDecimal(totalComprobantes).subtract(empresaSelected.getPlan().getCostoPlan()).intValue();
+        return result > 0 ? result : 0;
     }
 
     public double getValorAPagar() {
         double result;
-        if (totalComprobantes - empresaSelected.getPlan().getValorFacturaPlan().intValue() > 0) {
-            result = (empresaSelected.getPlan().getValorFacturaPlan().intValue() + getExedente()) * empresaSelected.getPlan().getCostoPlan().doubleValue();
+        if(getExedente() > 0){
+            result = (empresaSelected.getPlan().getCostoPlan().doubleValue() + getExedente()) * empresaSelected.getPlan().getValorFacturaPlan().doubleValue();
         } else {
-            result = empresaSelected.getPlan().getValorFacturaPlan().intValue();
+            result = empresaSelected.getPlan().getCostoPlan().doubleValue();
         }
         return result;
     }

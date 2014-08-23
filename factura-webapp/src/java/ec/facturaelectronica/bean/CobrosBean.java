@@ -111,12 +111,15 @@ public class CobrosBean extends RecursosServices implements Serializable{
         try {
             DateFormat df = new SimpleDateFormat("MM-dd-yyyy");
             Calendar calendar = Calendar.getInstance();
+            Catalogo catalogo = new Catalogo(4L);
       
             pagoSelected.setUsuarioCancelaPago(loginAccessBean.getUsuarioLogin());
+            pagoSelected.setEstado(catalogo);
             pagoSelected.setFechaCancelaPago(calendar.getTime());
             pagoSelected.setObservacionesPago(observaciones);
             pagoService.actualizarPago(pagoSelected);
             infoMessages(recurso.getString("cobro.header"), recurso.getString("editar.mensaje.cancelacion"), ":fCobros:growl");
+            init();
         } catch (Exception ex) {
             errorMessages(recurso.getString("cobro.header"), ex.getMessage(), ":fCobros:growl");
         }

@@ -35,6 +35,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.DefaultStreamedContent;
@@ -80,10 +81,11 @@ public class CertificadoBean extends RecursosServices implements Serializable {
     private int idSelected;
     private String newPass;
     private long estadoSelected;
+    private boolean isVisible = false;
 
     @PostConstruct
     public void init() {
-        limpiar();
+//        limpiar();
         certificados = certificadoService.getCertificadosFiltrados();
 
         try {
@@ -91,7 +93,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
             certificadoModel = new CertificadoDataTableModel(certificados);
             EmpresaListModel.empresaModel = empresas;
         } catch (ServicesException ex) {
-            Logger.getLogger(CertificadoBean.class.getName()).log(Level.SEVERE, null, ex);
+            errorMessages(recurso.getString("certificados.header"), ex.getMessage(), recurso.getString("editar.mensaje.error"));
         }
     }
 
@@ -185,18 +187,21 @@ public class CertificadoBean extends RecursosServices implements Serializable {
                 msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, recurso.getString("certificados.header"), recurso.getString("editar.mensaje.error"));
                 FacesContext.getCurrentInstance().addMessage("frmCertificadosId:growl", msg);
                 RequestContext.getCurrentInstance().update("frmCertificadosId:growl");                                
-            }
-            init();
+            }    
             RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').hide()");
+            init();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    public void resetearClave(final ActionEvent evt){
+        RequestContext.getCurrentInstance().execute("PF('dlgCambiarClave').show()");
+    }
 
-    public void cambiar(final Certificado certificado) {
-        if (certificado != null) {
-            setSelectedCertificado(certificado);
-        }
+    public void cambiar(final ActionEvent evt) {
+        this.estadoSelected = -1L;
+        RequestContext.getCurrentInstance().execute("PF('dlgModificarEstado').show()");
     }
 
     public void nuevaClave() {
@@ -205,6 +210,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
             try {
                 certificado.setClaveCertificado(Util.md5(getNewPass()));
                 certificadoService.actualizarCertificado(certificado);
+                infoMessages(recurso.getString("certificados.header"), recurso.getString("certificados.mensaje.cambio.clave"), ":frmCertificadosId:growl");
             } catch (Exception ex) {
                 Logger.getLogger(CertificadoBean.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -239,13 +245,15 @@ public class CertificadoBean extends RecursosServices implements Serializable {
     }
 
     public void nuevo() {
-//        limpiar();
+        limpiar();
+        setIsVisible(true);
         RequestContext ctx = RequestContext.getCurrentInstance();
         ctx.reset(":formDialogEditarId:gridEditar");
         RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').show()");
     }
 
     public void editar() {
+        
         if (selectedCertificado != null) {
             cert = selectedCertificado;
             this.nombreCertificado = cert.getNombre();
@@ -253,6 +261,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
             this.fechaCaducidad = cert.getFechaCaducidad();
             this.claveCertificado = cert.getClaveCertificado();
             this.selectedEmpresa = cert.getEmpresa();
+            setIsVisible(false);
             RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').show()");
         }
     }
@@ -396,6 +405,14 @@ public class CertificadoBean extends RecursosServices implements Serializable {
 
     public void setLoginBean(LoginAccessBean loginBean) {
         this.loginBean = loginBean;
+    }
+
+    public boolean isIsVisible() {
+        return isVisible;
+    }
+
+    public void setIsVisible(boolean isVisible) {
+        this.isVisible = isVisible;
     }
 
 }

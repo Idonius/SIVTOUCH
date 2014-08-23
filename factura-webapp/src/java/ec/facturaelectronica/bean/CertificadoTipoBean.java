@@ -165,13 +165,13 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
             try {
                 certificadoTipoComprobanteService.eliminarCertificadoTipoComprobanteService(certificadoTipoComprobante);
                 init();
-                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("empresa.header"), recurso.getString("empresa.editar.eliminar.mensaje"));
+                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("certificadoTipoComprobante.header"), recurso.getString("certificadoTipoComprobante.editar.eliminar.mensaje"));
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 RequestContext.getCurrentInstance().execute("PF('confirm').hide()");
                 RequestContext.getCurrentInstance().update("form:growl");
 
             } catch (ServicesException ex) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("empresa.header"), ex.getMessage());
+                msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("certificadoTipoComprobante.header"), ex.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 RequestContext.getCurrentInstance().update("form:growl");
             }

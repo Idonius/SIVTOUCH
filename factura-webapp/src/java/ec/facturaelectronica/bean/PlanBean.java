@@ -126,6 +126,7 @@ public class PlanBean extends RecursosServices implements Serializable {
     }
 
     public void editar() {
+        System.out.println("Plan selected " + selectedPlan);
         if (selectedPlan != null) {
             plan = selectedPlan;
             nombrePlan = plan.getNombrePlan();
