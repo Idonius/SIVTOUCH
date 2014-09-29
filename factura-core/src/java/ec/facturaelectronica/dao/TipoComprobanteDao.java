@@ -17,4 +17,6 @@ import javax.ejb.Local;
 @Local
 public interface TipoComprobanteDao extends GenericDao<TipoComprobante, Integer>{
     List<TipoComprobante> obtenerTipoComprobanteList();
+    TipoComprobante obtenerTipoComprobante(String codigo);
+    
 }

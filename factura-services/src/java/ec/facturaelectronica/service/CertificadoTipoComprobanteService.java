@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.facturaelectronica.service;
 
 import ec.facturaelectronica.exception.ServicesException;
@@ -19,10 +18,17 @@ import javax.ejb.Local;
  */
 @Local
 public interface CertificadoTipoComprobanteService {
-    List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobanteServiceList() throws ServicesException;
+
+   
     void agregarCertificadoTipoComprobanteService(final CertificadoTipoComprobante certificadoTipoComprobante) throws ServicesException;
+
     void actualizarCertificadoTipoComprobanteService(final CertificadoTipoComprobante certificadoTipoComprobante) throws ServicesException;
+
     void eliminarCertificadoTipoComprobanteService(CertificadoTipoComprobante certificadoTipoComprobante) throws ServicesException;
+
     List<TipoComprobante> obtenerTipoComprobanteList() throws ServicesException;
-    List<TipoComprobante> obtenerCertificadoTipoComprobante(Empresa empresa, TipoComprobante tipoComprobante) throws ServicesException;
+
+    public List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobanteServiceList(Empresa empresa) throws ServicesException;
+    
+    List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobante(Empresa empresa, TipoComprobante tipoComprobante) throws ServicesException;
 }

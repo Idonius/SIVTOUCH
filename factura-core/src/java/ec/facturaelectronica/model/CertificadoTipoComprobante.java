@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.facturaelectronica.model;
 
 import java.io.Serializable;
@@ -27,26 +26,32 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "certificado_tipo_comprobante")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "CertificadoTipoComprobante.findAll", query="SELECT ctc FROM CertificadoTipoComprobante ctc WHERE ctc.catalogo.nombreCatalogo='Activo'")
+    @NamedQuery(name = "CertificadoTipoComprobante.findEmpresa", query = "SELECT ctc FROM CertificadoTipoComprobante ctc WHERE ctc.catalogo=:catalogo and ctc.empresa=:empresa"),
+    @NamedQuery(name = "CertificadoTipoComprobante.findEmpresaTipo", query = "SELECT ctc FROM CertificadoTipoComprobante ctc WHERE ctc.catalogo=:catalogo and ctc.empresa=:empresa and ctc.tipoComprobante=:tipoComprobante"),
+    
 })
-public class CertificadoTipoComprobante implements Serializable{
+public class CertificadoTipoComprobante implements Serializable {
+
     @Id
     @SequenceGenerator(name = "seq_certificadoTipoComprobante_gen", sequenceName = "seq_certificado_tipo_comprobante", initialValue = 1, allocationSize = 1)
     @GeneratedValue(generator = "seq_certificadoTipoComprobante_gen")
     @Column(name = "id_certificado_tipo_comprobante")
     private Integer id;
-    
+
     @JoinColumn(name = "id_certificado", referencedColumnName = "id_certificado")
     @ManyToOne
     private Certificado certificado;
-    
+
     @JoinColumn(name = "id_tipo_comprobante", referencedColumnName = "id_tipo_comprobante")
     @ManyToOne
     private TipoComprobante tipoComprobante;
-    
+
     @JoinColumn(name = "id_estado", referencedColumnName = "id_catalogo")
     @ManyToOne
     private Catalogo catalogo;
+    @JoinColumn(name = "id_empresa", referencedColumnName = "id_empresa")
+    @ManyToOne
+    private Empresa empresa;
 
     public Integer getId() {
         return id;
@@ -79,7 +84,7 @@ public class CertificadoTipoComprobante implements Serializable{
     public void setCatalogo(Catalogo catalogo) {
         this.catalogo = catalogo;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -104,5 +109,19 @@ public class CertificadoTipoComprobante implements Serializable{
     public String toString() {
         return "ec.facturaelectronica.model.CertificadoTipoComprobante[ id=" + id + " ]";
     }
-    
+
+    /**
+     * @return the empresa
+     */
+    public Empresa getEmpresa() {
+        return empresa;
+    }
+
+    /**
+     * @param empresa the empresa to set
+     */
+    public void setEmpresa(Empresa empresa) {
+        this.empresa = empresa;
+    }
+
 }

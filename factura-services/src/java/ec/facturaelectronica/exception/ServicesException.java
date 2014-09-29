@@ -8,8 +8,13 @@ package ec.facturaelectronica.exception;
  *
  * @author desarrollotic
  */
-public class ServicesException  extends Exception{
-     public ServicesException(String mensaje) {
+public class ServicesException extends Exception {
+
+    public ServicesException(String mensaje) {
         super(mensaje);
-    }  
+    }
+
+    public ServicesException(String mensaje, Exception ex) {
+        super(mensaje, ex);
+    }
 }

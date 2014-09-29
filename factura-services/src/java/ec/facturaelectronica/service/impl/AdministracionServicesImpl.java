@@ -8,17 +8,18 @@ import ec.facturaelectronica.dao.CatalogoDao;
 import ec.facturaelectronica.dao.EmpresaDao;
 import ec.facturaelectronica.dao.MenuDao;
 import ec.facturaelectronica.dao.PerfilDao;
+import ec.facturaelectronica.dao.TipoComprobanteDao;
 import ec.facturaelectronica.dao.UsuarioDao;
 import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.Menu;
 import ec.facturaelectronica.model.Perfil;
+import ec.facturaelectronica.model.TipoComprobante;
 import ec.facturaelectronica.model.Usuario;
 import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.AdministracionService;
 import ec.facturaelectronica.service.util.Util;
-import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -40,7 +41,9 @@ public class AdministracionServicesImpl implements AdministracionService {
     EmpresaDao empresaDao;
     @EJB
     MenuDao menDao;
-  
+    @EJB
+    TipoComprobanteDao tipoComprobanteDao;
+
     @Override
     public List<Perfil> getPerfiles() throws ServicesException {
         return perfilDao.getPerfiles();
@@ -203,9 +206,9 @@ public class AdministracionServicesImpl implements AdministracionService {
 
         try {
             catalogo = catalogoDao.load((long) EstadosGeneralesEnum.Desactivado.getOrden());
-            List<Usuario> listaUsuario=usuarioDao.getUsuarioByEmpresa(empresa);
-            if (!listaUsuario.isEmpty()){
-                throw  new ServicesException("La empresa tiene usuarios que se encuentran activos, la operación no pudo ser concluida");
+            List<Usuario> listaUsuario = usuarioDao.getUsuarioByEmpresa(empresa);
+            if (!listaUsuario.isEmpty()) {
+                throw new ServicesException("La empresa tiene usuarios que se encuentran activos, la operación no pudo ser concluida");
             }
             empresa.setIdEstadoCatalogo(catalogo);
             empresaDao.update(empresa);
@@ -214,9 +217,6 @@ public class AdministracionServicesImpl implements AdministracionService {
         }
     }
 
-   
-   
-   
     @Override
     public List<Usuario> getUsuariosByEmpresas(Empresa empresa) throws ServicesException {
         return usuarioDao.getUsuarioByEmpresa(empresa);
@@ -245,5 +245,39 @@ public class AdministracionServicesImpl implements AdministracionService {
         }
     }
 
-   
+    @Override
+    public Empresa getEmpresa(String ruc) throws ServicesException {
+        Empresa empresa;
+        try {
+            empresa = empresaDao.getEmpresaByRuc(ruc);
+        } catch (Exception ex) {
+            throw new ServicesException(ex.getMessage());
+        }
+
+        return empresa;
+    }
+
+    @Override
+    public boolean buscaEmpresaActiva(String ruc) throws ServicesException {
+        Empresa empresa;
+        boolean val = false;
+        try {
+            empresa = empresaDao.getEmpresaByRuc(ruc);
+            if (empresa != null) {
+                val = true;
+            } else {
+                val = false;
+            }
+        } catch (Exception ex) {
+            throw new ServicesException("La empresa no se encuentra registrada en el sistema", ex);
+        }
+
+        return val;
+    }
+
+    @Override
+    public TipoComprobante buscarTipoComprobante(String codigo) throws ServicesException {
+        return tipoComprobanteDao.obtenerTipoComprobante(codigo);
+    }
+
 }

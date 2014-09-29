@@ -818,8 +818,8 @@ body.nooverflow {
 .inner-spacer:after,
 .jarviswidget-editbox:before,
 .jarviswidget-editbox:after,
-.clearfix:before,
-.clearfix:after {
+.clearfix:before{
+/*.clearfix:after {*/
   content: "\0020";
   display: block;
   height: 0;
@@ -9074,6 +9074,7 @@ body.fd-slider-drag-horizontal * {
   text-indent: -99999px;
   overflow: hidden;
   background-repeat: no-repeat;
+ 
 }
 /* Misc visuals
  ----------------------------------*/
@@ -10249,7 +10250,7 @@ input.ui-button {
 .ui-button-text-icons .ui-icon,
 .ui-button-icons-only .ui-icon {
   margin-bottom: 0;
-  margin-top: 0;
+/*  margin-top: 0;*/
   top: 50%;
 }
 .ui-button-icon-only .ui-icon {
@@ -10520,7 +10521,7 @@ button.ui-button::-moz-focus-inner {
   overflow: hidden;
 }
 .ui-dialog .ui-dialog-titlebar-close {
-  position: absolute;
+/*  position: absolute!important;*/
   right: .3em;
   top: 50%;
   width: 19px;
@@ -13019,7 +13020,7 @@ textarea.clone {
 }
 .ui-datepicker-next > :first-child,
 .ui-datepicker-prev > :first-child {
-  text-indent: 0px !important;
+/*  text-indent: 0px !important;*/
 }
 /*
  * JS SLIDER
@@ -13213,9 +13214,9 @@ textarea.clone {
 .ui-spinner-button {
   width: 19px;
 }
-.ui-widget-content .ui-icon {
+/*.ui-widget-content .ui-icon {
   background: none !important;
-}
+}*/
 /* spinner both */
 .ui-spinner-input.spinner-both {
   padding: 6px 30px;
@@ -13261,7 +13262,7 @@ textarea.clone {
   margin-right: 4px;
 }
 .ui-dialog-titlebar-close:before {
-  content: "\f00d";
+/*  content: "\f00d";*/
   font-family: FontAwesome;
   font-style: normal;
   font-weight: normal;

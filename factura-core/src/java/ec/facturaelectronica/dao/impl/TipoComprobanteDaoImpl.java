@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.facturaelectronica.dao.impl;
 
 import ec.facturaelectronica.dao.TipoComprobanteDao;
@@ -19,7 +18,7 @@ import javax.persistence.Query;
  * @author Armando
  */
 @Stateless
-public class TipoComprobanteDaoImpl extends GenericDaoImpl<TipoComprobante, Integer> implements TipoComprobanteDao, Serializable{
+public class TipoComprobanteDaoImpl extends GenericDaoImpl<TipoComprobante, Integer> implements TipoComprobanteDao, Serializable {
 
     public TipoComprobanteDaoImpl() {
         super(TipoComprobante.class);
@@ -29,10 +28,21 @@ public class TipoComprobanteDaoImpl extends GenericDaoImpl<TipoComprobante, Inte
     public List<TipoComprobante> obtenerTipoComprobanteList() {
         List<TipoComprobante> result = Collections.emptyList();
         Query qry = em.createNamedQuery("tipoComprobante.findAll");
-        if(qry != null){
+        if (qry != null) {
             result = qry.getResultList();
         }
         return result;
     }
-    
+
+    @Override
+    public TipoComprobante obtenerTipoComprobante(String codigo) {
+        TipoComprobante result;
+        Query qry = em.createNamedQuery("tipoComprobante.findByCodigo");
+        qry.setParameter("codigoTipo", codigo);
+
+        result = (TipoComprobante) qry.getSingleResult();
+
+        return result;
+    }
+
 }

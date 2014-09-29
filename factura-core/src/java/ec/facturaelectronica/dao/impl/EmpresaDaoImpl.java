@@ -4,7 +4,6 @@
  */
 package ec.facturaelectronica.dao.impl;
 
-
 import ec.facturaelectronica.dao.EmpresaDao;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.Plan;
@@ -56,12 +55,24 @@ public class EmpresaDaoImpl extends GenericDaoImpl<Empresa, Integer> implements 
     public List<Empresa> getEmpresaPorPlan(final Plan plan) {
         List<Empresa> result = Collections.emptyList();
         Query qry = em.createNamedQuery("Empresa.findAllByPlan");
-        if(qry != null){
+        if (qry != null) {
             qry.setParameter("plan", plan);
             result = qry.getResultList();
         }
         return result;
     }
-    
-    
+
+    @Override
+    public Empresa getEmpresaByRuc(String ruc) {
+        Empresa empresa;
+
+        Query q = em.createNamedQuery("Empresa.findAll");
+        q.setParameter("idEstadoCatalogo", EstadosGeneralesEnum.Activo.getOrden());
+        q.setParameter("rucEmpresa", ruc);
+
+        empresa = (Empresa) q.getSingleResult();
+
+        return empresa;
+    }
+
 }

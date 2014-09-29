@@ -24,7 +24,7 @@
                                             <h1 class="page-title txt-color-blueDark">
 
                                                 <!-- PAGE HEADER -->
-                                                <i class="fa-fw fa fa-hospital  "></i> 
+                                                <i class="fa-fw fa fa-key"></i> 
                                                 #{msg['certificadoTipoComprobante.header']}
                                                 <span>>  
                                                     Factura Electrónica
@@ -37,7 +37,7 @@
                                     <p/>
 
                                     <p:dataTable id="dt" value="#{certificadoTipoBean.tipoComprobanteDataModel}" var="_certificadoTipo" selection="#{certificadoTipoBean.certificadoTipoComprobanteSelected}"
-                                                 rows="8"  paginator="true" filteredValue="#{certificadoTipoBean.filterCertificadosTipo}" selectionMode="single" >
+                                                 rows="8"  paginator="true"  selectionMode="single" >
 
                                         <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna1']}" >
                                             <h:outputText value="#{_certificadoTipo.certificado.nombre}"/>
@@ -47,18 +47,12 @@
                                             <h:outputText value="#{_certificadoTipo.tipoComprobante.nombreTipoComprobante}"/>
                                         </p:column>
 
-                                        <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna3']}" >
-                                            <h:outputText value="#{_certificadoTipo.catalogo.nombreCatalogo}"/>
-                                        </p:column>
+                                      
 
-                                        <p:column headerText="#{msg['certificadoTipoComprobante.nuevo.acciones']}" styleClass="centrado">
-                                            <p:commandButton value="#{msg['boton.editar']}" styleClass="btn btn-info" action="#{certificadoTipoBean.editar}" update=":frmEdit:grid">
-                                                <f:setPropertyActionListener value="#{_certificadoTipo}" target="#{certificadoTipoBean.certificadoTipoComprobanteSelected}"  />  
-                                            </p:commandButton>
-
+                                        <p:column  >
                                             <p:commandButton value="#{msg['boton.eliminar']}" styleClass="btn btn-warning"   action="#{certificadoTipoBean.eliminar}" update=":form3:lblNombre" >
                                                 <f:setPropertyActionListener value="#{_certificadoTipo}" target="#{certificadoTipoBean.certificadoTipoComprobanteSelected}"  />  
-                                            </p:commandButton>                                            
+                                            </p:commandButton>       
                                         </p:column>
 
                                     </p:dataTable>
@@ -78,13 +72,13 @@
         <h:form id="frmEdit" >
             <p:dialog id="dlgEditar" widgetVar="ventanaEditar" header="#{msg['certificadoTipoComprobante.editar']}" width="490px" height="100px"  showEffect="explode"  
                       resizable="false">
-                <p:panelGrid id="grid" style="companyHeaderGrid">
+                <p:panelGrid id="grid" styleClass="companyHeaderGrid">
                     <p:row>
                         <p:column>
                             <p:outputLabel value="#{msg['certificadoTipoComprobante.editar.certificado']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
-                            <p:selectOneMenu value="#{certificadoTipoBean.certificadoSelected}" converter="CertificadosListModel" panelStyle="width:150px"
+                            <p:selectOneMenu id="certificado" value="#{certificadoTipoBean.certificadoSelected}" converter="CertificadosListModel" panelStyle="width:150px"
                                              effect="fade" var="_certificado" style="width:190px"  required="true" label="#{msg['certificadoTipoComprobante.editar.certificado']}" requiredMessage="#{msg['certificadoTipoComprobante.editar.certificado.mensaje.requerido']}" >
 
                                 <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
@@ -95,6 +89,11 @@
                             </p:selectOneMenu>
 
                         </p:column>
+
+                        <p:column>
+                            <p:message for="certificado" display="icon" showDetail="false"  />
+                        </p:column>
+
                     </p:row>
 
                     <p:row>
@@ -102,7 +101,7 @@
                             <p:outputLabel value="#{msg['certificadoTipoComprobante.editar.tipo.comprobante']}" style="font-weight:bold" />
                         </p:column>
                         <p:column>
-                            <p:selectOneMenu value="#{certificadoTipoBean.tipoComprobanteSelected}" converter="TipoComprobanteListModel" panelStyle="width:150px"
+                            <p:selectOneMenu id="comprobante" value="#{certificadoTipoBean.tipoComprobanteSelected}" converter="TipoComprobanteListModel" panelStyle="width:150px"
                                              effect="fade" var="_tipo" style="width:190px"  required="true"   label="#{msg['empresa.editar.plan']}" requiredMessage="#{msg['certificadoTipoComprobante.editar.tipoComprobante.mensaje.requerido']}" >
 
                                 <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
@@ -113,16 +112,20 @@
                             </p:selectOneMenu>                      
 
                         </p:column>
+                        <p:column>
+                            <p:message for="comprobante" display="icon" showDetail="false"  />
+                        </p:column>
                     </p:row>
 
                 </p:panelGrid>
-                
+
                 <f:facet name="footer">
-                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action ="#{certificadoTipoBean.registrar}" update=":form:dt, :form:growl, grid" >
-                        <p:resetInput target="grid" /> 
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action ="#{certificadoTipoBean.registrar}" update=":form:dt" >
+                  
                     </p:commandButton>
+                       
                     <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this"  action="#{certificadoTipoBean.cancelar}" >
-                        <p:resetInput target="grid" /> 
+                       
                     </p:commandButton>
                 </f:facet>
 

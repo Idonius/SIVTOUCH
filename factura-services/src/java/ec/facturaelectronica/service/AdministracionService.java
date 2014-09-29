@@ -10,6 +10,7 @@ import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.Menu;
 import ec.facturaelectronica.model.Perfil;
+import ec.facturaelectronica.model.TipoComprobante;
 import ec.facturaelectronica.model.Usuario;
 import java.util.List;
 import javax.ejb.Local;
@@ -56,6 +57,13 @@ public interface AdministracionService {
     public List<Menu> getMenusHijos(Menu padre) throws ServicesException;
     
     public Catalogo getCatalogo(Long numero) throws ServicesException;
+    
+    public Empresa getEmpresa(String ruc) throws ServicesException;
+    
+    public boolean buscaEmpresaActiva(String ruc) throws ServicesException;
+    
+    public TipoComprobante buscarTipoComprobante(String codigo) throws ServicesException;
+    
     
       
     

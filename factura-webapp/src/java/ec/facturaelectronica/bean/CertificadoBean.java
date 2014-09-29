@@ -11,7 +11,6 @@ import ec.facturaelectronica.list.model.EmpresaListModel;
 import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Certificado;
 import ec.facturaelectronica.model.Empresa;
-import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.AdministracionService;
 import ec.facturaelectronica.service.CertificadoService;
 import ec.facturaelectronica.service.util.Util;
@@ -24,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -43,7 +43,7 @@ import org.primefaces.model.StreamedContent;
 
 /**
  *
- * @author Armando
+ * @author Christian
  */
 @ManagedBean
 @ViewScoped
@@ -69,6 +69,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
     private Date fechaIngreso;
     private Date fechaCaducidad;
     private String nombreArchivoCertificado;
+    private String nombreArchivoRealCertificado;
     private Catalogo estado;
     private String claveCertificado;
     private Empresa empresa;
@@ -85,8 +86,8 @@ public class CertificadoBean extends RecursosServices implements Serializable {
 
     @PostConstruct
     public void init() {
-//        limpiar();
-        certificados = certificadoService.getCertificadosFiltrados();
+
+        certificados = certificadoService.getCertificadosFiltrados(loginBean.getUsuarioLogin().getIdEmpresa());
 
         try {
             empresas = admService.getEmpresas();
@@ -109,20 +110,26 @@ public class CertificadoBean extends RecursosServices implements Serializable {
     }
 
     public void upload(final FileUploadEvent evt) {
-        FacesMessage msg = new FacesMessage("Exito!! ", evt.getFile().getFileName().concat("subido exitosamente"));
-        FacesContext.getCurrentInstance().addMessage(null, msg);
         try {
-            copiarArchivo(evt.getFile().getFileName(), evt.getFile().getInputstream());
+            copiarArchivo(evt.getFile().getInputstream());
             setNombreArchivoCertificado(evt.getFile().getFileName());
+
         } catch (FileNotFoundException fne) {
-            fne.printStackTrace();
+            LOG.info("Error al subir el archivo", fne);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOG.info("Error al subir el archivo", ex);
         }
     }
 
-    private void copiarArchivo(final String nombreArchivo, final InputStream in) throws FileNotFoundException, IOException {
-        OutputStream out = new FileOutputStream(new File(certificado.getString("path.certificados").concat(nombreArchivo)));
+    private void copiarArchivo(final InputStream in) throws FileNotFoundException, IOException {
+        //cambiar el nombre al archivo
+
+        Date date = new Date();
+        SimpleDateFormat formato = new SimpleDateFormat("yyyyMMddHHmmss");
+        String cadenaFecha = formato.format(date);
+        cadenaFecha = cadenaFecha + ".p12";
+
+        OutputStream out = new FileOutputStream(new File(certificado.getString("path.certificados").concat(cadenaFecha)));
         int leer = 0;
         byte[] bytes = new byte[1024];
 
@@ -134,7 +141,9 @@ public class CertificadoBean extends RecursosServices implements Serializable {
         out.flush();
         out.close();
 
+        setNombreArchivoRealCertificado(cadenaFecha);
         LOG.info("Nuevo archivo creado...");
+
     }
 
     public String getNombreEmpresa() {
@@ -156,46 +165,41 @@ public class CertificadoBean extends RecursosServices implements Serializable {
 
     public void registrar() {
         FacesMessage msg;
-        Catalogo catalogo = new Catalogo();
+
         try {
-            if (cert == null) {
-                cert = new Certificado();
-                cert.setNombreArchivoCertificado(getNombreArchivoCertificado());
-            }else{
-                Certificado oldCertificado = certificadoService.getCertificadoPorId(cert.getIdCertificado());
-                cert.setNombreArchivoCertificado(oldCertificado.getNombreArchivoCertificado());
-            }
+
             if (fechasValidate(fechaIngreso, fechaCaducidad)) {
                 cert.setNombre(nombreCertificado);
                 cert.setFechaIngreso(fechaIngreso);
                 cert.setFechaCaducidad(fechaCaducidad);
-                catalogo.setIdCatalogo(EstadosGeneralesEnum.Activo.getOrden());                
-                cert.setEstado(catalogo);
-                cert.setClaveCertificado(Util.md5(claveCertificado));
                 cert.setEmpresa(certificadoService.getEmpresaPorId(loginBean.getUsuarioLogin().getIdEmpresa().getIdEmpresa()));
-                
-                if (cert.getIdCertificado()== null) {
+
+                if (cert.getIdCertificado() == null) {
+                    cert.setNombreArchivoCertificado(getNombreArchivoRealCertificado());
+                    cert.setClaveCertificado(Util.Encriptar(claveCertificado));
                     certificadoService.registrarCertificado(cert);
                 } else {
                     certificadoService.actualizarCertificado(cert);
                 }
-                
                 msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("certificados.header"), recurso.getString("editar.mensaje"));
                 FacesContext.getCurrentInstance().addMessage("frmCertificadosId:growl", msg);
-                RequestContext.getCurrentInstance().update("frmCertificadosId:growl");                
+                RequestContext.getCurrentInstance().update("frmCertificadosId:growl");
+                RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').hide()");
+                init();
+
             } else {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, recurso.getString("certificados.header"), recurso.getString("editar.mensaje.error"));
+
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, recurso.getString("certificados.header"), recurso.getString("certificado.editar.mensaje.error.fecha"));
                 FacesContext.getCurrentInstance().addMessage("frmCertificadosId:growl", msg);
-                RequestContext.getCurrentInstance().update("frmCertificadosId:growl");                                
-            }    
-            RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').hide()");
-            init();
-        } catch (Exception e) {
-            e.printStackTrace();
+                RequestContext.getCurrentInstance().update("frmCertificadosId:growl");
+            }
+        } catch (Exception ex) {
+            LOG.error("Error al registrar el certificado ", ex);
+//            e.printStackTrace();
         }
     }
-    
-    public void resetearClave(final ActionEvent evt){
+
+    public void resetearClave(final ActionEvent evt) {
         RequestContext.getCurrentInstance().execute("PF('dlgCambiarClave').show()");
     }
 
@@ -224,19 +228,19 @@ public class CertificadoBean extends RecursosServices implements Serializable {
         if (certificado != null) {
             certificado.setEstado(catalogo);
             certificadoService.actualizarCertificado(certificado);
-        }        
+        }
         init();
-        if(estadoSelected == 2){
+        if (estadoSelected == 2) {
             infoMessages(recurso.getString("certificados.header"), recurso.getString("certificados.mensaje"), "frmCertificadosId:growl");
         }
         RequestContext.getCurrentInstance().execute("PF('dlgModificarEstado').hide()");
     }
 
     private void limpiar() {
-        this.nombreCertificado = "";
+        this.nombreCertificado = null;
         this.fechaIngreso = null;
         this.fechaCaducidad = null;
-        this.claveCertificado = "";
+        this.claveCertificado = null;
         this.selectedEmpresa = null;
     }
 
@@ -247,13 +251,15 @@ public class CertificadoBean extends RecursosServices implements Serializable {
     public void nuevo() {
         limpiar();
         setIsVisible(true);
+        cert = new Certificado();
+        setFechaIngreso(new Date());
         RequestContext ctx = RequestContext.getCurrentInstance();
         ctx.reset(":formDialogEditarId:gridEditar");
         RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').show()");
     }
 
     public void editar() {
-        
+
         if (selectedCertificado != null) {
             cert = selectedCertificado;
             this.nombreCertificado = cert.getNombre();
@@ -413,6 +419,21 @@ public class CertificadoBean extends RecursosServices implements Serializable {
 
     public void setIsVisible(boolean isVisible) {
         this.isVisible = isVisible;
+    }
+
+    /**
+     * @return the nombreArchivoRealCertificado
+     */
+    public String getNombreArchivoRealCertificado() {
+        return nombreArchivoRealCertificado;
+    }
+
+    /**
+     * @param nombreArchivoRealCertificado the nombreArchivoRealCertificado to
+     * set
+     */
+    public void setNombreArchivoRealCertificado(String nombreArchivoRealCertificado) {
+        this.nombreArchivoRealCertificado = nombreArchivoRealCertificado;
     }
 
 }

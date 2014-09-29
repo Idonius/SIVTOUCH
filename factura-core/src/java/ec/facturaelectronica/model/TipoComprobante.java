@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.facturaelectronica.model;
 
 import java.io.Serializable;
@@ -28,21 +27,26 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "tipo_comprobante")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "tipoComprobante.findAll", query = "SELECT tc FROM TipoComprobante tc")
+    @NamedQuery(name = "tipoComprobante.findAll", query = "SELECT tc FROM TipoComprobante tc"),
+    @NamedQuery(name = "tipoComprobante.findByCodigo", query = "SELECT tc FROM TipoComprobante tc WHERE tc.codigoTipo=:codigoTipo"),
 })
 public class TipoComprobante implements Serializable {
+
     @Id
     @SequenceGenerator(name = "seq_tipo_comprobante_gen", sequenceName = "seq_tipo_comprobante", initialValue = 1, allocationSize = 1)
     @GeneratedValue(generator = "seq_tipo_comprobante_gen", strategy = GenerationType.SEQUENCE)
     @Column(name = "id_tipo_comprobante")
     private Integer id;
-    
+
     @Column(name = "nombre_tipo_comprobante", length = 20)
     private String nombreTipoComprobante;
-    
+
     @Column(name = "alias_tipo_comprobante", length = 2)
     private String alias;
-    
+
+    @Column(name = "codigo_sri_tipo_comprobante", length = 5)
+    private String codigoTipo;
+
     @OneToMany(mappedBy = "idTipoComprobante")
     private List<Comprobante> comprobantes;
 
@@ -102,5 +106,19 @@ public class TipoComprobante implements Serializable {
     public String toString() {
         return "ec.facturaelectronica.model.TipoComprobante[ id=" + id + " ]";
     }
-    
+
+    /**
+     * @return the codigoTipo
+     */
+    public String getCodigoTipo() {
+        return codigoTipo;
+    }
+
+    /**
+     * @param codigoTipo the codigoTipo to set
+     */
+    public void setCodigoTipo(String codigoTipo) {
+        this.codigoTipo = codigoTipo;
+    }
+
 }

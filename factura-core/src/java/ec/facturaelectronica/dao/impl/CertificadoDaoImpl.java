@@ -7,7 +7,9 @@
 package ec.facturaelectronica.dao.impl;
 
 import ec.facturaelectronica.dao.CertificadoDao;
+import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Certificado;
+import ec.facturaelectronica.model.Empresa;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
@@ -38,10 +40,13 @@ public class CertificadoDaoImpl extends GenericDaoImpl<Certificado, Long> implem
     }
 
     @Override
-    public List<Certificado> obtenerCertificadosFiltrados() {
+    public List<Certificado> obtenerCertificadosFiltrados(Empresa empresa,Catalogo estado) {
         List<Certificado> result;
+             
         
         Query qry = em.createNamedQuery("Certificado.filtered");
+        qry.setParameter("estado", estado);
+        qry.setParameter("empresa", empresa);
         result = qry.getResultList();
         if(result != null){
             return result;

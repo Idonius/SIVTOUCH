@@ -4,7 +4,6 @@
  */
 package ec.facturaelectronica.dao.impl;
 
-
 import ec.facturaelectronica.dao.GenericDao;
 import java.io.Serializable;
 import java.util.Iterator;
@@ -44,11 +43,10 @@ public abstract class GenericDaoImpl<T, PK extends Serializable> implements Gene
     }
 
     @Override
-    public void insert(T o)  {
+    public void insert(T o) {
 
-      
-            em.persist(o);
-       
+        em.persist(o);
+
     }
 
     @Override
@@ -58,18 +56,9 @@ public abstract class GenericDaoImpl<T, PK extends Serializable> implements Gene
 
     @Override
     public void update(T o) {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<T>> constraintViolation = validator.validate(o);
-        if(constraintViolation.size() > 0){
-            Iterator<ConstraintViolation<T>> iterator = constraintViolation.iterator();
-            while(iterator.hasNext()){
-                ConstraintViolation<T> cv = iterator.next();
-                System.err.println(cv.getRootBeanClass().getName()+"."+cv.getPropertyPath()+" "+cv.getMessage());
-            }
-        }else{
-            em.merge(o);
-        }
+
+        em.merge(o);
+
     }
 
     @Override

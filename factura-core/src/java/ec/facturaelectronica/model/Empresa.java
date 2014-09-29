@@ -35,6 +35,7 @@ import javax.persistence.GeneratedValue;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Empresa.findAll", query = "SELECT e FROM Empresa e WHERE e.idEstadoCatalogo.idCatalogo =:idEstadoCatalogo"),
+    @NamedQuery(name = "Empresa.findByEmpresa", query = "SELECT e FROM Empresa e WHERE e.idEstadoCatalogo.idCatalogo =:idEstadoCatalogo and e.rucEmpresa=:rucEmpresa"),
     @NamedQuery(name = "Empresa.findAllByPlan", query = "SELECT e FROM Empresa e WHERE e.plan =:plan AND e.idEstadoCatalogo.nombreCatalogo='Activo'")
     })
 public class Empresa implements Serializable {

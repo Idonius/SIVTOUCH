@@ -30,11 +30,11 @@ and open the template in the editor.
 
 .ui-widget {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-size: 11px!important;
+	font-size: 10px!important;
 }
 
 .ui-widget .ui-widget {
-	font-size: 11px!important;
+	font-size: 10px!important;
 }
 
 .btn-success, .ui-widget-content .btn-success, .ui-widget-header .btn-success {
@@ -274,3 +274,20 @@ and open the template in the editor.
      text-indent:0px!important;
      background-image:none;
 }
+
+.companyHeaderGrid tr, .companyHeaderGrid td {
+    border: none;
+}
+
+/*** override primefaces style ***/
+.ui-message-info,.ui-message-error,.ui-message-warn,.ui-message-fatal {
+	border: 0!important;
+	margin: 0!important;
+	padding: 0!important;
+}
+ 
+.ui-messages-error,.ui-message-error {
+	color: #D8000C;
+	background-color: #fff!important;
+}
+/*** override primefaces style ***/

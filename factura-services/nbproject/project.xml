@@ -6,6 +6,7 @@
             <name>factura-services</name>
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <included-library dirs="100">reference.factura-core.dist</included-library>
+            <included-library dirs="200">file.reference.commons-codec-1.9.jar</included-library>
             <source-roots>
                 <root id="src.dir" name="Source Packages"/>
             </source-roots>

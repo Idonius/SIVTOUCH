@@ -61,22 +61,31 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
     private CertificadoTipoComprobante certificadoTipoComprobanteSelected;
 
     private List<CertificadoTipoComprobante> certificadoTipoComprobantes;
-    private List<CertificadoTipoComprobante> filterCertificadosTipo;
-
+   
     private CertificadoTipoComprobante certificadoTipoComprobante;
 
     @PostConstruct
     public void init() {
         try {
-            LOGGER.error("Entre aqui");
-            certificados = certificadoService.getCertificadosFiltrados();
+
+            certificados = certificadoService.getCertificadosFiltrados(loginAccessBean.getUsuarioLogin().getIdEmpresa());
             CertificadosListModel.certificadoModel = certificados;
 
             tiposComprobantes = certificadoTipoComprobanteService.obtenerTipoComprobanteList();
             TipoComprobanteListModel.tipoComprobanteModel = tiposComprobantes;
+            cargarCertificados();
 
-            certificadoTipoComprobantes = certificadoTipoComprobanteService.obtenerCertificadoTipoComprobanteServiceList();
+        } catch (ServicesException ex) {
+            java.util.logging.Logger.getLogger(CertificadoTipoBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void cargarCertificados(){
+      try {
+
+            certificadoTipoComprobantes = certificadoTipoComprobanteService.obtenerCertificadoTipoComprobanteServiceList(loginAccessBean.getUsuarioLogin().getIdEmpresa());
             tipoComprobanteDataModel = new CertificadoTipoComprobanteDataTableModel(certificadoTipoComprobantes);
+            System.err.println("pasa pasa");
         } catch (ServicesException ex) {
             java.util.logging.Logger.getLogger(CertificadoTipoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -98,6 +107,7 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
     public void nuevo() {
         certificadoSelected = null;
         tipoComprobanteSelected = null;
+        certificadoTipoComprobante = new CertificadoTipoComprobante();
         RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
     }
 
@@ -109,42 +119,35 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
 
         try {
             if (certificadoTipoComprobanteService.obtenerCertificadoTipoComprobante(empresaLogueada, tipoComprobanteSelected).isEmpty()) {
-                if (certificadoTipoComprobante == null) {
-                    certificadoTipoComprobante = new CertificadoTipoComprobante();
-                }
 
                 certificadoTipoComprobante.setCertificado(certificadoSelected);
                 certificadoTipoComprobante.setTipoComprobante(tipoComprobanteSelected);
                 certificadoTipoComprobante.setCatalogo(catalogo);
+                certificadoTipoComprobante.setEmpresa(empresaLogueada);
+                certificadoTipoComprobanteService.agregarCertificadoTipoComprobanteService(certificadoTipoComprobante);
 
-                if (certificadoTipoComprobante.getId() == null) {
-
-                    certificadoTipoComprobanteService.agregarCertificadoTipoComprobanteService(certificadoTipoComprobante);
-                } else {
-                    certificadoTipoComprobanteService.actualizarCertificadoTipoComprobanteService(certificadoTipoComprobante);
-                }
-
-                RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
-                init();
-
-                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("empresa.header"), recurso.getString("editar.mensaje"));
+                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("certificadoTipoComprobante.header"), recurso.getString("editar.mensaje"));
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 RequestContext.getCurrentInstance().update("form:growl");
-            }else{
-                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("empresa.header"), recurso.getString("certificadoTipoComprobante.editar.mensaje.ya.existe"));
+                RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
+                certificadoTipoComprobante=new CertificadoTipoComprobante();
+                cargarCertificados();
+
+            } else {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("certificadoTipoComprobante.header"), recurso.getString("certificadoTipoComprobante.editar.mensaje.ya.existe"));
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-                RequestContext.getCurrentInstance().update("form:growl");                
+                RequestContext.getCurrentInstance().update("form:growl");
             }
 
         } catch (ServicesException ex) {
             certificadoTipoComprobante = null;
-            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("empresa.header"), ex.getMessage());
+            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("certificadoTipoComprobante.header"), ex.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             RequestContext.getCurrentInstance().update("form:growl");
 
         } catch (Exception ex) {
             certificadoTipoComprobante = null;
-            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("empresa.header"), ex.getMessage());
+            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("certificadoTipoComprobante.header"), ex.getMessage());
             FacesContext.getCurrentInstance().addMessage(null, msg);
             RequestContext.getCurrentInstance().update("form:growl");
         }
@@ -161,16 +164,17 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
     public void desactivar() {
         FacesMessage msg;
 
-        if (certificadoTipoComprobante != null) {
+        if (certificadoTipoComprobanteSelected != null) {
             try {
-                certificadoTipoComprobanteService.eliminarCertificadoTipoComprobanteService(certificadoTipoComprobante);
-                init();
+                //certificadoTipoComprobanteService.eliminarCertificadoTipoComprobanteService(certificadoTipoComprobante);
+                System.err.println(certificadoTipoComprobanteSelected);
+                System.err.println("entra entra");
                 msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("certificadoTipoComprobante.header"), recurso.getString("certificadoTipoComprobante.editar.eliminar.mensaje"));
                 FacesContext.getCurrentInstance().addMessage(null, msg);
-                RequestContext.getCurrentInstance().execute("PF('confirm').hide()");
                 RequestContext.getCurrentInstance().update("form:growl");
-
-            } catch (ServicesException ex) {
+                cargarCertificados();
+                RequestContext.getCurrentInstance().execute("PF('confirm').hide()");
+            } catch (Exception ex) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("certificadoTipoComprobante.header"), ex.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 RequestContext.getCurrentInstance().update("form:growl");
@@ -244,13 +248,7 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
         this.certificadoTipoComprobantes = certificadoTipoComprobantes;
     }
 
-    public List<CertificadoTipoComprobante> getFilterCertificadosTipo() {
-        return filterCertificadosTipo;
-    }
-
-    public void setFilterCertificadosTipo(List<CertificadoTipoComprobante> filterCertificadosTipo) {
-        this.filterCertificadosTipo = filterCertificadosTipo;
-    }
+   
 
     public void setLoginAccessBean(LoginAccessBean loginAccessBean) {
         this.loginAccessBean = loginAccessBean;

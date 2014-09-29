@@ -12,7 +12,7 @@ import javax.ejb.Stateless;
 
 /**
  *
- * @author armando
+ * @author Christian
  */
 @Stateless
 public class CobroPagoDaoImpl extends GenericDaoImpl<CobroPago, Integer> implements CobroPagoDao{

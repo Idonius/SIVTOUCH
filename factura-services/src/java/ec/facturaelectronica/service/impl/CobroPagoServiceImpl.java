@@ -21,7 +21,7 @@ import javax.ejb.Stateless;
 
 /**
  *
- * @author armando
+ * @author Christian
  */
 @Stateless
 public class CobroPagoServiceImpl implements CobroPagoService {

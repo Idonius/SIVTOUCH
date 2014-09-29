@@ -22,7 +22,7 @@ public interface CertificadoService {
     boolean registrarCertificado(final Certificado certificado);
     boolean actualizarCertificado(final Certificado certificado);
     Catalogo getCatalogoPorId(final Long idCatalogo);
-    List<Certificado> getCertificadosFiltrados();
+    List<Certificado> getCertificadosFiltrados(Empresa empresa );
     Empresa getEmpresaPorId(final int idEmpresa);
     Certificado getCertificadoPorId(Long id);
 }

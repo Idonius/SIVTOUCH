@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.facturaelectronica.service.impl;
 
 import ec.facturaelectronica.dao.CatalogoDao;
@@ -30,38 +29,42 @@ public class CertificadoTipoComprobanteServiceImpl implements CertificadoTipoCom
 
     @EJB
     private CertificadoTipoComprobanteDao certificadoTipoComprobanteDao;
-    
+
     @EJB
     private CatalogoDao catalogoDao;
-    
+
     @EJB
     private TipoComprobanteDao tipoComprobanteDao;
-    
+
     @Override
-    public List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobanteServiceList() throws ServicesException {
-        List<CertificadoTipoComprobante> result = Collections.emptyList();
-        try{
-            result = certificadoTipoComprobanteDao.obtenerCertificadoTipoComprobanteList();
-        }catch(Exception ex){
-            throw new ServicesException("Error al intentar obtener el listado de certificados por comprobantes...");
+    public List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobanteServiceList(Empresa empresa) throws ServicesException {
+        List<CertificadoTipoComprobante> result;
+        Catalogo catalogo;
+
+        try {
+
+            catalogo = catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
+            result = certificadoTipoComprobanteDao.obtenerCertificadoTipoComprobanteList(catalogo, empresa);
+        } catch (Exception ex) {
+            throw new ServicesException("Error al intentar obtener el listado de certificados por comprobantes...",ex);
         }
         return result;
     }
 
     @Override
     public void agregarCertificadoTipoComprobanteService(final CertificadoTipoComprobante certificadoTipoComprobante) throws ServicesException {
-        try{
+        try {
             certificadoTipoComprobanteDao.insert(certificadoTipoComprobante);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             throw new ServicesException("Error al intentar registrar detalles certificados por comprobantes...");
         }
     }
 
     @Override
     public void actualizarCertificadoTipoComprobanteService(CertificadoTipoComprobante certificadoTipoComprobante) throws ServicesException {
-        try{
+        try {
             certificadoTipoComprobanteDao.update(certificadoTipoComprobante);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             throw new ServicesException("Error al intentar modificar registro detalles certificados por comprobantes...");
         }
     }
@@ -77,33 +80,34 @@ public class CertificadoTipoComprobanteServiceImpl implements CertificadoTipoCom
         } catch (Exception ex) {
             throw new ServicesException(ex.getMessage());
         }
-        
+
     }
 
     @Override
-    public List<TipoComprobante> obtenerTipoComprobanteList() throws ServicesException{
+    public List<TipoComprobante> obtenerTipoComprobanteList() throws ServicesException {
         List<TipoComprobante> result = Collections.emptyList();
-        
-        try{
+
+        try {
             result = tipoComprobanteDao.obtenerTipoComprobanteList();
-        }catch(Exception ex){
+        } catch (Exception ex) {
             throw new ServicesException(ex.getMessage());
         }
         return result;
     }
 
     @Override
-    public List<TipoComprobante> obtenerCertificadoTipoComprobante(final Empresa empresa, final TipoComprobante tipoComprobante) throws ServicesException{
-        List<TipoComprobante> result = Collections.emptyList();
-        
-        try{
-            result = certificadoTipoComprobanteDao.obtenerCertificadoPorEmpresaYTipoComprobante(empresa, tipoComprobante);
-        }catch(Exception ex){
-            throw new ServicesException("Error al obtener el certificado");
+    public List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobante(final Empresa empresa, final TipoComprobante tipoComprobante) throws ServicesException {
+        List<CertificadoTipoComprobante> result;
+        Catalogo catalogo;
+
+        try {
+            catalogo=catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
+            
+            result = certificadoTipoComprobanteDao.obtenerCertificadoPorEmpresaYTipoComprobante(catalogo,empresa, tipoComprobante);
+        } catch (Exception ex) {
+            throw new ServicesException("Error al obtener el certificado",ex);
         }
         return result;
     }
-    
-    
-        
+
 }

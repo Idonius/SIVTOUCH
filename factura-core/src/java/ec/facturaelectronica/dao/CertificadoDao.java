@@ -6,7 +6,9 @@
 
 package ec.facturaelectronica.dao;
 
+import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Certificado;
+import ec.facturaelectronica.model.Empresa;
 import java.util.List;
 import javax.ejb.Local;
 
@@ -17,5 +19,5 @@ import javax.ejb.Local;
 @Local
 public interface CertificadoDao extends GenericDao<Certificado, Long>{
     List<Certificado> obtenerTodosLosCertificados();
-    List<Certificado> obtenerCertificadosFiltrados();
+    List<Certificado> obtenerCertificadosFiltrados(Empresa empresa,Catalogo estado);
 }

@@ -20,4 +20,5 @@ public interface EmpresaDao extends GenericDao<Empresa, Integer>{
     public List<Empresa> getEmpresas();
     public List<Empresa> getEmpresasMinusUsuario(Usuario usuario);
     public List<Empresa> getEmpresaPorPlan(Plan plan);
+    public Empresa getEmpresaByRuc(String ruc);
 }

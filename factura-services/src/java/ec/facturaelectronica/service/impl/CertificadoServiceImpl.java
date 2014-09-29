@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.facturaelectronica.service.impl;
 
 import ec.facturaelectronica.dao.CatalogoDao;
@@ -12,6 +11,7 @@ import ec.facturaelectronica.dao.EmpresaDao;
 import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Certificado;
 import ec.facturaelectronica.model.Empresa;
+import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.CertificadoService;
 import java.util.Collections;
 import java.util.List;
@@ -23,17 +23,17 @@ import javax.ejb.Stateless;
  * @author Armando
  */
 @Stateless
-public class CertificadoServiceImpl implements CertificadoService{
-    
+public class CertificadoServiceImpl implements CertificadoService {
+
     @EJB
     private CertificadoDao certificadoDao;
-    
+
     @EJB
     private CatalogoDao catalogoDao;
-    
+
     @EJB
     private EmpresaDao empresaDao;
-    
+
     @Override
     public List<Certificado> getTodosLosCertificados() {
         return certificadoDao.obtenerTodosLosCertificados();
@@ -42,7 +42,12 @@ public class CertificadoServiceImpl implements CertificadoService{
     @Override
     public boolean registrarCertificado(final Certificado certificado) {
         boolean result = Boolean.FALSE;
-        if(certificado != null){
+        Catalogo catalogo;
+        
+        catalogo=catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
+        
+        if (certificado != null) {
+            certificado.setEstado(catalogo);
             certificadoDao.insert(certificado);
             result = Boolean.TRUE;
         }
@@ -52,11 +57,11 @@ public class CertificadoServiceImpl implements CertificadoService{
     @Override
     public boolean actualizarCertificado(final Certificado certificado) {
         boolean result = Boolean.FALSE;
-        if(certificado != null){
+        if (certificado != null) {
             certificadoDao.update(certificado);
             result = Boolean.TRUE;
         }
-        return result;        
+        return result;
     }
 
     @Override
@@ -65,11 +70,12 @@ public class CertificadoServiceImpl implements CertificadoService{
     }
 
     @Override
-    public List<Certificado> getCertificadosFiltrados() {
-        List<Certificado> result = Collections.emptyList();
-        if(certificadoDao.obtenerCertificadosFiltrados().size() > 0){
-            result = certificadoDao.obtenerCertificadosFiltrados();
-        }
+    public List<Certificado> getCertificadosFiltrados(Empresa empresa) {
+        List<Certificado> result;
+        Catalogo estado = catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
+
+        result = certificadoDao.obtenerCertificadosFiltrados(empresa, estado);
+
         return result;
     }
 
@@ -82,14 +88,5 @@ public class CertificadoServiceImpl implements CertificadoService{
     public Certificado getCertificadoPorId(Long id) {
         return certificadoDao.load(id);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
 }

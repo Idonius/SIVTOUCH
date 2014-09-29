@@ -24,14 +24,14 @@ public class TipoComprobanteListModel implements Converter{
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String submittedValue) {
-        System.err.println("valor:"+submittedValue);
+      
         if (submittedValue.trim().equals("")) {
             return null;
         } else {
 
             for (TipoComprobante obj : tipoComprobanteModel) {
                 if (obj.getId().toString().equals(submittedValue)) {
-                    System.err.println(obj);
+                
                     return obj;
                 }
             }

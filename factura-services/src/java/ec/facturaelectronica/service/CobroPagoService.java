@@ -15,7 +15,7 @@ import javax.ejb.Local;
 
 /**
  *
- * @author armando
+ * @author Christian
  */
 @Local
 public interface CobroPagoService {
