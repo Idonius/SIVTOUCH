@@ -46,7 +46,7 @@ public class CertificadoTipoComprobanteServiceImpl implements CertificadoTipoCom
             catalogo = catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
             result = certificadoTipoComprobanteDao.obtenerCertificadoTipoComprobanteList(catalogo, empresa);
         } catch (Exception ex) {
-            throw new ServicesException("Error al intentar obtener el listado de certificados por comprobantes...",ex);
+            throw new ServicesException("Error al intentar obtener el listado de certificados por comprobantes...", ex);
         }
         return result;
     }
@@ -101,11 +101,26 @@ public class CertificadoTipoComprobanteServiceImpl implements CertificadoTipoCom
         Catalogo catalogo;
 
         try {
-            catalogo=catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
-            
-            result = certificadoTipoComprobanteDao.obtenerCertificadoPorEmpresaYTipoComprobante(catalogo,empresa, tipoComprobante);
+            catalogo = catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
+
+            result = certificadoTipoComprobanteDao.obtenerCertificadoPorEmpresaYTipoComprobante(catalogo, empresa, tipoComprobante);
         } catch (Exception ex) {
-            throw new ServicesException("Error al obtener el certificado",ex);
+            throw new ServicesException("Error al obtener el certificado", ex);
+        }
+        return result;
+    }
+
+    @Override
+    public CertificadoTipoComprobante buscarCertificado(Empresa empresa, TipoComprobante tipoComprobante) throws ServicesException {
+        CertificadoTipoComprobante result;
+        Catalogo catalogo;
+
+        try {
+            catalogo = catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
+
+            result = certificadoTipoComprobanteDao.obtenerCertificado(catalogo, empresa, tipoComprobante);
+        } catch (Exception ex) {
+            throw new ServicesException("Error al obtener el certificado", ex);
         }
         return result;
     }

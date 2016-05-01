@@ -7,6 +7,7 @@ package ec.facturaelectronica.service;
 
 import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.Catalogo;
+import ec.facturaelectronica.model.Cliente;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.Menu;
 import ec.facturaelectronica.model.Perfil;
@@ -60,9 +61,17 @@ public interface AdministracionService {
     
     public Empresa getEmpresa(String ruc) throws ServicesException;
     
-    public boolean buscaEmpresaActiva(String ruc) throws ServicesException;
+    public Empresa buscaEmpresaActiva(String ruc) throws ServicesException;
     
     public TipoComprobante buscarTipoComprobante(String codigo) throws ServicesException;
+    
+    public String devolverClavePk12(String clave);
+    
+    public void registrarCliente(Cliente cliente) throws ServicesException;
+    
+    public boolean verificarCliente(String ruc) throws ServicesException;
+    
+    
     
     
       

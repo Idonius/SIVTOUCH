@@ -5,6 +5,7 @@
 package ec.facturaelectronica.service.impl;
 
 import ec.facturaelectronica.dao.CatalogoDao;
+import ec.facturaelectronica.dao.ClienteDao;
 import ec.facturaelectronica.dao.EmpresaDao;
 import ec.facturaelectronica.dao.MenuDao;
 import ec.facturaelectronica.dao.PerfilDao;
@@ -12,6 +13,7 @@ import ec.facturaelectronica.dao.TipoComprobanteDao;
 import ec.facturaelectronica.dao.UsuarioDao;
 import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.Catalogo;
+import ec.facturaelectronica.model.Cliente;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.Menu;
 import ec.facturaelectronica.model.Perfil;
@@ -21,6 +23,8 @@ import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.AdministracionService;
 import ec.facturaelectronica.service.util.Util;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -43,6 +47,8 @@ public class AdministracionServicesImpl implements AdministracionService {
     MenuDao menDao;
     @EJB
     TipoComprobanteDao tipoComprobanteDao;
+    @EJB
+    ClienteDao clienteDao;
 
     @Override
     public List<Perfil> getPerfiles() throws ServicesException {
@@ -117,7 +123,7 @@ public class AdministracionServicesImpl implements AdministracionService {
                 throw new ServicesException("El nick del usuario ya esta registrado");
             }
             catalogo = catalogoDao.load((long) EstadosGeneralesEnum.Activo.getOrden());
-            usuario.setClaveUsuario(Util.md5(usuario.getClaveUsuario()));
+            usuario.setClaveUsuario(Util.Sha256(usuario.getClaveUsuario()));
             usuario.setIdEstadoCatalogo(catalogo);
             usuarioDao.insert(usuario);
 
@@ -162,7 +168,7 @@ public class AdministracionServicesImpl implements AdministracionService {
         try {
 
             //encriptar clave
-            String pass = Util.md5(clave);
+            String pass = Util.Sha256(clave);
             usuario.setClaveUsuario(pass);
 
             usuarioDao.update(usuario);
@@ -258,26 +264,56 @@ public class AdministracionServicesImpl implements AdministracionService {
     }
 
     @Override
-    public boolean buscaEmpresaActiva(String ruc) throws ServicesException {
+    public Empresa buscaEmpresaActiva(String ruc) throws ServicesException {
         Empresa empresa;
         boolean val = false;
         try {
             empresa = empresaDao.getEmpresaByRuc(ruc);
-            if (empresa != null) {
-                val = true;
-            } else {
-                val = false;
-            }
+
         } catch (Exception ex) {
             throw new ServicesException("La empresa no se encuentra registrada en el sistema", ex);
         }
 
-        return val;
+        return empresa;
     }
 
     @Override
     public TipoComprobante buscarTipoComprobante(String codigo) throws ServicesException {
         return tipoComprobanteDao.obtenerTipoComprobante(codigo);
+    }
+
+    @Override
+    public String devolverClavePk12(String clave) {
+        try {
+            return Util.Desencriptar(clave);
+        } catch (Exception ex) {
+            Logger.getLogger(AdministracionServicesImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+
+    }
+
+    @Override
+    public void registrarCliente(Cliente cliente) throws ServicesException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean verificarCliente(String ruc) throws ServicesException {
+        Cliente cliente;
+        boolean val = false;
+
+        try {
+            cliente = clienteDao.buscarCliente(ruc);
+            if (cliente != null) {
+                val = true;
+            }
+        } catch (Exception ex) {
+
+        }
+
+        return val;
+
     }
 
 }

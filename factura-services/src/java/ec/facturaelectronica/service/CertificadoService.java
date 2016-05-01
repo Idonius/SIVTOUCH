@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.facturaelectronica.service;
 
 import ec.facturaelectronica.model.Catalogo;
@@ -18,11 +17,20 @@ import javax.ejb.Local;
  */
 @Local
 public interface CertificadoService {
+
     List<Certificado> getTodosLosCertificados();
+
     boolean registrarCertificado(final Certificado certificado);
+
     boolean actualizarCertificado(final Certificado certificado);
+
     Catalogo getCatalogoPorId(final Long idCatalogo);
-    List<Certificado> getCertificadosFiltrados(Empresa empresa );
+
+    List<Certificado> getCertificadosFiltrados(Empresa empresa);
+
     Empresa getEmpresaPorId(final int idEmpresa);
+
     Certificado getCertificadoPorId(Long id);
+
+    public boolean validarP12(String filenameP12, String clave);
 }

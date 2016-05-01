@@ -31,4 +31,6 @@ public interface CertificadoTipoComprobanteService {
     public List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobanteServiceList(Empresa empresa) throws ServicesException;
     
     List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobante(Empresa empresa, TipoComprobante tipoComprobante) throws ServicesException;
+    
+    public CertificadoTipoComprobante buscarCertificado(Empresa empresa,TipoComprobante tipoComprobante) throws ServicesException;
 }

@@ -23,7 +23,7 @@ import javax.ejb.Stateless;
  * @author desarrollotic
  */
 @Stateless
-public class SeguridadServiceImpl implements SeguridadService  {
+public class SeguridadServiceImpl implements SeguridadService {
 
     @EJB
     UsuarioDao usuarioDao;
@@ -67,11 +67,9 @@ public class SeguridadServiceImpl implements SeguridadService  {
     public boolean buscarMenuxPerfil(Menu menu, Perfil perfil) throws ServicesException {
         boolean r = false;
 
-        List<PerfilMenu> lista = perfilMenuDao.getPerfilMenus(menu, perfil);
+        PerfilMenu lista = perfilMenuDao.getPerfilMenus(menu, perfil);
 
-        if (lista.isEmpty()) {
-            r = false;
-        } else {
+        if (null != lista) {
             r = true;
         }
 
@@ -116,20 +114,45 @@ public class SeguridadServiceImpl implements SeguridadService  {
     @Override
     public void eliminarPermiso(Menu menu, Perfil perfil) throws ServicesException {
         try {
-            List<PerfilMenu> lista = perfilMenuDao.getPerfilMenus(menu, perfil);
+            PerfilMenu perfilMenu = perfilMenuDao.getPerfilMenus(menu, perfil);
+            PerfilMenu delPerfilMenu;
 
-            if (!lista.isEmpty()) {
-                PerfilMenu pm = lista.get(0);
-                PerfilMenu perfilMenu = null;
-                perfilMenu = perfilMenuDao.load(pm.getIdPerfilMenu());
-                perfilMenuDao.delete(pm);
+            if (perfilMenu != null) {
+
+                List<Menu> lista = menuDao.getMenuByPerfil(menu, perfil);
+
+                for (Menu m : lista) {
+                    eliminaHijosPermiso(m, perfil);
+                }
+
+                delPerfilMenu = perfilMenuDao.load(perfilMenu.getIdPerfilMenu());
+                perfilMenuDao.delete(delPerfilMenu);
+
             }
 
         } catch (Exception ex) {
             throw new ServicesException(ex.getMessage());
         }
 
+    }
 
+    private void eliminaHijosPermiso(Menu menu, Perfil perfil) {
+
+        PerfilMenu perfilMenu = perfilMenuDao.getPerfilMenus(menu, perfil);
+        PerfilMenu delPerfilMenu;
+
+        if (perfilMenu != null) {
+
+            List<Menu> lista = menuDao.getMenuByPerfil(menu, perfil);
+
+            for (Menu m : lista) {
+                eliminaHijosPermiso(m, perfil);
+            }
+
+            delPerfilMenu = perfilMenuDao.load(perfilMenu.getIdPerfilMenu());
+            perfilMenuDao.delete(delPerfilMenu);
+        }
 
     }
+
 }

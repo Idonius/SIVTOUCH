@@ -21,4 +21,8 @@ import javax.ejb.Local;
 public interface FacturaService {
     public List<Comprobante> getComprobantesByEmpresa(Empresa empresa,Date desde,Date hasta) throws ServicesException;
     
+    public void guardarComprobanteWS(Comprobante comprobante) throws ServicesException;
+    
+    public void actualizarComprobanteWS(Comprobante comprobante) throws ServicesException;
+    
 }

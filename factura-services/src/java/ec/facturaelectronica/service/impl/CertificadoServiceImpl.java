@@ -13,7 +13,14 @@ import ec.facturaelectronica.model.Certificado;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.CertificadoService;
-import java.util.Collections;
+import ec.facturaelectronica.util.PassStoreKSGenerica;
+import es.mityc.javasign.pkstore.IPKStoreManager;
+import es.mityc.javasign.pkstore.keystore.KSStore;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -43,9 +50,9 @@ public class CertificadoServiceImpl implements CertificadoService {
     public boolean registrarCertificado(final Certificado certificado) {
         boolean result = Boolean.FALSE;
         Catalogo catalogo;
-        
-        catalogo=catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
-        
+
+        catalogo = catalogoDao.load(EstadosGeneralesEnum.Activo.getOrden());
+
         if (certificado != null) {
             certificado.setEstado(catalogo);
             certificadoDao.insert(certificado);
@@ -87,6 +94,51 @@ public class CertificadoServiceImpl implements CertificadoService {
     @Override
     public Certificado getCertificadoPorId(Long id) {
         return certificadoDao.load(id);
+    }
+
+    @Override
+    public boolean validarP12(String filenameP12, String clave) {
+
+        IPKStoreManager storeManager = getPKStoreManager(filenameP12, clave);
+        if (storeManager == null) {
+            // log.error("El gestor de claves no se ha obtenido correctamente.");
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private IPKStoreManager getPKStoreManager(String archivoP12, String clave) {
+        IPKStoreManager storeManager = null;
+
+        try {
+            KeyStore ks = KeyStore.getInstance("PKCS12");
+
+            java.io.FileInputStream fis = null;
+            try {
+                fis = new java.io.FileInputStream(archivoP12);
+                ks.load(fis, clave.toCharArray());
+            } finally {
+                if (fis != null) {
+                    fis.close();
+                }
+            }
+            storeManager = new KSStore(ks, new PassStoreKSGenerica(clave));
+        } catch (KeyStoreException ex) {
+            //    log.error("KeyStoreException: No se puede generar KeyStore PKCS12", ex);
+            //System.exit(-1);
+        } catch (NoSuchAlgorithmException ex) {
+            //  log.error("NoSuchAlgorithmException: No se puede generar KeyStore PKCS12", ex);
+            //System.exit(-1);
+        } catch (CertificateException ex) {
+            //log.error("CertificateException: No se puede generar KeyStore PKCS12", ex);
+            //System.exit(-1);
+        } catch (IOException ex) {
+            //log.error("IOException: No se puede generar KeyStore PKCS12");
+            //System.exit(-1);
+        }
+        return storeManager;
     }
 
 }
