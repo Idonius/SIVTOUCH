@@ -1,0 +1,16 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:po="http://primefaces.org/olympos">
+
+    <ul id="layout-tab-menu">
+        <h:outputFormat value="#{menuBean.menuDym}" escape="false"/>
+    </ul>
+
+    <ui:include src="othertabsubmenus.xhtml"/>
+
+
+</ui:composition>

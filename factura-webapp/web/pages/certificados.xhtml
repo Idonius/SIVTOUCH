@@ -30,27 +30,29 @@
                                         </div>
                                     </div>
 
-                                    <div id="EmpresaId" >
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <h:outputLabel for="empresaNameId" value="Empresa: " />                                        
-                                                </td>
-                                                <td>
-                                                    <p:spacer width="5" />
-                                                </td>
-                                                <td>
-                                                    <h:outputText id="empresaNameId" value="#{certificadoBean.nombreEmpresa}" style="font-weight: bold;"/>                                            
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </div>
+
 
                                     <p:commandButton value="#{msg['boton.nuevo']}" styleClass="btn btn-success" actionListener="#{certificadoBean.nuevo}" update=":formDialogEditarId:gridEditar" />
                                     <p/>
-                                    <p:dataTable  id="dtCertificadoId" resizableColumns="true" value="#{certificadoBean.certificadoModel}" 
+                                    <p:dataTable  id="dtCertificadoId"  resizableColumns="true" value="#{certificadoBean.certificadoModel}"  
                                                   var="_certificado" rows="8"  paginator="true" selectionMode="single">
 
+                                        <f:facet name="header">
+                                            <p:panelGrid columns="2"  style="width: 400px;margin-left: auto"  >
+                                                <p:outputLabel   value="#{msg['certificado.empresa']}" style="font-weight:bold;width: 40px" />
+                                                <p:selectOneMenu id="empresa" value="#{certificadoBean.selectedEmpresaBusqueda}" disabled="#{!certificadoBean.isSuperAdm}" converter="EmpresaListModel" panelStyle="width:150px"
+                                                                 effect="fade" var="emp" style="width:190px"  >
+
+                                                    <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                                    <f:selectItems value="#{certificadoBean.empresas}" var="lsemp" itemLabel="#{lsemp.nombreEmpresa}" itemValue="#{lsemp}"/>
+                                                    <p:ajax listener="#{certificadoBean.seleccionarEmpresa()}" update="dtCertificadoId"  />
+                                                    <p:column>
+                                                        #{emp.nombreEmpresa}   
+                                                    </p:column>
+                                                </p:selectOneMenu>
+                                            </p:panelGrid>
+
+                                        </f:facet>
                                         <p:column headerText="#{msg['certificados.tabla.columna1']}" >
                                             <h:outputText value="#{_certificado.nombre}"/>
                                         </p:column>
@@ -112,6 +114,28 @@
         <h:form id="formDialogEditarId">
             <p:dialog id="dlgEditar" widgetVar="dlgEditarCertificado" header="#{msg['certificados.header.editar']}" width="490px" height="220px"  showEffect="explode"  >
                 <p:panelGrid id="gridEditar" styleClass="companyHeaderGrid">
+
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel   value="#{msg['certificado.empresa']}" style="font-weight:bold;width: 40px" />
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="empresaEdit" value="#{certificadoBean.selectedEmpresaEdit}" disabled="#{!certificadoBean.isSuperAdm}" converter="EmpresaListModel" panelStyle="width:150px"
+                                             effect="fade" var="emp" style="width:190px" required="true"  requiredMessage="#{msg['certificados.editar.empresa.mensaje']}" >
+
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItems value="#{certificadoBean.empresas}" var="lsemp" itemLabel="#{lsemp.nombreEmpresa}" itemValue="#{lsemp}"/>
+                                <p:column>
+                                    #{emp.nombreEmpresa}   
+                                </p:column>
+                            </p:selectOneMenu>
+
+                        </p:column>
+                        <p:column>
+                            <p:message for="empresaEdit" display="icon" showDetail="false"  />
+                        </p:column>
+                    </p:row> 
                     <p:row>
                         <p:column>
                             <p:outputLabel value="#{msg['certificados.tabla.columna1']}" style="font-weight:bold" />

@@ -1,0 +1,43 @@
+<ui:composition 
+
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <h:form>
+
+
+        <!-- LAYOUT TOPBAR COVER -->
+        <div id="layout-topbar-cover">
+            <div id="layout-topbar-row">
+                <div id="layout-topbar-left">
+                    <a href="dashboard-banking.xhtml" id="logo"><h:graphicImage name="images/logo.svg" id="logo" library="olympos-layout" /></a>
+                </div>
+                <div id="layout-topbar-right">
+
+                    <a id="menu-resize-btn" class="topbar-link Animated03"><h:graphicImage name="images/menu-resize-btn-icon.svg" id="menu-resize-btn" library="olympos-layout" /></a>
+                    <a id="mobile-menu-btn" class="topbar-link Animated03"><h:graphicImage name="images/menu-btn-icon.svg" id="menu-btn-icon" library="olympos-layout" /></a>
+
+                    
+                    <p:commandLink id="dynaButton"  styleClass=" topbar-link Animated03 Fright  ">
+                        <h:graphicImage  name="images/user.png"    library="olympos-layout" />
+                    </p:commandLink>
+                    
+                  
+                    <p:menu overlay="true" trigger="dynaButton" my="left top" at="left bottom">
+                        <p:submenu label="#{menuBean.username}">
+                            <p:menuitem value="Salir" icon="fa fa-power-off Fs15" action="#{loginAccessBean.logout()}"/>
+                            
+                        </p:submenu>
+                       
+                    </p:menu>
+
+
+
+                </div>
+            </div>
+        </div>
+    </h:form>
+</ui:composition>

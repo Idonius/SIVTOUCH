@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="index.xhtml">
+
+
+    <ui:define name="content">
+
+        <h:form id="form">
+
+
+            <p:growl id="growl" showDetail="true"      />  
+            <p:outputPanel id="pnlPrincipal">
+
+
+                <p:panel style="border: 0px" rendered="#{perfilesBean.perfilVo.renderEdit}">
+                    <div class="Card"  >
+                        <div class="Container30 Responsive50 NoIndent">
+                            <i class="icon-cloud231 Fs50 Navy Fleft"></i>
+                            <span class="FontLatoBlack Fs14 Navy Opac80">  #{msg['perfiles.titulo']}</span><br/>
+
+                        </div>
+                        <div class="EmptyBox5"></div>
+
+                        <div class="Container60 Responsive50 NoIndent">
+                            <p:commandButton  value="#{msg['boton.nuevo']}" icon="fa fa-plus" styleClass="Fs14 White GreenButton"  actionListener="#{perfilesBean.nuevo}"  update="pnlPrincipal,pnlEditar"  />
+
+                        </div>
+                        <div class="EmptyBox5"></div>
+                        <div class="SeparatorFull"></div>
+                    </div>
+                    <div class="Card"  >
+                        <p:dataTable  id="dt" value="#{perfilesBean.perfilModel}" var="obj" selection="#{perfilesBean.selectedPerfil}"
+                                      rows="8" rowsPerPageTemplate="8,10,15"  paginator="true"  selectionMode="single" reflow="true">
+
+                            <p:column style="width: 70%" sortBy="nombrePerfil" headerText="#{msg['perfiles.tabla.columna1']}"  filterMatchMode="contains" >
+                                <h:outputText value="#{obj.nombrePerfil}"/>
+                            </p:column>
+                            <p:column  style="width: 70px" >
+                                <p:commandButton title="#{msg['boton.editar']}" icon="fa fa-pencil-square-o" styleClass="Fs14 White BlueButton"  action="#{perfilesBean.editar}" update=":form:pnlPrincipal,:form:pnlEditar"   >
+                                    <f:setPropertyActionListener value="#{obj}" target="#{perfilesBean.selectedPerfil}"  />  
+                                </p:commandButton>
+                                <p:commandButton title="#{msg['boton.eliminar']}" icon="fa fa-trash" styleClass="Fs14 White OrangeButton" actionListener ="#{perfilesBean.eliminar(obj)}" update=":form:pnlPrincipal,:form:pnlEditar"   >
+
+                                    <p:confirm header="Perfil" message="Esta seguro de eliminar el perfil?" icon="ui-icon-alert" />
+                                </p:commandButton>
+
+                            </p:column>
+
+                           
+
+
+                        </p:dataTable>
+                        
+                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                            </p:confirmDialog>
+
+                    </div>
+
+                </p:panel>
+
+
+            </p:outputPanel>
+
+            <p:outputPanel id="pnlEditar">
+                <p:panel style="border: 0px" rendered="#{!perfilesBean.perfilVo.renderEdit }">
+                    <div class="Card"  >
+                        <div class="Container30 Responsive50 NoIndent">
+                            <i class="icon-cloud231 Fs50 Navy Fleft"></i>
+                            <span class="FontLatoBlack Fs14 Navy Opac80">  #{msg['perfiles.titulo']}</span><br/>
+
+                        </div>
+                        <div class="EmptyBox5"></div>
+
+                        <div class="Container60 Responsive50 NoIndent">
+                            <p:commandButton  id="aceptar" value="#{msg['boton.aceptar']}"   action="#{perfilesBean.registrar}" update="pnlPrincipal,pnlEditar"   />
+                            <p:commandButton value="#{msg['boton.cancelar']}"    action="#{perfilesBean.cancelar}" process="@this" update="pnlPrincipal,pnlEditar"  />
+                        </div>
+                        <div class="EmptyBox5"></div>
+                        <div class="SeparatorFull"></div>
+                    </div>
+                    <div class="Card"  >
+
+                        <div class="ui-fluid">
+                            <div class="ui-grid ui-grid-responsive">
+                                <div class="ui-grid-row">
+                                    <div class="ui-grid-col-5">
+                                        <p:inputText id="nombre" placeholder="#{msg['perfiles.editar.nombre']}"  value="#{perfilesBean.perfilVo.nombre}"  required="true"  requiredMessage="#{msg['perfiles.editar.nombre.mensaje']}" />
+                                    </div>
+                                    <div class="ui-grid-col-1">
+                                        <p:message for="nombre" display="icon" showDetail="false"  />    
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </p:panel>
+
+            </p:outputPanel>
+
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

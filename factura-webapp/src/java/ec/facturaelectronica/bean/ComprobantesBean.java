@@ -24,6 +24,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 
 /**
@@ -76,6 +77,13 @@ public class ComprobantesBean extends RecursosServices implements Serializable {
             LOG.info(ex);
 
         }
+    }
+    
+    public void verNovedades(){
+      
+        
+          RequestContext.getCurrentInstance().execute("PF('dlgNov').show()");
+    
     }
 
     public void prepDownload() throws Exception {

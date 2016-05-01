@@ -5,9 +5,12 @@
  */
 package ec.facturaelectronica.bean;
 
+import ec.facturaelectronica.constantes.FacturaConstantes;
+import ec.facturaelectronica.datatable.model.CertificadoDataTableModel;
 import ec.facturaelectronica.datatable.model.CertificadoTipoComprobanteDataTableModel;
 import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.list.model.CertificadosListModel;
+import ec.facturaelectronica.list.model.EmpresaListModel;
 import ec.facturaelectronica.list.model.TipoComprobanteListModel;
 import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Certificado;
@@ -15,10 +18,12 @@ import ec.facturaelectronica.model.CertificadoTipoComprobante;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.TipoComprobante;
 import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
+import ec.facturaelectronica.service.AdministracionService;
 import ec.facturaelectronica.service.CertificadoService;
 import ec.facturaelectronica.service.CertificadoTipoComprobanteService;
 import ec.facturaelectronica.util.RecursosServices;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.annotation.PostConstruct;
@@ -46,6 +51,9 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
     @EJB
     private CertificadoTipoComprobanteService certificadoTipoComprobanteService;
 
+    @EJB
+    private AdministracionService admService;
+
     @ManagedProperty(value = "#{loginAccessBean}")
     private LoginAccessBean loginAccessBean;
 
@@ -61,31 +69,61 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
     private CertificadoTipoComprobante certificadoTipoComprobanteSelected;
 
     private List<CertificadoTipoComprobante> certificadoTipoComprobantes;
-   
+
     private CertificadoTipoComprobante certificadoTipoComprobante;
+
+    private List<Empresa> empresas;
+    private Empresa selectedEmpresa;
+    private Empresa selectedEmpresaBusqueda;
+    private boolean isSuperAdm = false;
 
     @PostConstruct
     public void init() {
         try {
 
-            certificados = certificadoService.getCertificadosFiltrados(loginAccessBean.getUsuarioLogin().getIdEmpresa());
-            CertificadosListModel.certificadoModel = certificados;
+            empresas = admService.getEmpresas();
+
+            if (FacturaConstantes.SUPER_ADMINISTRADOR.equals(loginAccessBean.getUsuarioLogin().getIdPerfil().getNombrePerfil())) {
+                certificados = certificadoService.getCertificadosFiltrados(selectedEmpresaBusqueda);
+                CertificadosListModel.certificadoModel = certificados;
+                isSuperAdm = true;
+            } else {
+                certificados = certificadoService.getCertificadosFiltrados(loginAccessBean.getUsuarioLogin().getIdEmpresa());
+                CertificadosListModel.certificadoModel = certificados;
+                isSuperAdm = false;
+                selectedEmpresaBusqueda = loginAccessBean.getUsuarioLogin().getIdEmpresa();
+            }
 
             tiposComprobantes = certificadoTipoComprobanteService.obtenerTipoComprobanteList();
             TipoComprobanteListModel.tipoComprobanteModel = tiposComprobantes;
-            cargarCertificados();
+            EmpresaListModel.empresaModel = empresas;
+            cargarCertificados(selectedEmpresaBusqueda);
 
         } catch (ServicesException ex) {
             java.util.logging.Logger.getLogger(CertificadoTipoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private void cargarCertificados(){
-      try {
 
-            certificadoTipoComprobantes = certificadoTipoComprobanteService.obtenerCertificadoTipoComprobanteServiceList(loginAccessBean.getUsuarioLogin().getIdEmpresa());
+    public void seleccionarEmpresa() {
+
+        if (selectedEmpresaBusqueda != null) {
+            certificados = certificadoService.getCertificadosFiltrados(selectedEmpresaBusqueda);
+            CertificadosListModel.certificadoModel = certificados;
+            cargarCertificados(selectedEmpresaBusqueda);
+
+        } else {
+            certificados = new ArrayList<>();
+            CertificadosListModel.certificadoModel = certificados;
+            cargarCertificados(selectedEmpresaBusqueda);
+        }
+    }
+
+    private void cargarCertificados(Empresa empresa) {
+        try {
+
+            certificadoTipoComprobantes = certificadoTipoComprobanteService.obtenerCertificadoTipoComprobanteServiceList(empresa);
             tipoComprobanteDataModel = new CertificadoTipoComprobanteDataTableModel(certificadoTipoComprobantes);
-            System.err.println("pasa pasa");
+
         } catch (ServicesException ex) {
             java.util.logging.Logger.getLogger(CertificadoTipoBean.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -105,17 +143,25 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
      * Para la creacion del nuevo certificado
      */
     public void nuevo() {
-        certificadoSelected = null;
-        tipoComprobanteSelected = null;
-        certificadoTipoComprobante = new CertificadoTipoComprobante();
-        RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
+        FacesMessage msg;
+        if (selectedEmpresaBusqueda != null) {
+            certificadoSelected = null;
+            tipoComprobanteSelected = null;
+            certificadoTipoComprobante = new CertificadoTipoComprobante();
+            RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
+        } else {
+            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("certificadoTipoComprobante.header"),  recurso.getString("certificadoTipoComprobante.selectempresa.nuevo"));
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().update("form:growl");
+        }
+
     }
 
     public void registrar() {
 
         FacesMessage msg;
         Catalogo catalogo = new Catalogo(EstadosGeneralesEnum.Activo.getOrden());
-        Empresa empresaLogueada = loginAccessBean.getUsuarioLogin().getIdEmpresa();
+        Empresa empresaLogueada = selectedEmpresaBusqueda;
 
         try {
             if (certificadoTipoComprobanteService.obtenerCertificadoTipoComprobante(empresaLogueada, tipoComprobanteSelected).isEmpty()) {
@@ -130,8 +176,8 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 RequestContext.getCurrentInstance().update("form:growl");
                 RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
-                certificadoTipoComprobante=new CertificadoTipoComprobante();
-                cargarCertificados();
+                certificadoTipoComprobante = new CertificadoTipoComprobante();
+                cargarCertificados(empresaLogueada);
 
             } else {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("certificadoTipoComprobante.header"), recurso.getString("certificadoTipoComprobante.editar.mensaje.ya.existe"));
@@ -164,15 +210,14 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
     public void desactivar() {
         FacesMessage msg;
 
-        if (certificadoTipoComprobanteSelected != null) {
+        if (certificadoTipoComprobante != null) {
             try {
-                //certificadoTipoComprobanteService.eliminarCertificadoTipoComprobanteService(certificadoTipoComprobante);
-                System.err.println(certificadoTipoComprobanteSelected);
-                System.err.println("entra entra");
+                certificadoTipoComprobanteService.eliminarCertificadoTipoComprobanteService(certificadoTipoComprobante);
+
                 msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("certificadoTipoComprobante.header"), recurso.getString("certificadoTipoComprobante.editar.eliminar.mensaje"));
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 RequestContext.getCurrentInstance().update("form:growl");
-                cargarCertificados();
+                cargarCertificados(selectedEmpresaBusqueda);
                 RequestContext.getCurrentInstance().execute("PF('confirm').hide()");
             } catch (Exception ex) {
                 msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("certificadoTipoComprobante.header"), ex.getMessage());
@@ -248,10 +293,64 @@ public class CertificadoTipoBean extends RecursosServices implements Serializabl
         this.certificadoTipoComprobantes = certificadoTipoComprobantes;
     }
 
-   
-
     public void setLoginAccessBean(LoginAccessBean loginAccessBean) {
         this.loginAccessBean = loginAccessBean;
+    }
+
+    /**
+     * @return the empresas
+     */
+    public List<Empresa> getEmpresas() {
+        return empresas;
+    }
+
+    /**
+     * @param empresas the empresas to set
+     */
+    public void setEmpresas(List<Empresa> empresas) {
+        this.empresas = empresas;
+    }
+
+    /**
+     * @return the selectedEmpresa
+     */
+    public Empresa getSelectedEmpresa() {
+        return selectedEmpresa;
+    }
+
+    /**
+     * @param selectedEmpresa the selectedEmpresa to set
+     */
+    public void setSelectedEmpresa(Empresa selectedEmpresa) {
+        this.selectedEmpresa = selectedEmpresa;
+    }
+
+    /**
+     * @return the selectedEmpresaBusqueda
+     */
+    public Empresa getSelectedEmpresaBusqueda() {
+        return selectedEmpresaBusqueda;
+    }
+
+    /**
+     * @param selectedEmpresaBusqueda the selectedEmpresaBusqueda to set
+     */
+    public void setSelectedEmpresaBusqueda(Empresa selectedEmpresaBusqueda) {
+        this.selectedEmpresaBusqueda = selectedEmpresaBusqueda;
+    }
+
+    /**
+     * @return the isSuperAdm
+     */
+    public boolean isIsSuperAdm() {
+        return isSuperAdm;
+    }
+
+    /**
+     * @param isSuperAdm the isSuperAdm to set
+     */
+    public void setIsSuperAdm(boolean isSuperAdm) {
+        this.isSuperAdm = isSuperAdm;
     }
 
 }

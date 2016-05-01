@@ -186,13 +186,11 @@ public class PermisoBean extends RecursosServices implements Serializable {
             RequestContext.getCurrentInstance().update("form:growl");
         }
 
-
     }
 
     private void armaMenuHijos(TreeNode node, Menu menu) {
         FacesMessage msg;
         try {
-
 
             List<Menu> listaMenus = admService.getMenusHijos(menu);
 
@@ -215,7 +213,7 @@ public class PermisoBean extends RecursosServices implements Serializable {
         Menu menu;
         if (selectedNode != null) {
             menu = (Menu) selectedNode.getData();
-            if (menu.getUrlMenu() != null) {
+            if (menu.getUrlMenu() != null || menu.getMenIdMenu()==null) {
                 try {
                     if (!seguridadService.buscarMenuxPerfil(menu, selectedPerfil)) {
                         seguridadService.asignarPermiso(menu, selectedPerfil);
@@ -230,7 +228,6 @@ public class PermisoBean extends RecursosServices implements Serializable {
                     }
                 } catch (ServicesException ex) {
                 }
-
 
             } else {
                 msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("permisos.header"), "Debe seleccionar un módulo que contenga la actividad");
@@ -247,24 +244,22 @@ public class PermisoBean extends RecursosServices implements Serializable {
 
         if (selectedNodeP != null) {
             menu = (Menu) selectedNodeP.getData();
-            if (menu.getUrlMenu() != null) {
-                try {
-                    seguridadService.eliminarPermiso(menu, selectedPerfil);
-                    msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("permisos.header"), "Permiso eliminado satisfactoriamente");
-                    FacesContext.getCurrentInstance().addMessage(null, msg);
-                    RequestContext.getCurrentInstance().update("form:growl");
-                    armarMenuxPermiso();
 
-                } catch (ServicesException ex) {
-                }
+            try {
+                seguridadService.eliminarPermiso(menu, selectedPerfil);
 
+                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("permisos.header"), "Permiso eliminado satisfactoriamente");
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                RequestContext.getCurrentInstance().update("form:growl");
+                armarMenuxPermiso();
 
-            } else {
-                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("permisos.header"), "Debe seleccionar un módulo que contenga la actividad");
+            } catch (ServicesException ex) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("permisos.header"), "Debe seleccionar un módulo que contenga la actividad. "+ex.getMessage());
                 FacesContext.getCurrentInstance().addMessage(null, msg);
                 RequestContext.getCurrentInstance().update("form:growl");
             }
 
+//           
         }
     }
 }

@@ -12,11 +12,15 @@ import ec.facturaelectronica.util.RecursosServices;
 import ec.facturaelectronica.vo.LoginVo;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -32,7 +36,10 @@ public class LoginAccessBean extends RecursosServices implements Serializable {
     @EJB
     SeguridadService seguridadService;
 
+    private String username;
+    private String password;
     private Usuario usuarioLogin;
+   
 
     private LoginVo loginVo;
 
@@ -40,39 +47,33 @@ public class LoginAccessBean extends RecursosServices implements Serializable {
         loginVo = new LoginVo();
     }
 
-    public void validarUsuario() {
-        FacesMessage msg;
+    public void login() {
 
+        FacesContext.getCurrentInstance().getExternalContext().getRequest();
+
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
         try {
-
-            boolean val = seguridadService.IsValidUser(getLoginVo().getNick(), getLoginVo().getClave());
-
-            if (val) {
-                setUsuarioLogin(seguridadService.getUsuarioByNick(getLoginVo().getNick()));
-
-                FacesContext.getCurrentInstance().getExternalContext().redirect(recurso.getString("login.url"));
-            } else {
-
-                msg = new FacesMessage(FacesMessage.SEVERITY_WARN, recurso.getString("login.titulo"), recurso.getString("login.mensaje"));
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-
-            }
-        } catch (ServicesException | IOException ex) {
-            msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, recurso.getString("login.titulo"), ex.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-
+            request.login(this.getUsername(), this.getPassword());
+            FacesContext.getCurrentInstance().getExternalContext().redirect("index.jsf");
+        } catch (ServletException e) {
+           
+            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Acceso Negado, las credenciales son incorrectas",null));
+           
+        } catch (IOException ex) {
+            Logger.getLogger(LoginAccessBean.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void logout() {
-       
+
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
-        
+
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(recurso.getString("login.urllogin1"));
+            FacesContext.getCurrentInstance().getExternalContext().redirect("../index.html");
         } catch (IOException ex) {
-            }
-        //return "login.xhtml?faces-redirect=true";
+        }
+
     }
 
     /**
@@ -90,6 +91,34 @@ public class LoginAccessBean extends RecursosServices implements Serializable {
     }
 
     /**
+     * @return the username
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
      * @return the usuarioLogin
      */
     public Usuario getUsuarioLogin() {
@@ -102,5 +131,7 @@ public class LoginAccessBean extends RecursosServices implements Serializable {
     public void setUsuarioLogin(Usuario usuarioLogin) {
         this.usuarioLogin = usuarioLogin;
     }
+
+ 
 
 }

@@ -5,6 +5,7 @@
  */
 package ec.facturaelectronica.bean;
 
+import ec.facturaelectronica.constantes.FacturaConstantes;
 import ec.facturaelectronica.datatable.model.CertificadoDataTableModel;
 import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.list.model.EmpresaListModel;
@@ -24,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -75,6 +77,8 @@ public class CertificadoBean extends RecursosServices implements Serializable {
     private Empresa empresa;
     private List<Empresa> empresas;
     private Empresa selectedEmpresa;
+    private Empresa selectedEmpresaEdit;
+
     private StringBuffer path;
     private String contentType;
     private Certificado cert;
@@ -83,18 +87,49 @@ public class CertificadoBean extends RecursosServices implements Serializable {
     private String newPass;
     private long estadoSelected;
     private boolean isVisible = false;
+    private boolean isSuperAdm = false;
+
+    private Empresa selectedEmpresaBusqueda;
 
     @PostConstruct
     public void init() {
 
-        certificados = certificadoService.getCertificadosFiltrados(loginBean.getUsuarioLogin().getIdEmpresa());
-
         try {
             empresas = admService.getEmpresas();
-            certificadoModel = new CertificadoDataTableModel(certificados);
             EmpresaListModel.empresaModel = empresas;
+
+            if (FacturaConstantes.SUPER_ADMINISTRADOR.equals(loginBean.getUsuarioLogin().getIdPerfil().getNombrePerfil())) {
+                certificados = new ArrayList<>();
+                isSuperAdm = true;
+                if (selectedEmpresaBusqueda != null) {
+                    certificados = certificadoService.getCertificadosFiltrados(selectedEmpresaBusqueda);
+
+                    certificadoModel = new CertificadoDataTableModel(certificados);
+
+                }
+            } else {
+                certificados = certificadoService.getCertificadosFiltrados(loginBean.getUsuarioLogin().getIdEmpresa());
+                certificadoModel = new CertificadoDataTableModel(certificados);
+                selectedEmpresaBusqueda = loginBean.getUsuarioLogin().getIdEmpresa();
+                selectedEmpresaEdit = loginBean.getUsuarioLogin().getIdEmpresa();
+                System.out.println(selectedEmpresaEdit);
+                isSuperAdm = false;
+            }
+
         } catch (ServicesException ex) {
             errorMessages(recurso.getString("certificados.header"), ex.getMessage(), recurso.getString("editar.mensaje.error"));
+        }
+    }
+
+    public void seleccionarEmpresa() {
+
+        if (selectedEmpresaBusqueda != null) {
+            certificados = certificadoService.getCertificadosFiltrados(selectedEmpresaBusqueda);
+            certificadoModel = new CertificadoDataTableModel(certificados);
+
+        } else {
+            certificados = new ArrayList<>();
+            certificadoModel = new CertificadoDataTableModel();
         }
     }
 
@@ -146,16 +181,6 @@ public class CertificadoBean extends RecursosServices implements Serializable {
 
     }
 
-    public String getNombreEmpresa() {
-        String result = "";
-        int empresaId = loginBean.getUsuarioLogin().getIdEmpresa().getIdEmpresa();
-        Empresa empresa = certificadoService.getEmpresaPorId(empresaId);
-        if (empresa != null) {
-            result = empresa.getNombreEmpresa();
-        }
-        return result;
-    }
-
     private boolean fechasValidate(final Date inicio, final Date fin) {
         if (inicio != null && fin != null) {
             return fin.compareTo(inicio) > 0 ? true : false;
@@ -172,20 +197,30 @@ public class CertificadoBean extends RecursosServices implements Serializable {
                 cert.setNombre(nombreCertificado);
                 cert.setFechaIngreso(fechaIngreso);
                 cert.setFechaCaducidad(fechaCaducidad);
-                cert.setEmpresa(certificadoService.getEmpresaPorId(loginBean.getUsuarioLogin().getIdEmpresa().getIdEmpresa()));
+                cert.setEmpresa(selectedEmpresaEdit);
 
                 if (cert.getIdCertificado() == null) {
                     cert.setNombreArchivoCertificado(getNombreArchivoRealCertificado());
                     cert.setClaveCertificado(Util.Encriptar(claveCertificado));
-                    certificadoService.registrarCertificado(cert);
+
+                    String fileP12 = certificado.getString("path.certificados").concat(getNombreArchivoRealCertificado());
+                    System.out.println(fileP12);
+                    if (certificadoService.validarP12(fileP12, claveCertificado)) {
+                         certificadoService.registrarCertificado(cert);
+                        msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("certificados.header"), recurso.getString("editar.mensaje"));
+                        FacesContext.getCurrentInstance().addMessage("frmCertificadosId:growl", msg);
+                        RequestContext.getCurrentInstance().update("frmCertificadosId:growl");
+                        RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').hide()");
+                        init();
+                    } else {
+                        msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, recurso.getString("certificados.header"), recurso.getString("certificado.editar.mensaje.error.clave"));
+                        FacesContext.getCurrentInstance().addMessage("frmCertificadosId:growl", msg);
+                        RequestContext.getCurrentInstance().update("frmCertificadosId:growl");
+                    }
+
                 } else {
                     certificadoService.actualizarCertificado(cert);
                 }
-                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("certificados.header"), recurso.getString("editar.mensaje"));
-                FacesContext.getCurrentInstance().addMessage("frmCertificadosId:growl", msg);
-                RequestContext.getCurrentInstance().update("frmCertificadosId:growl");
-                RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').hide()");
-                init();
 
             } else {
 
@@ -212,7 +247,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
         Certificado certificado = getSelectedCertificado();
         if (certificado != null) {
             try {
-                certificado.setClaveCertificado(Util.md5(getNewPass()));
+                certificado.setClaveCertificado(Util.Encriptar(getNewPass()));
                 certificadoService.actualizarCertificado(certificado);
                 infoMessages(recurso.getString("certificados.header"), recurso.getString("certificados.mensaje.cambio.clave"), ":frmCertificadosId:growl");
             } catch (Exception ex) {
@@ -242,6 +277,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
         this.fechaCaducidad = null;
         this.claveCertificado = null;
         this.selectedEmpresa = null;
+        //this.selectedEmpresaEdit = null;
     }
 
     public void cancelar() {
@@ -267,6 +303,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
             this.fechaCaducidad = cert.getFechaCaducidad();
             this.claveCertificado = cert.getClaveCertificado();
             this.selectedEmpresa = cert.getEmpresa();
+            this.selectedEmpresaEdit = cert.getEmpresa();
             setIsVisible(false);
             RequestContext.getCurrentInstance().execute("PF('dlgEditarCertificado').show()");
         }
@@ -434,6 +471,48 @@ public class CertificadoBean extends RecursosServices implements Serializable {
      */
     public void setNombreArchivoRealCertificado(String nombreArchivoRealCertificado) {
         this.nombreArchivoRealCertificado = nombreArchivoRealCertificado;
+    }
+
+    /**
+     * @return the selectedEmpresaBusqueda
+     */
+    public Empresa getSelectedEmpresaBusqueda() {
+        return selectedEmpresaBusqueda;
+    }
+
+    /**
+     * @param selectedEmpresaBusqueda the selectedEmpresaBusqueda to set
+     */
+    public void setSelectedEmpresaBusqueda(Empresa selectedEmpresaBusqueda) {
+        this.selectedEmpresaBusqueda = selectedEmpresaBusqueda;
+    }
+
+    /**
+     * @return the isSuperAdm
+     */
+    public boolean isIsSuperAdm() {
+        return isSuperAdm;
+    }
+
+    /**
+     * @param isSuperAdm the isSuperAdm to set
+     */
+    public void setIsSuperAdm(boolean isSuperAdm) {
+        this.isSuperAdm = isSuperAdm;
+    }
+
+    /**
+     * @return the selectedEmpresaEdit
+     */
+    public Empresa getSelectedEmpresaEdit() {
+        return selectedEmpresaEdit;
+    }
+
+    /**
+     * @param selectedEmpresaEdit the selectedEmpresaEdit to set
+     */
+    public void setSelectedEmpresaEdit(Empresa selectedEmpresaEdit) {
+        this.selectedEmpresaEdit = selectedEmpresaEdit;
     }
 
 }

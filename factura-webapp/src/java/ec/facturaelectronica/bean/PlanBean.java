@@ -44,7 +44,7 @@ public class PlanBean extends RecursosServices implements Serializable {
     private String nombrePlan;
     private BigDecimal costoPlan;
     private BigDecimal valorFacturaPlan;
-    private int maxFacturasPlan;
+    private Integer maxFacturasPlan;
     private String descripcionPlan;
     private List<Plan> planes;
     private PlanDataTableModel planModel;
@@ -80,9 +80,9 @@ public class PlanBean extends RecursosServices implements Serializable {
 
     private void limpiar() {
         nombrePlan = "";
-        maxFacturasPlan = 0;
-        costoPlan = BigDecimal.ZERO;
-        valorFacturaPlan = BigDecimal.ZERO;
+        maxFacturasPlan = null;
+        costoPlan = null;
+        valorFacturaPlan = null;
         descripcionPlan = "";
         plan = null;
     }
@@ -126,9 +126,10 @@ public class PlanBean extends RecursosServices implements Serializable {
     }
 
     public void editar() {
-        System.out.println("Plan selected " + selectedPlan);
+      
         if (selectedPlan != null) {
             plan = selectedPlan;
+
             nombrePlan = plan.getNombrePlan();
             maxFacturasPlan = plan.getMaxFacturasPlan();
             costoPlan = plan.getCostoPlan();
@@ -166,6 +167,7 @@ public class PlanBean extends RecursosServices implements Serializable {
             init();
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("plan.header"), recurso.getString("editar.mensaje"));
             FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().execute("PF('wdgNew').hide()");
             RequestContext.getCurrentInstance().update("fplan:growl");
         } catch (ServicesException ex) {
             plan = null;
@@ -176,6 +178,8 @@ public class PlanBean extends RecursosServices implements Serializable {
     }
 
     public void cancelar() {
+       
+        limpiar();
         RequestContext.getCurrentInstance().execute("PF('wdgNew').hide()");
     }
 
@@ -247,11 +251,11 @@ public class PlanBean extends RecursosServices implements Serializable {
         this.valorFacturaPlan = valorFacturaPlan;
     }
 
-    public int getMaxFacturasPlan() {
+    public Integer getMaxFacturasPlan() {
         return maxFacturasPlan;
     }
 
-    public void setMaxFacturasPlan(int maxFacturasPlan) {
+    public void setMaxFacturasPlan(Integer maxFacturasPlan) {
         this.maxFacturasPlan = maxFacturasPlan;
     }
 

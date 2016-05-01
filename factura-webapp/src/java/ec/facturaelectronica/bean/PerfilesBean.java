@@ -9,6 +9,7 @@ import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.Perfil;
 import ec.facturaelectronica.service.AdministracionService;
 import ec.facturaelectronica.util.RecursosServices;
+import ec.facturaelectronica.vo.PerfilVo;
 import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -32,71 +33,30 @@ public class PerfilesBean extends RecursosServices implements Serializable {
      */
     @EJB
     AdministracionService admService;
-    private String nombre;
+
     private List<Perfil> listaPerfiles;
-    private List<Perfil> filterPerfiles;
+
     private Perfil selectedPerfil;
     private PerfilDataTableModel perfilModel;
     private Perfil perfil;
 
+    private PerfilVo perfilVo;
+
     public PerfilesBean() {
-    }
-
-    public Perfil getPerfil() {
-        return perfil;
-    }
-
-    public void setPerfil(Perfil perfil) {
-        this.perfil = perfil;
-    }
-
-    public List<Perfil> getFilterPerfiles() {
-        return filterPerfiles;
-    }
-
-    public void setFilterPerfiles(List<Perfil> filterPerfiles) {
-        this.filterPerfiles = filterPerfiles;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public List<Perfil> getListaPerfiles() {
-        return listaPerfiles;
-    }
-
-    public void setListaPerfiles(List<Perfil> listaPerfiles) {
-        this.listaPerfiles = listaPerfiles;
-    }
-
-    public Perfil getSelectedPerfil() {
-        return selectedPerfil;
-    }
-
-    public void setSelectedPerfil(Perfil selectedPerfil) {
-        this.selectedPerfil = selectedPerfil;
-    }
-
-    public PerfilDataTableModel getPerfilModel() {
-        return perfilModel;
-    }
-
-    public void setPerfilModel(PerfilDataTableModel perfilModel) {
-        this.perfilModel = perfilModel;
     }
 
     @PostConstruct
     public void initBean() {
+        perfilVo = new PerfilVo();
+        cargarPerfiles();
+        perfilVo.desactivarEdicion();
+    }
+
+    private void cargarPerfiles() {
         FacesMessage msg;
 
         try {
             perfil = null;
-            nombre = "";
             listaPerfiles = admService.getPerfiles();
             perfilModel = new PerfilDataTableModel(listaPerfiles);
 
@@ -111,36 +71,43 @@ public class PerfilesBean extends RecursosServices implements Serializable {
 
     public void nuevo() {
 
-        nombre = "";
-        perfil=null;
-        RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
+        perfilVo = new PerfilVo();
+        perfil = null;
+        perfilVo.activarEdicion();
     }
 
     public void cancelar() {
-
-        nombre = "";
-
-        RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
+        perfil = null;
+        perfilVo.desactivarEdicion();
 
     }
 
     public void editar() {
-
         if (selectedPerfil != null) {
             perfil = selectedPerfil;
-            nombre = perfil.getNombrePerfil();
+            perfilVo.setNombre(perfil.getNombrePerfil());
+            perfilVo.activarEdicion();
 
-            RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
         }
     }
 
-    public void eliminar() {
+    public void eliminar(Perfil perfilSeleccionado) {
+        FacesMessage msg;
+        System.out.println(perfilSeleccionado);
+        perfil = perfilSeleccionado;
+        try {
+            admService.eliminarPerfil(perfil);
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("perfiles.header"), recurso.getString("editar.mensaje"));
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().update("form:growl");
+            cargarPerfiles();
+        } catch (ServicesException ex) {
+            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("perfiles.header"), ex.getMessage());
 
-        if (selectedPerfil != null) {
-            perfil = selectedPerfil;
-
-            RequestContext.getCurrentInstance().execute("PF('confirm').show()");
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().update("form:growl");
         }
+
     }
 
     public void registrar() {
@@ -153,7 +120,7 @@ public class PerfilesBean extends RecursosServices implements Serializable {
                 perfil = new Perfil();
             }
 
-            perfil.setNombrePerfil(nombre);
+            perfil.setNombrePerfil(perfilVo.getNombre());
 
             if (perfil.getIdPerfil() == null) {
 
@@ -162,8 +129,8 @@ public class PerfilesBean extends RecursosServices implements Serializable {
                 admService.actualizarPerfil(perfil);
             }
 
-            RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
-            initBean();
+            perfilVo.desactivarEdicion();
+            cargarPerfiles();
 
             msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("perfiles.header"), recurso.getString("editar.mensaje"));
             FacesContext.getCurrentInstance().addMessage(null, msg);
@@ -208,4 +175,51 @@ public class PerfilesBean extends RecursosServices implements Serializable {
             RequestContext.getCurrentInstance().update("form:growl");
         }
     }
+
+    /**
+     * @return the perfilVo
+     */
+    public PerfilVo getPerfilVo() {
+        return perfilVo;
+    }
+
+    /**
+     * @param perfilVo the perfilVo to set
+     */
+    public void setPerfilVo(PerfilVo perfilVo) {
+        this.perfilVo = perfilVo;
+    }
+
+    public Perfil getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(Perfil perfil) {
+        this.perfil = perfil;
+    }
+
+    public List<Perfil> getListaPerfiles() {
+        return listaPerfiles;
+    }
+
+    public void setListaPerfiles(List<Perfil> listaPerfiles) {
+        this.listaPerfiles = listaPerfiles;
+    }
+
+    public Perfil getSelectedPerfil() {
+        return selectedPerfil;
+    }
+
+    public void setSelectedPerfil(Perfil selectedPerfil) {
+        this.selectedPerfil = selectedPerfil;
+    }
+
+    public PerfilDataTableModel getPerfilModel() {
+        return perfilModel;
+    }
+
+    public void setPerfilModel(PerfilDataTableModel perfilModel) {
+        this.perfilModel = perfilModel;
+    }
+
 }

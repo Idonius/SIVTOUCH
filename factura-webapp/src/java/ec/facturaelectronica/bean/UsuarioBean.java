@@ -4,16 +4,16 @@
  */
 package ec.facturaelectronica.bean;
 
-
+import ec.facturaelectronica.bean.service.UtilBeanService;
+import ec.facturaelectronica.constantes.FacturaConstantes;
 import ec.facturaelectronica.datatable.model.UsuarioDataTableModel;
 import ec.facturaelectronica.exception.ServicesException;
-import ec.facturaelectronica.list.model.EmpresaListModel;
-import ec.facturaelectronica.list.model.PerfilListModel;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.Perfil;
 import ec.facturaelectronica.model.Usuario;
 import ec.facturaelectronica.service.AdministracionService;
 import ec.facturaelectronica.util.RecursosServices;
+import ec.facturaelectronica.vo.UsuarioVo;
 import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import org.primefaces.context.RequestContext;
@@ -39,31 +40,248 @@ public class UsuarioBean extends RecursosServices implements Serializable {
      */
     @EJB
     AdministracionService admService;
+
+    @ManagedProperty("#{utilBeanService}")
+    private UtilBeanService servicioUtil;
+
+    private UsuarioVo usuarioVo;
+
     private Usuario selectedUsuario;
     private List<Usuario> listUsuarios;
     private List<Usuario> filterUsuarios;
     private UsuarioDataTableModel usuarioModel;
     private List<Empresa> listEmpresas;
-    private Empresa selectedEmpresa;
-    private String nombre;
-    private String nick;
-    private String clave;
-    private String cedula;
-    private String cargo;
-    private String email;
+
     private List<Perfil> listPerfiles;
-    private Perfil selectedPerfil;
+
     private Usuario usuario;
-    private String rclave;
-    private boolean editUser;
-    private String estadoMenUser;
-    private String nclave;
-    private String rnclave;
 
     public UsuarioBean() {
+
     }
 
- 
+    @PostConstruct
+    public void initBean() {
+        usuarioVo = new UsuarioVo();
+
+        usuario = null;
+        usuarioVo.setRenderActionNewEdit(Boolean.TRUE);
+        usuarioVo.setRenderActionClave(Boolean.TRUE);
+
+        usuarioVo.setRenderEmpresa(Boolean.TRUE);
+
+        try {
+
+            listPerfiles = admService.getPerfiles();
+            listEmpresas = admService.getEmpresas();
+            cargarUsuarios();
+            cargarListas();
+
+        } catch (ServicesException ex) {
+            Logger.getLogger(UsuarioBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void cargarUsuarios() {
+        listUsuarios = admService.getUsuarios();
+        usuarioModel = new UsuarioDataTableModel(listUsuarios);
+    }
+
+    private void cargarListas() {
+        usuarioVo.setListaPerfiles(servicioUtil.getItemsPerfiles(listPerfiles));
+        usuarioVo.setListaEmpresas(servicioUtil.getItemsEmpresas(listEmpresas));
+    }
+
+    public void nuevo() {
+        usuarioVo = new UsuarioVo();
+        usuario = null;
+        cargarListas();
+        usuarioVo.nuevoUsuario();
+    }
+
+    public void seleccionaPerfil() {
+        if (FacturaConstantes.SUPER_ADMINISTRADOR.equals(usuarioVo.getSelectedPerfil().toString())) {
+            usuarioVo.setRenderEmpresa(Boolean.FALSE);
+            usuarioVo.setSelectedEmpresa(null);
+        } else {
+            usuarioVo.setRenderEmpresa(Boolean.TRUE);
+        }
+
+    }
+
+    public void registrar() {
+
+        FacesMessage msg;
+
+        try {
+
+            if (usuario == null) {
+                usuario = new Usuario();
+            }
+
+            if (!usuarioVo.getClave().equals(usuarioVo.getRclave())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), recurso.getString("usuarios.editar.mensaje.claves"));
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                RequestContext.getCurrentInstance().update("form:growl");
+                return;
+            }
+
+            usuario.setNombreUsuario(usuarioVo.getNombre());
+            usuario.setClaveUsuario(usuarioVo.getClave());
+            usuario.setIdPerfil(new Perfil(usuarioVo.getSelectedPerfil()));
+            usuario.setNickUsuario(usuarioVo.getNick());
+            usuario.setCargoUsuario(usuarioVo.getCargo());
+            usuario.setCedulaUsuario(usuarioVo.getCedula());
+            usuario.setEmailUsuario(usuarioVo.getEmail());
+
+            if (usuarioVo.getSelectedEmpresa() != null) {
+                usuario.setIdEmpresa(new Empresa(usuarioVo.getSelectedEmpresa()));
+
+            }
+
+            if (usuario.getIdUsuario() == null) {
+
+                admService.guardarUsuario(usuario);
+            } else {
+
+                admService.actualizarUsuario(usuario);
+            }
+
+            cargarUsuarios();
+            usuarioVo.initUsuario();
+
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("usuarios.header"), recurso.getString("editar.mensaje"));
+            FacesContext.getCurrentInstance().addMessage("form:growl", msg);
+            RequestContext.getCurrentInstance().update("form:growl");
+
+        } catch (ServicesException ex) {
+            usuario = null;
+            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), ex.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().update("form:growl");
+
+        } catch (Exception ex) {
+            usuario = null;
+            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), ex.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().update("form:growl");
+        }
+
+    }
+
+    public void cancelar() {
+        usuario = null;
+        usuarioVo.initUsuario();
+
+    }
+
+    public void cancelarPassword() {
+
+        usuario = null;
+        usuarioVo.initUsuario();
+
+    }
+
+    public void resetClave() {
+
+        FacesMessage msg;
+
+        try {
+
+            if (!usuarioVo.getNclave().equals(usuarioVo.getRnclave())) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), recurso.getString("usuarios.editar.mensaje.claves"));
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                RequestContext.getCurrentInstance().update("form:growl");
+                return;
+            }
+
+            admService.resetClaveUsuario(usuario, usuarioVo.getNclave());
+
+            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("usuarios.header"), recurso.getString("editar.mensaje"));
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().update("form:growl");
+            cancelarPassword();
+
+        } catch (ServicesException ex) {
+            usuario = null;
+            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), ex.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().update("form:growl");
+
+        } catch (Exception ex) {
+            usuario = null;
+            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), ex.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, msg);
+            RequestContext.getCurrentInstance().update("form:growl");
+        }
+    }
+
+    public void editar() {
+        usuarioVo = new UsuarioVo();
+        cargarListas();
+        if (selectedUsuario != null) {
+
+            usuarioVo.setEditUser(Boolean.TRUE);
+            usuario = selectedUsuario;
+
+            usuarioVo.setNombre(usuario.getNombreUsuario());
+            usuarioVo.setNick(usuario.getNickUsuario());
+            usuarioVo.setSelectedPerfil(usuario.getIdPerfil().getIdPerfil());
+            System.err.println(usuario.getIdEmpresa());
+            if (usuario.getIdEmpresa() != null) {
+                usuarioVo.setSelectedEmpresa(usuario.getIdEmpresa().getIdEmpresa());
+                System.out.println(usuarioVo.getSelectedEmpresa());
+            }
+
+            usuarioVo.setClave(usuario.getClaveUsuario());
+            usuarioVo.setRclave(usuario.getClaveUsuario());
+            usuarioVo.setCedula(usuario.getCedulaUsuario());
+            usuarioVo.setCargo(usuario.getCargoUsuario());
+            usuarioVo.setEmail(usuario.getEmailUsuario());
+
+            usuarioVo.setRenderActionNewEdit(Boolean.FALSE);
+
+            seleccionaPerfil();
+        }
+    }
+
+    public void eliminar() {
+
+        FacesMessage msg;
+
+        if (selectedUsuario != null) {
+            usuario = selectedUsuario;
+
+            try {
+                admService.eliminarUsuario(usuario);
+
+                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("usuarios.header"), recurso.getString("editar.mensaje"));
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                RequestContext.getCurrentInstance().update("form:growl");
+
+            } catch (ServicesException ex) {
+                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, recurso.getString("usuarios.header"), ex.getMessage());
+                FacesContext.getCurrentInstance().addMessage(null, msg);
+                RequestContext.getCurrentInstance().update("form:growl");
+            }
+
+        }
+    }
+
+    public void cambiarClave() {
+        if (selectedUsuario != null) {
+            usuarioVo.setEditUser(Boolean.TRUE);
+
+            usuario = selectedUsuario;
+            usuarioVo.setNombre(usuario.getNombreUsuario());
+            usuarioVo.setNick(usuario.getNickUsuario());
+            usuarioVo.setClave(usuario.getClaveUsuario());
+            usuarioVo.setRclave(usuario.getClaveUsuario());
+            usuarioVo.cambiarClave();
+
+        }
+    }
+
     public List<Empresa> getListEmpresas() {
         return listEmpresas;
     }
@@ -72,80 +290,8 @@ public class UsuarioBean extends RecursosServices implements Serializable {
         this.listEmpresas = listEmpresas;
     }
 
-    public Empresa getSelectedEmpresa() {
-        return selectedEmpresa;
-    }
-
-    public void setSelectedEmpresa(Empresa selectedEmpresa) {
-        this.selectedEmpresa = selectedEmpresa;
-    }
-
-    public String getCedula() {
-        return cedula;
-    }
-
-    public void setCedula(String cedula) {
-        this.cedula = cedula;
-    }
-
-    public String getCargo() {
-        return cargo;
-    }
-
-    public void setCargo(String cargo) {
-        this.cargo = cargo;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getNclave() {
-        return nclave;
-    }
-
-    public void setNclave(String nclave) {
-        this.nclave = nclave;
-    }
-
-    public String getRnclave() {
-        return rnclave;
-    }
-
-    public void setRnclave(String rnclave) {
-        this.rnclave = rnclave;
-    }
-
-    public String getEstadoMenUser() {
-        return estadoMenUser;
-    }
-
-    public void setEstadoMenUser(String estadoMenUser) {
-        this.estadoMenUser = estadoMenUser;
-    }
-
-    public boolean isEditUser() {
-        return editUser;
-    }
-
-    public void setEditUser(boolean editUser) {
-        this.editUser = editUser;
-    }
-
     public Usuario getUsuario() {
         return usuario;
-    }
-
-    public String getRclave() {
-        return rclave;
-    }
-
-    public void setRclave(String rclave) {
-        this.rclave = rclave;
     }
 
     public void setUsuario(Usuario usuario) {
@@ -158,14 +304,6 @@ public class UsuarioBean extends RecursosServices implements Serializable {
 
     public void setListPerfiles(List<Perfil> listPerfiles) {
         this.listPerfiles = listPerfiles;
-    }
-
-    public Perfil getSelectedPerfil() {
-        return selectedPerfil;
-    }
-
-    public void setSelectedPerfil(Perfil selectedPerfil) {
-        this.selectedPerfil = selectedPerfil;
     }
 
     public List<Usuario> getFilterUsuarios() {
@@ -200,258 +338,32 @@ public class UsuarioBean extends RecursosServices implements Serializable {
         this.usuarioModel = usuarioModel;
     }
 
-    public String getNombre() {
-        return nombre;
+    /**
+     * @return the usuarioVo
+     */
+    public UsuarioVo getUsuarioVo() {
+        return usuarioVo;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    /**
+     * @param usuarioVo the usuarioVo to set
+     */
+    public void setUsuarioVo(UsuarioVo usuarioVo) {
+        this.usuarioVo = usuarioVo;
     }
 
-    public String getNick() {
-        return nick;
+    /**
+     * @return the servicioUtil
+     */
+    public UtilBeanService getServicioUtil() {
+        return servicioUtil;
     }
 
-    public void setNick(String nick) {
-        this.nick = nick;
+    /**
+     * @param servicioUtil the servicioUtil to set
+     */
+    public void setServicioUtil(UtilBeanService servicioUtil) {
+        this.servicioUtil = servicioUtil;
     }
 
-    public String getClave() {
-        return clave;
-    }
-
-    public void setClave(String clave) {
-        this.clave = clave;
-    }
-
-    @PostConstruct
-    public void initBean() {
-
-        nombre = "";
-        usuario = null;
-        nick = "";
-        clave = "";
-        rclave = "";
-        cedula = "";
-        cargo = "";
-        email = "";
-        editUser = false;
-        selectedPerfil = null;
-
-        try {
-            listUsuarios = admService.getUsuarios();
-
-            listPerfiles = admService.getPerfiles();
-            listEmpresas=admService.getEmpresas();
-            usuarioModel = new UsuarioDataTableModel(listUsuarios);
-            PerfilListModel.perfilModel = listPerfiles;
-            EmpresaListModel.empresaModel=listEmpresas;
-
-        } catch (ServicesException ex) {
-            Logger.getLogger(UsuarioBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void nuevo() {
-
-        nombre = "";
-        usuario = null;
-        nick = "";
-        clave = "";
-        rclave = "";
-        cedula = "";
-        cargo = "";
-        email = "";
-        editUser = false;
-        selectedPerfil = null;
-
-        RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
-    }
-
-    public void registrar() {
-
-        FacesMessage msg;
-
-        try {
-
-            if (usuario == null) {
-                usuario = new Usuario();
-            }
-
-            if (!clave.equals(rclave)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), recurso.getString("usuarios.editar.mensaje.claves"));
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                RequestContext.getCurrentInstance().update("form:growl");
-                return;
-            }
-            usuario.setNombreUsuario(nombre);
-            usuario.setClaveUsuario(clave);
-            usuario.setIdPerfil(selectedPerfil);
-            usuario.setNickUsuario(nick);
-            usuario.setCargoUsuario(cargo);
-            usuario.setCedulaUsuario(cedula);
-            usuario.setEmailUsuario(email);
-            usuario.setIdEmpresa(selectedEmpresa);
-
-            if (usuario.getIdUsuario() == null) {
-
-                admService.guardarUsuario(usuario);
-            } else {
-
-                admService.actualizarUsuario(usuario);
-            }
-
-            RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
-            initBean();
-
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("usuarios.header"), recurso.getString("editar.mensaje"));
-            FacesContext.getCurrentInstance().addMessage("form:growl", msg);
-            RequestContext.getCurrentInstance().update("form:growl");
-
-
-
-        } catch (ServicesException ex) {
-            usuario = null;
-            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), ex.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            RequestContext.getCurrentInstance().update("form:growl");
-
-        } catch (Exception ex) {
-            usuario = null;
-            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), ex.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            RequestContext.getCurrentInstance().update("form:growl");
-        }
-
-    }
-
-    public void cancelar() {
-
-        nombre = "";
-        usuario = null;
-        nick = "";
-        clave = "";
-        rclave = "";
-        editUser = false;
-        selectedPerfil = null;
-
-
-        RequestContext.getCurrentInstance().execute("PF('ventanaEditar').hide()");
-
-    }
-
-    public void cancelarPassword() {
-
-        nombre = "";
-        usuario = null;
-        nick = "";
-        clave = "";
-        rclave = "";
-        editUser = false;
-        selectedPerfil = null;
-
-
-        RequestContext.getCurrentInstance().execute("PF('ventanaClave').hide()");
-
-    }
-
-    public void resetClave() {
-
-        FacesMessage msg;
-
-        try {
-
-
-
-            if (!nclave.equals(rnclave)) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), recurso.getString("usuarios.editar.mensaje.claves"));
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                RequestContext.getCurrentInstance().update("form:growl");
-                return;
-            }
-
-
-            admService.resetClaveUsuario(usuario, nclave);
-
-            RequestContext.getCurrentInstance().execute("PF('ventanaClave').hide()");
-            initBean();
-
-            msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("usuarios.header"), recurso.getString("editar.mensaje"));
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            RequestContext.getCurrentInstance().update("form:growl");
-
-        } catch (ServicesException ex) {
-            usuario = null;
-            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), ex.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            RequestContext.getCurrentInstance().update("form:growl");
-
-        } catch (Exception ex) {
-            usuario = null;
-            msg = new FacesMessage(FacesMessage.SEVERITY_FATAL, recurso.getString("usuarios.header"), ex.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, msg);
-            RequestContext.getCurrentInstance().update("form:growl");
-        }
-    }
-
-    public void editar() {
-        if (selectedUsuario != null) {
-            editUser = true;
-
-            usuario = selectedUsuario;
-            nombre = usuario.getNombreUsuario();
-            nick = usuario.getNickUsuario();
-            selectedPerfil = usuario.getIdPerfil();
-            selectedEmpresa=usuario.getIdEmpresa();
-            clave = usuario.getClaveUsuario();
-            rclave = usuario.getClaveUsuario();
-            cedula = usuario.getCedulaUsuario();
-            cargo = usuario.getCargoUsuario();
-            email = usuario.getEmailUsuario();
-            RequestContext.getCurrentInstance().execute("PF('ventanaEditar').show()");
-
-        }
-    }
-
-    public void eliminar() {
-
-        FacesMessage msg;
-
-        if (selectedUsuario != null) {
-            usuario = selectedUsuario;
-
-            try {
-                admService.eliminarUsuario(usuario);
-
-                msg = new FacesMessage(FacesMessage.SEVERITY_INFO, recurso.getString("usuarios.header"), recurso.getString("editar.mensaje"));
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                RequestContext.getCurrentInstance().update("form:growl");
-
-            } catch (ServicesException ex) {
-                msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, recurso.getString("usuarios.header"), ex.getMessage());
-                FacesContext.getCurrentInstance().addMessage(null, msg);
-                RequestContext.getCurrentInstance().update("form:growl");
-            }
-
-        }
-    }
-
-    public void cambiarClave() {
-        if (selectedUsuario != null) {
-            editUser = true;
-
-            usuario = selectedUsuario;
-            nombre = usuario.getNombreUsuario();
-            nick = usuario.getNickUsuario();
-            selectedPerfil = usuario.getIdPerfil();
-            clave = usuario.getClaveUsuario();
-            rclave = usuario.getClaveUsuario();
-            RequestContext.getCurrentInstance().execute("PF('ventanaClave').show()");
-
-        }
-    }
-
- 
- 
 }
- 

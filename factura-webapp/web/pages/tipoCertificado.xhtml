@@ -39,6 +39,22 @@
                                     <p:dataTable id="dt" value="#{certificadoTipoBean.tipoComprobanteDataModel}" var="_certificadoTipo" selection="#{certificadoTipoBean.certificadoTipoComprobanteSelected}"
                                                  rows="8"  paginator="true"  selectionMode="single" >
 
+                                        <f:facet name="header">
+                                            <p:panelGrid columns="2"  style="width: 400px;margin-left: auto"  >
+                                                <p:outputLabel   value="#{msg['certificado.empresa']}" style="font-weight:bold;width: 40px" />
+                                                <p:selectOneMenu id="empresa" value="#{certificadoTipoBean.selectedEmpresaBusqueda}" disabled="#{!certificadoTipoBean.isSuperAdm}" converter="EmpresaListModel" panelStyle="width:150px"
+                                                                 effect="fade" var="emp" style="width:190px"  >
+
+                                                    <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                                    <f:selectItems value="#{certificadoTipoBean.empresas}" var="lsemp" itemLabel="#{lsemp.nombreEmpresa}" itemValue="#{lsemp}"/>
+                                                    <p:ajax listener="#{certificadoTipoBean.seleccionarEmpresa()}" update="dt"  />
+                                                    <p:column>
+                                                        #{emp.nombreEmpresa}   
+                                                    </p:column>
+                                                </p:selectOneMenu>
+                                            </p:panelGrid>
+
+                                        </f:facet>
                                         <p:column headerText="#{msg['certificadoTipoComprobante.tabla.columna1']}" >
                                             <h:outputText value="#{_certificadoTipo.certificado.nombre}"/>
                                         </p:column>
@@ -47,7 +63,7 @@
                                             <h:outputText value="#{_certificadoTipo.tipoComprobante.nombreTipoComprobante}"/>
                                         </p:column>
 
-                                      
+
 
                                         <p:column  >
                                             <p:commandButton value="#{msg['boton.eliminar']}" styleClass="btn btn-warning"   action="#{certificadoTipoBean.eliminar}" update=":form3:lblNombre" >
@@ -73,6 +89,15 @@
             <p:dialog id="dlgEditar" widgetVar="ventanaEditar" header="#{msg['certificadoTipoComprobante.editar']}" width="490px" height="100px"  showEffect="explode"  
                       resizable="false">
                 <p:panelGrid id="grid" styleClass="companyHeaderGrid">
+                    <p:row>
+                        <p:column>
+                             <p:outputLabel value="#{msg['certificadoTipoComprobante.editar.empresa']}" style="font-weight:bold" />
+                        </p:column>
+                         <p:column>
+                             <p:outputLabel value="#{certificadoTipoBean.selectedEmpresaBusqueda.nombreEmpresa}"  />
+                    
+                        </p:column>
+                    </p:row>
                     <p:row>
                         <p:column>
                             <p:outputLabel value="#{msg['certificadoTipoComprobante.editar.certificado']}" style="font-weight:bold" />
@@ -121,11 +146,11 @@
 
                 <f:facet name="footer">
                     <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action ="#{certificadoTipoBean.registrar}" update=":form:dt" >
-                  
+
                     </p:commandButton>
-                       
+
                     <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this"  action="#{certificadoTipoBean.cancelar}" >
-                       
+
                     </p:commandButton>
                 </f:facet>
 

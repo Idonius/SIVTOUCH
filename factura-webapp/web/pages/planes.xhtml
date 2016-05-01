@@ -64,15 +64,17 @@
                                         </p:column>
 
                                         <p:column headerText="#{msg['plan.tabla.columna3']}" styleClass="centrado">
-                                            <h:outputText value="#{_plan.costoPlan}"/>
+                                            <h:outputText value="#{_plan.costoPlan}">
+                                                <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                            </h:outputText>
                                         </p:column>
 
                                         <p:column headerText="#{msg['plan.tabla.columna4']}" styleClass="centrado">
-                                            <h:outputText value="#{_plan.valorFacturaPlan}"/>
+                                            <h:outputText value="#{_plan.valorFacturaPlan}">
+                                                <f:convertNumber type="number" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                            </h:outputText>
                                         </p:column>
-                                        <p:column headerText="#{msg['plan.tabla.columna5']}" styleClass="centrado">
-                                            <h:outputText value="#{_plan.idEstado.nombreCatalogo}"/>
-                                        </p:column>
+
 
                                         <p:column styleClass="centrado">
                                             <p:commandButton value="#{msg['boton.editar']}" styleClass="btn btn-info"   action="#{planBean.editar}" update=":fplan01:grdNuevo">
@@ -103,14 +105,17 @@
         <h:form id="fplan01" >
             <p:dialog id="dlgNuevo" widgetVar="wdgNew" header="#{msg['plan.header.editar']}" width="380px" height="270px"  showEffect="explode"  
                       resizable="false">
-                <p:panelGrid id="grdNuevo" style="companyHeaderGrid">
+                <p:panelGrid id="grdNuevo" styleClass="companyHeaderGrid">
                     <p:row>
                         <p:column>
                             <p:outputLabel value="#{msg['plan.nuevo.nombre']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
                             <p:inputText id="nombrePlanId" value="#{planBean.nombrePlan}" label="#{msg['plan.nuevo.nombre']}"
-                                         required="true" requiredMessage="#{msg['plan.editar.campo.requerido.nombre.plan']}" />
+                                         required="true"  requiredMessage="#{msg['plan.editar.campo.requerido.nombre.plan']}" />
+                        </p:column>
+                        <p:column>
+                            <p:message for="nombrePlanId" display="icon" showDetail="false"  />
                         </p:column>
                     </p:row>
                     <p:row>
@@ -118,8 +123,15 @@
                             <p:outputLabel value="#{msg['plan.nuevo.hasta']}" style="font-weight:bold" />
                         </p:column>
                         <p:column >
-                            <pe:inputNumber id="hastaPlanId" value="#{planBean.maxFacturasPlan}" label="#{msg['plan.nuevo.hasta']}" required="true"
-                                            requiredMessage="#{msg['plan.editar.campo.requerido.hasta.factura']}" />
+
+                            <p:inputText id="hastaPlanId" value="#{planBean.maxFacturasPlan}" label="#{msg['plan.nuevo.hasta']}" required="true"
+                                         requiredMessage="#{msg['plan.editar.campo.requerido.hasta.factura']}">
+                                <pe:keyFilter regEx="/[\d]/"/>  
+                                <f:validateLength maximum="10"/>
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <p:message for="hastaPlanId" display="icon" showDetail="false"  />
                         </p:column>
                     </p:row>
                     <p:row>
@@ -128,7 +140,10 @@
                         </p:column>
                         <p:column>
                             <pe:inputNumber id="costoPlanId" value="#{planBean.costoPlan}" label="#{msg['plan.nuevo.costo']}"
-                                         required="true" requiredMessage="#{msg['plan.editar.campo.requerido.costo']}" />
+                                            required="true" requiredMessage="#{msg['plan.editar.campo.requerido.costo']}" />
+                        </p:column>
+                        <p:column>
+                            <p:message for="costoPlanId" display="icon" showDetail="false"  />
                         </p:column>
                     </p:row>
                     <p:row>
@@ -137,7 +152,10 @@
                         </p:column>
                         <p:column >
                             <pe:inputNumber id="costoPorFacturaPlanId" value="#{planBean.valorFacturaPlan}" label="#{msg['plan.nuevo.costo.por.factura']}"
-                                         required="true" requiredMessage="#{msg['plan.editar.campo.requerido.costo.factura']}" />
+                                            required="true" requiredMessage="#{msg['plan.editar.campo.requerido.costo.factura']}" />
+                        </p:column>
+                        <p:column>
+                            <p:message for="costoPorFacturaPlanId" display="icon" showDetail="false"  />
                         </p:column>
                     </p:row>
                     <p:row>
@@ -156,13 +174,13 @@
                         </p:columnGroup>    
 
                         <p:column>
-                            <p:commandButton value="#{msg['boton.guardar']}" styleClass="btn btn-info" action="#{planBean.guardar}" update="grdNuevo, :fplan:dt, :fplan:growl" oncomplete="PF('wdgNew').hide()">
-                                <p:resetInput target="grdNuevo" />
+                            <p:commandButton value="#{msg['boton.guardar']}" styleClass="btn btn-primary" action="#{planBean.guardar}" update="grdNuevo, :fplan:dt"  >
+
                             </p:commandButton>
                         </p:column>
                         <p:column >
-                            <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" action="#{planBean.cancelar}" update="grdNuevo, :fplan:dt" >
-                                <p:resetInput target="grdNuevo" />
+                            <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" action="#{planBean.cancelar}" process="@this" update="grdNuevo, :fplan:dt" >
+
                             </p:commandButton>              
                         </p:column>                                                
                     </p:row>

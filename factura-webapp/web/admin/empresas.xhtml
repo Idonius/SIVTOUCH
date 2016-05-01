@@ -1,0 +1,191 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="index.xhtml">
+
+
+
+    <ui:define name="content">
+        <h:form id="form">
+            <p:growl id="growl" showDetail="true"      />  
+
+            <p:outputPanel id="pnlPrincipal">
+                <p:panel style="border: 0px" rendered="#{usuarioBean.usuarioVo.renderActionNewEdit}">
+                    <div class="Card"  >
+                        <div class="Container30 Responsive50 NoIndent">
+                            <i class="icon-award60 Fs50 Navy Fleft"></i>
+                            <span class="FontLatoBlack Fs14 Navy Opac80">  #{msg['empresa.header']}</span><br/>
+
+                        </div>
+                        <div class="EmptyBox5"></div>
+
+                        <div class="Container60 Responsive50 NoIndent">
+                            <p:commandButton value="#{msg['boton.nuevo']}"  actionListener="#{empresaBean.nuevo}" update=":form2:grid"    />
+
+                            <p:commandButton value="#{msg['boton.nuevo']}" icon="fa fa-plus" 
+                                             styleClass="Fs14 White GreenButton"  
+                                             actionListener="#{usuarioBean.nuevo}" update="pnlPrincipal,pnlEditar"    />
+
+
+                        </div>
+                        <div class="EmptyBox5"></div>
+                        <div class="SeparatorFull"></div>
+                    </div>
+                    <div class="Card">
+                        <p:dataTable resizableColumns="true"  id="dt" 
+                                     value="#{empresaBean.empresaModel}"  
+                                     var="obj" selection="#{empresaBean.selectedEmpresa}" 
+                                     rows="8"  paginator="true"  selectionMode="single" reflow="true"  >
+
+                            <p:column sortBy="nombreEmpresa" headerText="#{msg['empresa.tabla.columna1']}" filterBy="nombreEmpresa" filterMatchMode="contains">
+                                <h:outputText value="#{obj.nombreEmpresa}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg['empresa.tabla.columna2']}" >
+                                <h:outputText value="#{obj.direccionEmpresa}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg['empresa.tabla.columna3']}" >
+                                <h:outputText value="#{obj.telefonoEmpresa}"/>
+                            </p:column>
+
+                            <p:column headerText="#{msg['empresa.tabla.columna4']}" >
+                                <h:outputText value="#{obj.rucEmpresa}"/>
+                            </p:column>
+                            <p:column headerText="#{msg['empresa.tabla.columna5']}"  >
+                                <h:outputText value="#{obj.plan.nombrePlan}"/>
+                            </p:column>
+
+                            <p:column  >
+                                <p:commandButton value="#{msg['boton.editar']}" styleClass="btn btn-info"   action="#{empresaBean.editar}" update=":form2:grid"   >
+                                    <f:setPropertyActionListener value="#{obj}" target="#{empresaBean.selectedEmpresa}"  />  
+                                </p:commandButton>
+
+                            </p:column>
+                            <p:column  >
+                                <p:commandButton value="#{msg['boton.eliminar']}" styleClass="btn btn-warning"  action="#{empresaBean.eliminar}" update=":form3:lblNombre" >
+                                    <f:setPropertyActionListener value="#{obj}" target="#{empresaBean.selectedEmpresa}"  />  
+                                </p:commandButton>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+                </p:panel>
+            </p:outputPanel>
+
+            <p:outputPanel id="pnlEditar">
+
+            </p:outputPanel>
+
+        </h:form>
+
+        <h:form id="form2">
+            <p:dialog id="dlgEditar" widgetVar="ventanaEditar" header="#{msg['empresa.header.editar']}" width="490px" height="220px"  showEffect="explode"  >
+
+                <p:panelGrid id="grid" styleClass="companyHeaderGrid">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['empresa.editar.nombre']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText  id="nombre" value="#{empresaBean.nombre}" required="true" style="width:190px"  label="#{msg['empresa.editar.nombre']}" requiredMessage="#{msg['empresa.editar.nombre.mensaje']}" />
+                        </p:column>
+                        <p:column>
+                            <p:message for="nombre" display="icon" showDetail="false"  />
+                        </p:column>
+
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['empresa.editar.direccion']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="direccion"  value="#{empresaBean.direccion}" required="true" style="width:190px"  label="#{msg['empresa.editar.direccion']}" requiredMessage="#{msg['empresa.editar.direccion.mensaje']}" />
+
+                        </p:column>
+
+                        <p:column>
+                            <p:message for="direccion" display="icon" showDetail="false"  />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['empresa.editar.telefono']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="telefono"  value="#{empresaBean.telefono}" required="true" style="width:190px"  label="#{msg['empresa.editar.telefono']}" requiredMessage="#{msg['empresa.editar.telefono.mensaje']}" />
+
+                        </p:column>
+
+                        <p:column>
+                            <p:message for="telefono" display="icon" showDetail="false"  />
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['empresa.editar.ruc']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column >
+                            <p:inputText id="ruc" value="#{empresaBean.ruc}" label="Ruc" required="true"  style="width:190px"   />
+                        </p:column>
+                        <p:column>
+                            <p:message for="ruc" display="icon" showDetail="false"  />
+                        </p:column>
+
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="#{msg['empresa.editar.plan']}" style="font-weight:bold" />
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu value="#{empresaBean.selectedPlan}" converter="PlanListModel" panelStyle="width:150px"
+                                             effect="fade" var="_plan" style="width:190px"  required="true"   label="#{msg['empresa.editar.plan']}" requiredMessage="#{msg['empresa.editar.plan.mensaje.requerido']}" >
+
+                                <f:selectItem itemLabel="#{msg['lista.mensaje']}" itemValue="" />
+                                <f:selectItems value="#{empresaBean.planes}" var="lsplan" itemLabel="#{lsplan.nombrePlan}" itemValue="#{lsplan}"/>
+                                <p:column>
+                                    #{_plan.nombrePlan}
+                                </p:column>
+                            </p:selectOneMenu>
+
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>  
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.aceptar']}"  styleClass="btn btn-primary"  action ="#{empresaBean.registrar}" update="grid,:form:dt"   >
+                        <p:resetInput target="grid" /> 
+                    </p:commandButton>
+                    <p:commandButton value="#{msg['boton.cancelar']}" styleClass="btn btn-danger" process="@this"  action="#{empresaBean.cancelar}">
+                        <p:resetInput target="grid" /> 
+                    </p:commandButton>
+                </f:facet>
+            </p:dialog>
+        </h:form>
+
+        <h:form id="form3">
+            <p:dialog id="dlgConfirm" header="#{msg['title.eliminar']}" widgetVar="confirm"   showEffect="fade" hideEffect="explode" width="320" height="50"  >
+
+
+                <h:outputText value="#{msg['empresa.eliminar']}"/>
+                <h:outputText style="font-weight:  bold" id="lblNombre" value=" #{empresaBean.selectedEmpresa.nombreEmpresa} ?"/>
+
+                <f:facet name="footer">
+                    <p:commandButton value="#{msg['boton.si']}"  styleClass="btn btn-success"  actionListener="#{empresaBean.desactivar}" update=":form:dt"  />
+                    <p:commandButton value="#{msg['boton.no']}"  styleClass="btn btn-danger" onclick="PF('confirm').hide()"/> 	
+
+                </f:facet>
+            </p:dialog>
+        </h:form>
+
+
+    </ui:define>
+
+</ui:composition>
+
+

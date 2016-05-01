@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+        <title>Pv-Touch de Facturación Electrónica</title>
+        <ui:insert name="head" />
+
+        <h:outputScript name="js/nanoscroller.js" library="olympos-layout" />
+        <h:outputScript name="js/layout.js" library="olympos-layout" />
+
+
+    </h:head>
+
+    <h:body styleClass="AquaBack">
+
+        <div class="Wid70 MarAuto">
+            <div class="Wid70 MarAuto WidAutoOnMobile TexAlCenter">
+
+                <div class="Wid70 MarAuto WidAutoOnMobile">
+                    <div class="EmptyBox30"></div>
+                    <div class="Container50 Responsive50">
+                        <a href="dashboard-supplychain.xhtml" class="DispBlock Fleft FloatNoneOnMobile"><h:graphicImage name="images/logo.svg" library="olympos-layout" style="height:25px;"/></a>
+                    </div>
+                    <div class="Container50 Responsive50">
+                        <p:commandButton type="button" value="Registrarse" styleClass="OrangeButton Fright FloatNoneOnMobile"/>
+                    </div>
+                    <div class="EmptyBox10 ShowOnMobile"></div>
+
+                    <div class="EmptyBox100 ShowOnDesktop"></div>
+                    <div class="EmptyBox20 ShowOnMobile"></div>
+
+                    <div class="Wid100 FontLatoRegular White Fs18">Acceso al Sistema</div>
+                    <div class="EmptyBox30"></div>
+
+
+
+                    <p:messages id="messages"  autoUpdate="true"  />
+
+
+                    <h:form id="formLogin" >
+
+                        <div class="Card ui-fluid ShadowEffect">
+
+                            <div class="Container100">
+                                <p:inputText placeholder="Usuario" style="padding:15px !important;" id="j_username" value="#{loginAccessBean.username}" />
+                            </div>  
+
+                            <div class="Container100">
+                                <p:password placeholder="Password" style="padding:15px !important;" id="j_password" value="#{loginAccessBean.password}" />
+                            </div>
+
+                            <div class="EmptyBox20"></div>
+                            <div class="Container100">
+                                <p:commandButton  value="Ingresar" styleClass="GreenButton" action="#{loginAccessBean.login()}"  />
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="EmptyBox10"></div>
+                    </h:form>
+
+
+                    <div class="EmptyBox10"></div>
+                    <div class="Separator"></div>
+                    <div class="EmptyBox10"></div>
+
+
+
+
+                    <div class="EmptyBox20"></div>
+                    <div class="Wid100 FontLatoRegular Fs12 TransparentWhite"> <i class="fa fa-copyright DispInlBlock"></i> pvTouch <br/>Todos los derechos reservados.</div>
+                    <div class="EmptyBox30"></div>
+                </div>
+            </div>
+        </div>
+
+        <style>.ui-button-text, .ui-button-text-only .ui-button-text{padding:15px !important; transition:none !important;}</style>
+
+        <h:outputStylesheet name="css/core-layout.css" library="olympos-layout" />
+        <h:outputStylesheet name="css/font-awesome.css" library="olympos-layout" />
+        <h:outputStylesheet name="css/animate.css" library="olympos-layout" />
+        <h:outputStylesheet name="css/olympos-layout.css" library="olympos-layout" />
+        <h:outputStylesheet name="css/olympos-font.css" library="olympos-layout" />
+
+
+    </h:body>
+
+</html>
