@@ -36,6 +36,8 @@ public class ComprobanteDaoImpl extends GenericDaoImpl<Comprobante, Long> implem
         q.setParameter("idEmpresa", empresa);
         q.setParameter("fechaDesde", desde);
         q.setParameter("fechaHasta", hasta);
+     
+        
         
         lista=q.getResultList();
         

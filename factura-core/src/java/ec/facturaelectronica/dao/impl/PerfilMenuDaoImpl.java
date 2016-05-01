@@ -4,7 +4,6 @@
  */
 package ec.facturaelectronica.dao.impl;
 
-
 import ec.facturaelectronica.dao.PerfilMenuDao;
 import ec.facturaelectronica.model.Menu;
 import ec.facturaelectronica.model.Perfil;
@@ -18,25 +17,28 @@ import javax.persistence.Query;
  * @author desarrollotic
  */
 @Stateless
-public class PerfilMenuDaoImpl  extends GenericDaoImpl<PerfilMenu, Long> implements PerfilMenuDao {
+public class PerfilMenuDaoImpl extends GenericDaoImpl<PerfilMenu, Long> implements PerfilMenuDao {
 
     public PerfilMenuDaoImpl() {
         super(PerfilMenu.class);
     }
 
     @Override
-    public List<PerfilMenu> getPerfilMenus(Menu menu, Perfil perfil) {
-        List<PerfilMenu> perfilMenus;
+    public PerfilMenu getPerfilMenus(Menu menu, Perfil perfil) {
+        PerfilMenu perfilMenu = null;
 
         Query q = em.createNamedQuery("PerfilMenu.findMenuAndPermiso");
         q.setParameter("idMenu", menu);
         q.setParameter("idPerfil", perfil);
-        
 
-        perfilMenus = q.getResultList();
+        try {
+            perfilMenu = (PerfilMenu) q.getSingleResult();
+        } catch (Exception ex) {
+            perfilMenu = null;
+        }
 
-        return perfilMenus;
+        return perfilMenu;
 
     }
-    
+
 }

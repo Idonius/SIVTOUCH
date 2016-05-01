@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package ec.facturaelectronica.model;
 
 import java.io.Serializable;
@@ -31,11 +30,12 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "menu")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Menu.findMenusByPerfil", query = "SELECT m FROM PerfilMenu mp INNER JOIN mp.idMenu m WHERE  mp.idPerfil = :perfil and m.menIdMenu is null and m.estadoMenu='A' order by m.ordenMenu"),    
-    @NamedQuery(name = "Menu.findMenus", query = "SELECT m FROM Menu m Where m.estadoMenu='A' and m.menIdMenu is null order by m.ordenMenu"),    
-    @NamedQuery(name = "Menu.findHijos", query = "SELECT m FROM Menu m Where m.estadoMenu='A' and m.menIdMenu= :menIdMenu order by m.ordenMenu"),    
+    @NamedQuery(name = "Menu.findMenusByPerfil", query = "SELECT m FROM PerfilMenu mp INNER JOIN mp.idMenu m WHERE  mp.idPerfil = :perfil and m.menIdMenu is null and m.estadoMenu='A' order by m.ordenMenu"),
+    @NamedQuery(name = "Menu.findMenus", query = "SELECT m FROM Menu m Where m.estadoMenu='A' and m.menIdMenu is null order by m.ordenMenu"),
+    @NamedQuery(name = "Menu.findHijos", query = "SELECT m FROM Menu m Where m.estadoMenu='A' and m.menIdMenu= :menIdMenu order by m.ordenMenu"),
     @NamedQuery(name = "Menu.findByImagenMenu", query = "SELECT m FROM Menu m WHERE m.imagenMenu = :imagenMenu")})
 public class Menu implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -48,6 +48,9 @@ public class Menu implements Serializable {
     @Size(max = 100)
     @Column(name = "url_menu")
     private String urlMenu;
+    @Size(max = 20)
+    @Column(name = "color_menu")
+    private String color;
     @Size(max = 1)
     @Column(name = "estado_menu")
     private String estadoMenu;
@@ -170,5 +173,21 @@ public class Menu implements Serializable {
     public String toString() {
         return "ec.facturaelectronica.model.Menu[ idMenu=" + idMenu + " ]";
     }
-    
+
+    /**
+     * @return the color
+     */
+    public String getColor() {
+        return color;
+    }
+
+    /**
+     * @param color the color to set
+     */
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+  
+
 }

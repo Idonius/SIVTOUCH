@@ -53,4 +53,22 @@ public class CertificadoTipoComprobanteDaoImpl extends GenericDaoImpl<Certificad
         return result;
     }
 
+    @Override
+    public CertificadoTipoComprobante obtenerCertificado(Catalogo estado, Empresa empresa, TipoComprobante tipoComprobante) {
+        CertificadoTipoComprobante result;
+
+        Query qry = em.createNamedQuery("CertificadoTipoComprobante.findEmpresaTipo");
+        qry.setParameter("catalogo", estado);
+        qry.setParameter("empresa", empresa);
+        qry.setParameter("tipoComprobante", tipoComprobante);
+
+        try {
+            result = (CertificadoTipoComprobante) qry.getSingleResult();
+        } catch (Exception ex) {
+            result = null;
+        }
+
+        return result;
+    }
+
 }

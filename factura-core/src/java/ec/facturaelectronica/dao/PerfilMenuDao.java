@@ -17,5 +17,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface PerfilMenuDao  extends GenericDao<PerfilMenu , Long>{
-    public List<PerfilMenu> getPerfilMenus(Menu menu, Perfil perfil);
+    public PerfilMenu getPerfilMenus(Menu menu, Perfil perfil);
 }

@@ -1,0 +1,17 @@
+2014-09-08 21:08:44,005 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - javax.xml.ws.WebServiceException: Fallo al acceder al WSDL en: https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantes?wsdl. Ha fallado con: 
+	sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target.
+2014-09-08 21:08:44,012 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - java.lang.NullPointerException
+2014-09-08 21:11:49,144 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - javax.xml.ws.WebServiceException: Fallo al acceder al WSDL en: https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantes?wsdl. Ha fallado con: 
+	sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target.
+2014-09-08 21:11:49,151 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - java.lang.NullPointerException
+2014-09-08 21:23:05,123 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - javax.xml.ws.WebServiceException: Fallo al acceder al WSDL en: https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantes?wsdl. Ha fallado con: 
+	sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target.
+2014-09-08 21:26:40,970 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - java.lang.NullPointerException
+2014-09-09 10:58:53,551 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - javax.xml.ws.WebServiceException: Fallo al acceder al WSDL en: https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantes?wsdl. Ha fallado con: 
+	sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target.
+2014-09-09 11:08:36,844 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - javax.xml.ws.WebServiceException: Fallo al acceder al WSDL en: https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantes?wsdl. Ha fallado con: 
+	java.security.NoSuchAlgorithmException: Error constructing implementation (algorithm: Default, provider: SunJSSE, class: sun.security.ssl.SSLContextImpl$DefaultSSLContext).
+2014-09-09 11:08:36,850 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - java.lang.NullPointerException
+2014-09-09 11:17:32,241 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - javax.xml.ws.WebServiceException: Fallo al acceder al WSDL en: https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantes?wsdl. Ha fallado con: 
+	java.security.NoSuchAlgorithmException: Error constructing implementation (algorithm: Default, provider: SunJSSE, class: sun.security.ssl.SSLContextImpl$DefaultSSLContext).
+2014-09-09 11:17:32,243 [main] ERROR ec.facturacion.autorizacion.AutorizacionComprobantesWs - java.lang.NullPointerException

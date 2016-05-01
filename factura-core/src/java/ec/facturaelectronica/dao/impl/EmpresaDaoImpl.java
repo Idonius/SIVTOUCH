@@ -66,11 +66,15 @@ public class EmpresaDaoImpl extends GenericDaoImpl<Empresa, Integer> implements 
     public Empresa getEmpresaByRuc(String ruc) {
         Empresa empresa;
 
-        Query q = em.createNamedQuery("Empresa.findAll");
+        Query q = em.createNamedQuery("Empresa.findByEmpresa");
         q.setParameter("idEstadoCatalogo", EstadosGeneralesEnum.Activo.getOrden());
         q.setParameter("rucEmpresa", ruc);
+        try {
+            empresa = (Empresa) q.getSingleResult();
 
-        empresa = (Empresa) q.getSingleResult();
+        } catch (Exception ex) {
+            empresa = null;
+        }
 
         return empresa;
     }

@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "comprobante")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Comprobante.findByEmpresa", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta order by c.fechaComprobante desc"),
+    @NamedQuery(name = "Comprobante.findByEmpresa", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta order by c.idComprobante desc"),
     @NamedQuery(name = "Comprobante.findByArchivoComprobante", query = "SELECT c FROM Comprobante c WHERE c.archivoComprobante = :archivoComprobante"),
     @NamedQuery(name = "Comprobante.findByEmpresaByEstadoByFechas", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.estadoComprobante=:estado and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta order by c.fechaComprobante desc"),
     @NamedQuery(name = "Comprobante.findByTipoComprobante", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.estadoComprobante=:estado and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta and c.idTipoComprobante=:tipo order by c.fechaComprobante desc")
@@ -56,7 +56,7 @@ public class Comprobante implements Serializable {
     @Column(name = "ambiente_comprobante")
     private String ambienteComprobante;
     @Column(name = "identificador_comprobante")
-    private Integer identificadorComprobante;
+    private String identificadorComprobante;
     @Size(max = 1000)
     @Column(name = "mensaje_comprobante")
     private String mensajeComprobante;
@@ -139,11 +139,11 @@ public class Comprobante implements Serializable {
         this.ambienteComprobante = ambienteComprobante;
     }
 
-    public Integer getIdentificadorComprobante() {
+    public String getIdentificadorComprobante() {
         return identificadorComprobante;
     }
 
-    public void setIdentificadorComprobante(Integer identificadorComprobante) {
+    public void setIdentificadorComprobante(String identificadorComprobante) {
         this.identificadorComprobante = identificadorComprobante;
     }
 

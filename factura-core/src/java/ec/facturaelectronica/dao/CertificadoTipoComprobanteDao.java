@@ -22,4 +22,7 @@ public interface CertificadoTipoComprobanteDao extends GenericDao<CertificadoTip
     List<CertificadoTipoComprobante> obtenerCertificadoTipoComprobanteList(Catalogo estado, Empresa empresa);
 
     List<CertificadoTipoComprobante> obtenerCertificadoPorEmpresaYTipoComprobante(Catalogo estado, Empresa empresa, TipoComprobante tipoComprobante);
+    
+    CertificadoTipoComprobante obtenerCertificado(Catalogo estado, Empresa empresa, TipoComprobante tipoComprobante);
+    
 }
