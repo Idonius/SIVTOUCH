@@ -150,9 +150,9 @@ public class CertificadoBean extends RecursosServices implements Serializable {
             setNombreArchivoCertificado(evt.getFile().getFileName());
 
         } catch (FileNotFoundException fne) {
-            LOG.info("Error al subir el archivo", fne);
+            //LOG.info("Error al subir el archivo", fne);
         } catch (IOException ex) {
-            LOG.info("Error al subir el archivo", ex);
+            //LOG.info("Error al subir el archivo", ex);
         }
     }
 
@@ -177,7 +177,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
         out.close();
 
         setNombreArchivoRealCertificado(cadenaFecha);
-        LOG.info("Nuevo archivo creado...");
+        //LOG.info("Nuevo archivo creado...");
 
     }
 
@@ -229,7 +229,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
                 RequestContext.getCurrentInstance().update("frmCertificadosId:growl");
             }
         } catch (Exception ex) {
-            LOG.error("Error al registrar el certificado ", ex);
+            //LOG.error("Error al registrar el certificado ", ex);
 //            e.printStackTrace();
         }
     }
