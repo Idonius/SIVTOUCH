@@ -25,5 +25,15 @@ public class UsuarioServiceImpl implements UsuarioService{
     public Usuario getUsuarioPorCedula(final String cedula) {
         return usuarioDao.getUsuarioByCedula(cedula);
     }
+
+    @Override
+    public void crearUsuario(final Usuario usuario) {
+        usuarioDao.insert(usuario);
+    }
+
+    @Override
+    public void actualizarUsuario(Usuario usuario) {
+        usuarioDao.update(usuario);
+    }
     
 }
