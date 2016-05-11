@@ -105,7 +105,7 @@
                                 <p:password id="confimId" value="#{registroBean.usuarioNuevo.confirmarClave}" />
                             </p:column>
                             <p:column>
-                                <p:commandButton value="Ok" action="#{registroBean.ok()}" />
+                                <p:commandButton value="Ok" action="#{registroBean.modificarCredenciales()}" update="oPanel"/>
                             </p:column>
                             <p:column>
                                 <p:commandButton value="Cerrar" action="#{registroBean.cerrar()}" />

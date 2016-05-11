@@ -6,11 +6,13 @@
 package ec.facturaelectronica.bean;
 
 import ec.facturaelectronica.exception.ServicesException;
+import ec.facturaelectronica.model.Catalogo;
 import ec.facturaelectronica.model.Comprobante;
 import ec.facturaelectronica.model.Usuario;
+import ec.facturaelectronica.model.enumtype.EstadosGeneralesEnum;
 import ec.facturaelectronica.service.ComprobanteService;
-import ec.facturaelectronica.service.RegistroService;
 import ec.facturaelectronica.service.UsuarioService;
+import ec.facturaelectronica.service.util.Util;
 import ec.facturaelectronica.util.CredencialesUtils;
 import ec.facturaelectronica.util.RecursosServices;
 import java.io.IOException;
@@ -33,8 +35,6 @@ public class RegistroBean extends RecursosServices implements Serializable{
     
     @EJB
     private ComprobanteService comprobanteService;
-    @EJB
-    private RegistroService registroService;
     @EJB
     private UsuarioService usuarioService;
     
@@ -71,32 +71,33 @@ public class RegistroBean extends RecursosServices implements Serializable{
         usuario = usuarioService.getUsuarioPorCedula(identificadorSeleccionado);    
     }    
     
-    private void verificarDatos() throws IOException{   
-        if(comprobantes.isEmpty() && usuario == null) {
-            this.registro = Boolean.TRUE;
-        }else {
-            this.registro = Boolean.FALSE;
-            infoMessages("El usuario existe", "Usuario registrado en el sistema", "fRegistros:growl");
-        }
-//      getContext().redirect(getContext().getRequestContextPath().concat("/admin/registro.jsf?layout=layout1"));
+    private void verificarDatos() throws IOException{      
+        this.registro = comprobantes.isEmpty() && usuario == null ? Boolean.TRUE : Boolean.FALSE;
     }
     
     public void registrar(){
         if(usuarioNuevo.getClaveUsuario().equals(usuarioNuevo.getConfirmarClave())){
-            System.out.println("Son iguales");
+            Catalogo catalogo = new Catalogo(EstadosGeneralesEnum.Activo.getOrden());
+            usuarioNuevo.setCedulaUsuario(identificadorSeleccionado);
+            usuarioNuevo.setClaveUsuario(Util.Sha256(usuarioNuevo.getClaveUsuario()));
+            usuarioNuevo.setIdEstadoCatalogo(catalogo);
+            usuarioService.crearUsuario(usuarioNuevo);
             usuarioNuevo = new Usuario();
-            infoMessages("Son iguales", "Ambas claves coinciden", "fRegistros:growl");
+            infoMessages(recurso.getString("registro.mensaje.exitoso"), recurso.getString("registro.mensaje.perfil.exitoso.detalle"), "fRegistros:growl");
         }else{
-            System.out.println("No son iguales");
-            errorMessages("No son iguales", "No coinciden las claves", "fRegistros:growl");
+            errorMessages(recurso.getString("registro.mensaje.error"), recurso.getString("registro.mensaje.perfil.error"), "fRegistros:growl");
         }
     }
     
-    public void ok(){
+    public void modificarCredenciales(){
         if(CredencialesUtils.verificar(usuarioNuevo.getClaveUsuario(), usuarioNuevo.getConfirmarClave())){
-            infoMessages("Claves identicas", "Coinciden las claves", "fRegistros:growl");
+            Usuario user = usuarioService.getUsuarioPorCedula(identificadorSeleccionado);
+            user.setClaveUsuario(Util.Sha256(usuarioNuevo.getClaveUsuario()));
+            usuarioService.actualizarUsuario(user);
+            usuarioNuevo = new Usuario();
+            infoMessages(recurso.getString("registro.mensaje.exitoso"), recurso.getString("registro.mensaje.exitoso.detalle"), "fRegistros:growl");
         }else{
-            errorMessages("Claves diferentes", "Claves no coinciden", "fRegistros:growl");
+            errorMessages(recurso.getString("registro.mensaje.error"), recurso.getString("registro.mensaje.error.detalle"), "fRegistros:growl");
         }
     }
     
