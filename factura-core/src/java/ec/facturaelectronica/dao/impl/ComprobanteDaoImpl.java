@@ -76,6 +76,21 @@ public class ComprobanteDaoImpl extends GenericDaoImpl<Comprobante, Long> implem
         return result;
         
     }
+
+    @Override
+    public List<Comprobante> obtenerComprobantePorIdentificadorComprobante(final String identificador) {
+        List<Comprobante> result = Collections.emptyList();
+        
+        Query qry = em.createNamedQuery("Comprobante.findByIdentificadorComprobante");
+        
+        if(qry != null){
+            qry.setParameter("identificador", identificador);
+            
+            result = qry.getResultList();
+        }
+        
+        return result;
+    }
     
     
 }

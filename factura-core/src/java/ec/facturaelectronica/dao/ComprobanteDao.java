@@ -22,4 +22,5 @@ public interface ComprobanteDao extends GenericDao<Comprobante , Long>{
     public List<Comprobante> getComprobantes(Empresa empresa,Date desde,Date hasta);
     List<Comprobante> obtenerComprobantesPorEmpresaPorEstadoPorFechas(Empresa empresa, String estado, Date fechaInicio, Date fechaFin);
     List<Comprobante> obtenerComprobantesPorEmpresaPorEstadoPorFechasPorTipo(Empresa empresa, String estado, Date fechaInicio, Date fechaFin, TipoComprobante tipo);
+    List<Comprobante> obtenerComprobantePorIdentificadorComprobante(String identificador);
 }

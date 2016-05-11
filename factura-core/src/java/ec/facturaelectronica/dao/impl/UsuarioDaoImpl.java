@@ -106,4 +106,19 @@ public class UsuarioDaoImpl extends GenericDaoImpl<Usuario, Long> implements Usu
         return usuarios;
 
     }
+
+    @Override
+    public Usuario getUsuarioByCedula(final String cedula) {
+        List<Usuario> usuarios;
+        Usuario usuario = null;
+        
+        Query qry = em.createNamedQuery("Usuario.findByCedulaUsuario");
+        qry.setParameter("cedula", cedula);
+        
+        usuarios = qry.getResultList();
+        if(!usuarios.isEmpty()){
+            usuario = usuarios.get(0);
+        }
+        return usuario;
+    }
 }

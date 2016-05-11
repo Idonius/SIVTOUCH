@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Comprobante.findByEmpresa", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta order by c.idComprobante desc"),
     @NamedQuery(name = "Comprobante.findByArchivoComprobante", query = "SELECT c FROM Comprobante c WHERE c.archivoComprobante = :archivoComprobante"),
     @NamedQuery(name = "Comprobante.findByEmpresaByEstadoByFechas", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.estadoComprobante=:estado and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta order by c.fechaComprobante desc"),
-    @NamedQuery(name = "Comprobante.findByTipoComprobante", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.estadoComprobante=:estado and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta and c.idTipoComprobante=:tipo order by c.fechaComprobante desc")
+    @NamedQuery(name = "Comprobante.findByTipoComprobante", query = "SELECT c FROM Comprobante c WHERE c.idEmpresa=:idEmpresa and c.estadoComprobante=:estado and c.fechaComprobante>=:fechaDesde and c.fechaComprobante<=:fechaHasta and c.idTipoComprobante=:tipo order by c.fechaComprobante desc"),
+    @NamedQuery(name = "Comprobante.findByIdentificadorComprobante", query = "SELECT c FROM Comprobante c WHERE c.identificadorComprobante=:identificador")
 })
 
 public class Comprobante implements Serializable {

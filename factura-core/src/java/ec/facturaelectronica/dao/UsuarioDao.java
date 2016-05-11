@@ -28,4 +28,6 @@ public interface UsuarioDao extends GenericDao<Usuario, Long> {
     
     public List<Usuario> getUsuarioByEmpresa(Empresa empresa);
     
+    public Usuario getUsuarioByCedula(final String cedula);
+    
 }

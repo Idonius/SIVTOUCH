@@ -20,6 +20,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Transient;
 
 /**
  *
@@ -34,7 +35,8 @@ import javax.persistence.GeneratedValue;
     @NamedQuery(name = "Usuario.findByPerfil", query = "SELECT u FROM Usuario u where u.idPerfil=:idPerfil and u.idEstadoCatalogo.idCatalogo=:idEstadoCatalogo"),
     @NamedQuery(name = "Usuario.ValidateUser", query = "SELECT u FROM Usuario u where u.nickUsuario=:nickUsuario and u.claveUsuario=:claveUsuario and u.idEstadoCatalogo.idCatalogo=:idEstadoCatalogo"),
     @NamedQuery(name = "Usuario.findByEmpresa", query = "SELECT u FROM Usuario u where u.idEstadoCatalogo.idCatalogo=:idEstadoCatalogo and u.idEmpresa=:idEmpresa"),
-    @NamedQuery(name = "Usuario.findByNick", query = "SELECT u FROM Usuario u where u.nickUsuario=:nickUsuario ")})
+    @NamedQuery(name = "Usuario.findByNick", query = "SELECT u FROM Usuario u where u.nickUsuario=:nickUsuario "),
+})  @NamedQuery(name = "Usuario.findByCedulaUsuario", query = "SELECT u FROM Usuario u where u.cedulaUsuario=:cedula")
 
 public class Usuario implements Serializable {
 
@@ -54,6 +56,9 @@ public class Usuario implements Serializable {
     @Size(max = 200)
     @Column(name = "clave_usuario")
     private String claveUsuario;
+    @Size(max = 200)
+    @Transient
+    private String confirmarClave;
     @Size(max = 13)
     @Column(name = "cedula_usuario")
     private String cedulaUsuario;
@@ -110,6 +115,14 @@ public class Usuario implements Serializable {
 
     public void setClaveUsuario(String claveUsuario) {
         this.claveUsuario = claveUsuario;
+    }
+
+    public String getConfirmarClave() {
+        return confirmarClave;
+    }
+
+    public void setConfirmarClave(String confirmarClave) {
+        this.confirmarClave = confirmarClave;
     }
 
     public String getCedulaUsuario() {
