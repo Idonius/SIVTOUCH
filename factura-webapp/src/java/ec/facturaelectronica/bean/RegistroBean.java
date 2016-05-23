@@ -102,7 +102,7 @@ public class RegistroBean extends RecursosServices implements Serializable {
 
     private void notificarRegistro() throws MessagingException {
         MailUtil notificar = new MailUtil();
-        LOG.error(usuarioNuevo.getEmailUsuario());
+        
         notificar.to(usuarioNuevo.getEmailUsuario());
         notificar.subject("Registro exitoso");
         notificar.body("Hola a todos esto es una prueba");
