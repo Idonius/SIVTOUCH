@@ -23,7 +23,7 @@ public class RecursosServices {
     public ResourceBundle recurso = ResourceBundle.getBundle("ec.facturaelectronica.resources.etiquetas");
     public ResourceBundle certificado = ResourceBundle.getBundle("ec.facturaelectronica.resources.certificados");
     
-    public Logger LOG = LogManager.getLogger("HelloWorld");
+    public Logger LOG = LogManager.getLogger("FacturaElectronica");
 
     public ResourceBundle getRecurso() {
         return recurso;

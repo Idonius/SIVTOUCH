@@ -76,8 +76,8 @@ public class LoginAccessBean extends RecursosServices implements Serializable {
 
     }
     
-    public void registrarse(){
-//      FacesContext.getCurrentInstance().getExternalContext().redirect("../pages/registro.jsf");
+    public void registrarse() throws IOException{
+      FacesContext.getCurrentInstance().getExternalContext().redirect("../pages/registro.jsf");
     }
 
     /**
