@@ -43,7 +43,7 @@ public class MailUtil extends RecursosServices {
     private Session Autenticar() {
         return Session.getDefaultInstance(mailProperties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication(){
-                return new PasswordAuthentication("armando.suarez.pons@gmail.com", "freesoftware21041503");
+                return new PasswordAuthentication("armando.suarez.pons@gmail.com", "password123");
             }
         });        
     }
