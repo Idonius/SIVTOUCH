@@ -14,7 +14,9 @@ import javax.ejb.Local;
  */
 @Local
 public interface UsuarioService {
+    Usuario getUsuarioPorNick(final String nick);
     Usuario getUsuarioPorCedula(final String cedula);
+    Usuario getUsuarioPorToken(final String token);
     void crearUsuario(final Usuario usuario);
     void actualizarUsuario(final Usuario usuario);
 }

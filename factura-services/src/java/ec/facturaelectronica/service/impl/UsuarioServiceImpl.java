@@ -35,5 +35,15 @@ public class UsuarioServiceImpl implements UsuarioService{
     public void actualizarUsuario(Usuario usuario) {
         usuarioDao.update(usuario);
     }
+
+    @Override
+    public Usuario getUsuarioPorToken(String token) {
+        return usuarioDao.getUsuarioByToken(token);
+    }
+
+    @Override
+    public Usuario getUsuarioPorNick(String nick) {
+        return usuarioDao.getUsuarioByNick(nick);
+    }
     
 }
