@@ -98,7 +98,7 @@ public class CertificadoBean extends RecursosServices implements Serializable {
             empresas = admService.getEmpresas();
             EmpresaListModel.empresaModel = empresas;
 
-            if (FacturaConstantes.SUPER_ADMINISTRADOR.equals(loginBean.getUsuarioLogin().getIdPerfil().getNombrePerfil())) {
+           // if (FacturaConstantes.SUPER_ADMINISTRADOR.equals(loginBean.getUsuarioLogin().getIdPerfil().getNombrePerfil())) {
                 certificados = new ArrayList<>();
                 isSuperAdm = true;
                 if (selectedEmpresaBusqueda != null) {
@@ -107,14 +107,14 @@ public class CertificadoBean extends RecursosServices implements Serializable {
                     certificadoModel = new CertificadoDataTableModel(certificados);
 
                 }
-            } else {
-                certificados = certificadoService.getCertificadosFiltrados(loginBean.getUsuarioLogin().getIdEmpresa());
-                certificadoModel = new CertificadoDataTableModel(certificados);
-                selectedEmpresaBusqueda = loginBean.getUsuarioLogin().getIdEmpresa();
-                selectedEmpresaEdit = loginBean.getUsuarioLogin().getIdEmpresa();
-                System.out.println(selectedEmpresaEdit);
-                isSuperAdm = false;
-            }
+          //  } else {
+//                certificados = certificadoService.getCertificadosFiltrados(loginBean.getUsuarioLogin().getIdEmpresa());
+//                certificadoModel = new CertificadoDataTableModel(certificados);
+//                selectedEmpresaBusqueda = loginBean.getUsuarioLogin().getIdEmpresa();
+//                selectedEmpresaEdit = loginBean.getUsuarioLogin().getIdEmpresa();
+//                System.out.println(selectedEmpresaEdit);
+//                isSuperAdm = false;
+            //}
 
         } catch (ServicesException ex) {
             errorMessages(recurso.getString("certificados.header"), ex.getMessage(), recurso.getString("editar.mensaje.error"));

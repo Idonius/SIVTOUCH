@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:metadata>
+            <f:event listener="#{modificarCredencialesBean.verificar()}" type="preRenderView"></f:event>
+        </f:metadata>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+        </f:facet>
+
+        <title>Modificar Credenciales</title>
+        <ui:insert name="head" />
+
+        <h:outputScript name="js/nanoscroller.js" library="olympos-layout" />
+        <h:outputScript name="js/layout.js" library="olympos-layout" />        
+    </h:head>
+    <h:body styleClass="AquaBack">
+        <h:form id="frm">
+            <p:growl id="growl" showDetail="true" />
+            <p:outputPanel id="oPanel">
+                <!--<h:outputText value="¿Ha olvidado la clave?" />-->
+                <p:fieldset legend="¿Ha olvidado la clave?" toggleable="true" collapsed="false">
+                    <h:panelGrid columns="2">
+                        <p:column>
+                            <p:outputLabel for="newId" value="Nueva Clave: " />
+                        </p:column>
+                        <p:column>
+                            <p:password id="newId" value="#{modificarCredencialesBean.usuarioNuevo.claveUsuario}" />
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel for="confimId" value="Confirmar Clave: " />
+                        </p:column>
+                        <p:column>
+                            <p:password id="confimId" value="#{modificarCredencialesBean.usuarioNuevo.confirmarClave}" />
+                        </p:column>
+                        <p:column>
+                            <p:commandButton value="Ok" action="#{modificarCredencialesBean.datosModificarCredenciales()}" />
+                        </p:column>
+                        <p:column>
+                            <p:commandButton value="Cerrar" action="#{modificarCredencialesBean.cerrar()}" />
+                        </p:column>
+                    </h:panelGrid>
+                </p:fieldset>
+            </p:outputPanel>
+
+        </h:form>
+    </h:body>
+</html>

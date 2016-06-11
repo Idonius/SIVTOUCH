@@ -6,11 +6,13 @@
 
 package ec.facturaelectronica.vo;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Christian
  */
-public class LoginVo {
+public class LoginVo implements Serializable{
     private String nick;
     private String clave;
 

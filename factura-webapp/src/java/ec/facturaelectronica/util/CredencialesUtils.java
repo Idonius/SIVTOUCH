@@ -5,6 +5,8 @@
  */
 package ec.facturaelectronica.util;
 
+import java.util.UUID;
+
 /**
  *
  * @author Armando
@@ -12,15 +14,17 @@ package ec.facturaelectronica.util;
 public class CredencialesUtils {
     
     public static Boolean verificar(String password, String confirmPassword){
-        Boolean result = Boolean.FALSE;
         Boolean noNullPassword = password != null && !password.equals("");
         Boolean noNullConfirmPassword = confirmPassword != null && !confirmPassword.equals("");
         Boolean iguales = password.equals(confirmPassword);
         
-        if(noNullConfirmPassword && noNullPassword && iguales){
-            result = Boolean.TRUE;
-        }
+        Boolean result = noNullConfirmPassword && noNullPassword && iguales ? Boolean.TRUE : Boolean.FALSE;
         
         return result;
+    }
+    
+    public static String getUUID(){
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
 }

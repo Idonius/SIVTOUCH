@@ -14,12 +14,19 @@ import ec.facturaelectronica.service.ComprobanteService;
 import ec.facturaelectronica.service.UsuarioService;
 import ec.facturaelectronica.service.util.Util;
 import ec.facturaelectronica.util.CredencialesUtils;
+import ec.facturaelectronica.util.DateUtils;
 import ec.facturaelectronica.util.MailUtil;
 import ec.facturaelectronica.util.RecursosServices;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
@@ -49,10 +56,13 @@ public class RegistroBean extends RecursosServices implements Serializable {
     private List<Comprobante> comprobantes = Collections.EMPTY_LIST;
     private Usuario usuario = null;
     private Usuario usuarioNuevo = null;
+    private DateFormat df = null;
+    private String token;
 
     @PostConstruct
     public void init() {
         usuarioNuevo = new Usuario();
+        df = new SimpleDateFormat("yyyy/MM/dd");
     }
 
     public void buscar() throws IOException {
@@ -79,11 +89,7 @@ public class RegistroBean extends RecursosServices implements Serializable {
 
     public void registrar() {
         datosRegistro();
-        try {
-            notificarRegistro();
-        } catch (MessagingException ex) {
-            errorMessages(recurso.getString("registro.mensaje.notificacion.error"), recurso.getString("registro.mensaje.notificacion.error.detalle"), "fRegistros:growl");
-        }
+        notificar();
     }
 
     private void datosRegistro() {
@@ -100,9 +106,17 @@ public class RegistroBean extends RecursosServices implements Serializable {
         }
     }
 
+    private void notificar() {
+        try {
+            notificarRegistro();
+        } catch (MessagingException ex) {
+            errorMessages(recurso.getString("registro.mensaje.notificacion.error"), recurso.getString("registro.mensaje.notificacion.error.detalle"), "fRegistros:growl");
+        }
+    }
+
     private void notificarRegistro() throws MessagingException {
         MailUtil notificar = new MailUtil();
-        
+
         notificar.to(usuarioNuevo.getEmailUsuario());
         notificar.subject("Registro exitoso");
         notificar.body("Hola a todos esto es una prueba");
@@ -110,33 +124,52 @@ public class RegistroBean extends RecursosServices implements Serializable {
     }
 
     public void modificarCredenciales() {
-        datosModificarCredenciales();
         try {
+            registrarToken();
             notificarModificacionCredenciales();
-        } catch (MessagingException ex) {
+            infoMessages(recurso.getString("registro.mensaje.notificacion.envio.modificacion.credenciales"), recurso.getString("registro.mensaje.notificacion.envio.modificacion.credenciales.detalle"), "fRegistros:growl");
+        } catch (MessagingException | ParseException ex) {
             errorMessages(recurso.getString("registro.mensaje.notificacion.error"), recurso.getString("registro.mensaje.notificacion.error.detalle"), "fRegistros:growl");
         }
     }
 
-    private void datosModificarCredenciales() {
-        if (CredencialesUtils.verificar(usuarioNuevo.getClaveUsuario(), usuarioNuevo.getConfirmarClave())) {
-            usuario = usuarioService.getUsuarioPorCedula(identificadorSeleccionado);
-            usuario.setClaveUsuario(Util.Sha256(usuarioNuevo.getClaveUsuario()));
-            usuarioService.actualizarUsuario(usuario);
-            usuarioNuevo = new Usuario();
-            infoMessages(recurso.getString("registro.mensaje.exitoso"), recurso.getString("registro.mensaje.exitoso.detalle"), "fRegistros:growl");
-        } else {
-            errorMessages(recurso.getString("registro.mensaje.error"), recurso.getString("registro.mensaje.error.detalle"), "fRegistros:growl");
-        }
+    private void registrarToken() throws ParseException {
+        String cuarentaYOchoHoras = DateUtils.modifyDaysInDateFormat(2);
+        token = CredencialesUtils.getUUID();
+        registrarUsuarioToken(df.parse(cuarentaYOchoHoras));
+    }
+
+    private void registrarUsuarioToken(Date horas) {
+        usuario = usuarioService.getUsuarioPorCedula(identificadorSeleccionado);
+
+        usuario.setFechaExpiracion(horas);
+        usuario.setToken(token);
+        usuarioService.actualizarUsuario(usuario);
     }
 
     private void notificarModificacionCredenciales() throws MessagingException {
         MailUtil notificar = new MailUtil();
-        
+
         notificar.to(usuario.getEmailUsuario());
-        notificar.subject("Modificación de credenciales exitosa");
-        notificar.body("Hola a todos esto es una prueba");
+        notificar.subject(recurso.getString("registro.mensaje.notificacion.modificacion.credenciales.subject"));
+        notificar.body(recurso.getString("registro.mensaje.notificacion.modificacion.credenciales.cuerpo")
+                + "\n"
+                + "\n"
+                + recurso.getString("registro.mensaje.notificacion.modificacion.credenciales.url")
+                + this.token
+                + "\n"
+                + "\n"
+                + recurso.getString("registro.mensaje.notificacion.modificacion.credenciales.cuerpo.warning")
+        );
         notificar.send();
+    }
+    
+    public void redirigir(){
+        try {
+            getContext().redirect("../admin/index.jsf");
+        } catch (IOException ex) {
+            Logger.getLogger(RegistroBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void cerrar() {
@@ -169,6 +202,22 @@ public class RegistroBean extends RecursosServices implements Serializable {
 
     public void setLoginAccessBean(LoginAccessBean loginAccessBean) {
         this.loginAccessBean = loginAccessBean;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
 }

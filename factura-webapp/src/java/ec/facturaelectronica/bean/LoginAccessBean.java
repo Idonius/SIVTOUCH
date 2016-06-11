@@ -5,7 +5,6 @@
  */
 package ec.facturaelectronica.bean;
 
-import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.Usuario;
 import ec.facturaelectronica.service.SeguridadService;
 import ec.facturaelectronica.util.RecursosServices;
@@ -77,7 +76,7 @@ public class LoginAccessBean extends RecursosServices implements Serializable {
     }
     
     public void registrarse() throws IOException{
-      FacesContext.getCurrentInstance().getExternalContext().redirect("../pages/registro.jsf");
+      FacesContext.getCurrentInstance().getExternalContext().redirect("../registro/registro.jsf");
     }
 
     /**

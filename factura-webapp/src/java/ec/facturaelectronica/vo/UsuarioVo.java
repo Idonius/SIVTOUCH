@@ -5,6 +5,7 @@
  */
 package ec.facturaelectronica.vo;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
@@ -13,7 +14,7 @@ import javax.faces.model.SelectItem;
  *
  * @author Christian
  */
-public class UsuarioVo {
+public class UsuarioVo implements Serializable{
 
     private List<SelectItem> listaPerfiles;
     private Integer selectedPerfil;

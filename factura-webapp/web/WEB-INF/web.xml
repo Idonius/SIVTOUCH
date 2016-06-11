@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <context-param>
-       <param-name>javax.faces.PROJECT_STAGE</param-name>
- <param-value>Production</param-value>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Production</param-value>
     </context-param>
     <context-param>
         <param-name>primefaces.THEME</param-name>
@@ -49,10 +49,6 @@
         <extension>portable</extension>
         <mime-type>application/x-pkcs12</mime-type>
     </mime-mapping>
-    
-      
-  
-
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.jsf</url-pattern>
@@ -125,6 +121,19 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
+    <security-constraint>
+        <display-name>Constraint1</display-name>
+        <web-resource-collection>
+            <web-resource-name>*</web-resource-name>
+            <description/>
+            <url-pattern>/registro/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>PUT</http-method>
+            <http-method>HEAD</http-method>
+            <http-method>POST</http-method>
+            <http-method>OPTIONS</http-method>
+        </web-resource-collection>
+    </security-constraint>
     <login-config>
         <auth-method>FORM</auth-method>
         <realm-name>jdbcReaml</realm-name>
@@ -145,6 +154,4 @@
         <description>Administrador General</description>
         <role-name>adming</role-name>
     </security-role>
-
-    
 </web-app>

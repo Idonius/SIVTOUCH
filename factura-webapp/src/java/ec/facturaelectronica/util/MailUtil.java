@@ -23,7 +23,7 @@ import javax.mail.internet.MimeMessage;
 public class MailUtil extends RecursosServices {
 
     private final Properties mailProperties;
-    private final String MAIL_FROM = "armando.suarez.pons@gmail.com";
+    private final String MAIL_FROM = "fast@tecnolpet.com";
     private final Session mailSession;
     private final MimeMessage mailMessage;
     
@@ -43,7 +43,7 @@ public class MailUtil extends RecursosServices {
     private Session Autenticar() {
         return Session.getDefaultInstance(mailProperties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication(){
-                return new PasswordAuthentication("armando.suarez.pons@gmail.com", "passw123");
+                return new PasswordAuthentication(certificado.getString("mail.smtp.user"), certificado.getString("mail.smtp.pass"));
             }
         });        
     }

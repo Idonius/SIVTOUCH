@@ -6,9 +6,12 @@ package ec.facturaelectronica.test;
  * and open the template in the editor.
  */
 
+import ec.facturaelectronica.util.DateUtils;
 import ec.facturaelectronica.util.MailUtil;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.context.FacesContext;
 import javax.mail.MessagingException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -63,5 +66,12 @@ public class FacturaJUnitTest {
         } catch (MessagingException ex) {
             ex.printStackTrace();
         }
+     }
+     
+     @Test
+     @Ignore
+     public void dateTest(){
+         String fecha = DateUtils.modifyDaysInDateFormat(2);
+         System.out.println("Fecha futura: " + fecha);
      }
 }
