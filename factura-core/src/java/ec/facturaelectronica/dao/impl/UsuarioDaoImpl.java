@@ -121,4 +121,19 @@ public class UsuarioDaoImpl extends GenericDaoImpl<Usuario, Long> implements Usu
         }
         return usuario;
     }
+
+    @Override
+    public Usuario getUsuarioByToken(final String token) {
+        List<Usuario> usuarios;
+        Usuario usuario = null;
+        
+        Query qry = em.createNamedQuery("Usuario.findByUsuarioToken");
+        qry.setParameter("token", token);
+        
+        usuarios = qry.getResultList();
+        if(!usuarios.isEmpty()){
+            usuario = usuarios.get(0);
+        }
+        return usuario;        
+    }
 }

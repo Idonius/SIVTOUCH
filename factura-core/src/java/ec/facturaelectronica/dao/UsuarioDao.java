@@ -30,4 +30,6 @@ public interface UsuarioDao extends GenericDao<Usuario, Long> {
     
     public Usuario getUsuarioByCedula(final String cedula);
     
+    public Usuario getUsuarioByToken(final String token);
+    
 }

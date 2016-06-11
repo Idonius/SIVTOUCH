@@ -6,6 +6,7 @@
 package ec.facturaelectronica.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,6 +21,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.GeneratedValue;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 /**
@@ -36,7 +39,9 @@ import javax.persistence.Transient;
     @NamedQuery(name = "Usuario.ValidateUser", query = "SELECT u FROM Usuario u where u.nickUsuario=:nickUsuario and u.claveUsuario=:claveUsuario and u.idEstadoCatalogo.idCatalogo=:idEstadoCatalogo"),
     @NamedQuery(name = "Usuario.findByEmpresa", query = "SELECT u FROM Usuario u where u.idEstadoCatalogo.idCatalogo=:idEstadoCatalogo and u.idEmpresa=:idEmpresa"),
     @NamedQuery(name = "Usuario.findByNick", query = "SELECT u FROM Usuario u where u.nickUsuario=:nickUsuario "),
-})  @NamedQuery(name = "Usuario.findByCedulaUsuario", query = "SELECT u FROM Usuario u where u.cedulaUsuario=:cedula")
+    @NamedQuery(name = "Usuario.findByCedulaUsuario", query = "SELECT u FROM Usuario u where u.cedulaUsuario=:cedula"),
+    @NamedQuery(name = "Usuario.findByUsuarioToken", query = "SELECT u FROM Usuario u where u.token=:token")    
+})  
 
 public class Usuario implements Serializable {
 
@@ -77,6 +82,10 @@ public class Usuario implements Serializable {
     @JoinColumn(name = "id_estado_catalogo", referencedColumnName = "id_catalogo")
     @ManyToOne
     private Catalogo idEstadoCatalogo;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "fecha_expiracion")
+    private Date fechaExpiracion;
+    private String token;
 
     public Usuario() {
     }
@@ -173,7 +182,23 @@ public class Usuario implements Serializable {
         this.idEstadoCatalogo = idEstadoCatalogo;
     }
 
-    @Override
+    public Date getFechaExpiracion() {
+        return fechaExpiracion;
+    }
+
+    public void setFechaExpiracion(Date fechaExpiracion) {
+        this.fechaExpiracion = fechaExpiracion;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+    
+   @Override
     public int hashCode() {
         int hash = 0;
         hash += (idUsuario != null ? idUsuario.hashCode() : 0);
