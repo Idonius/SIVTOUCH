@@ -6,7 +6,8 @@
 package ec.facturacion.service;
 
 import ec.facturacion.app.ComprobanteEnviado;
-import ec.gob.sri.comprobantes.ws.aut.Autorizacion;
+import ec.facturacion.exception.FacturaFirmaException;
+import ec.facturacionelectronica.aut.Autorizacion;
 import javax.ejb.Local;
 
 /**
@@ -16,9 +17,11 @@ import javax.ejb.Local;
 @Local
 public interface IFacturaElectronica {
 
-    public ComprobanteEnviado firmarEnviarAutorizar(byte[] archivoAFirmar) throws Exception;
+    public ComprobanteEnviado firmarEnviarAutorizar(byte[] archivoAFirmar,String email,String codigoEmpresa) throws Exception;
 
-    public Autorizacion consultaAutorizacion(String claveDeAcceso, int ambiente, int numeroIntentos);
+    public Autorizacion consultaAutorizacion(String claveDeAcceso) throws FacturaFirmaException;
     
     public boolean validarP12(String filenameP12,String clave);
+    
+    public ComprobanteEnviado generarAutorizacion(String claveDeAcceso, int ambiente, int numeroIntentos);
 }

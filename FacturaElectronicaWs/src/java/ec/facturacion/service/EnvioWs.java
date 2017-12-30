@@ -1,56 +1,49 @@
-/*
- * www.facturacionelectronica.ec
- *
- * © Gabriel Eguiguren P. 2012-2014 
- * Todos los derechos reservados
- */
-package ec.facturacion.autorizacion;
+package ec.facturacion.service;
 
-import ec.gob.sri.comprobantes.ws.Comprobante;
-import ec.gob.sri.comprobantes.ws.MensajeXml;
+import ec.facturacion.firmaxades.util.xml.FileUtils;
+import ec.facturacionelectronica.rec.Comprobante;
+import ec.facturacionelectronica.rec.Mensaje;
+import ec.facturacionelectronica.rec.RecepcionComprobantesOffline;
+import ec.facturacionelectronica.rec.RecepcionComprobantesOfflineService;
+import ec.facturacionelectronica.rec.RespuestaSolicitud;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceException;
 
-import ec.gob.sri.comprobantes.ws.RecepcionComprobantes;
-import ec.gob.sri.comprobantes.ws.RecepcionComprobantesService;
-import ec.gob.sri.comprobantes.ws.RespuestaSolicitud;
+
+
 import org.apache.log4j.Logger;
 
 /**
- * https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantes?wsdl
- * https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantes?wsdl
+ * https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline?wsdl
  *
- *
- * Cliente con metodos de conexion al WS
+ * Cliente con metodos de conexion al WS Offline
  *
  * @author Gabriel Eguiguren
  */
-public class EnvioComprobantesWs {
+public class EnvioWs {
 
-    static Logger log = Logger.getLogger(EnvioComprobantesWs.class.getName());
-    private static RecepcionComprobantesService service;
+    static Logger log = Logger.getLogger(EnvioWs.class.getName());
+    private static RecepcionComprobantesOfflineService service;
 
     public static final String ESTADO_RECIBIDA = "RECIBIDA";
     public static final String ESTADO_DEVUELTA = "DEVUELTA";
 
-    public EnvioComprobantesWs(String wsdlLocation) throws MalformedURLException, WebServiceException {
+    public EnvioWs(String wsdlLocation) throws MalformedURLException, WebServiceException {
         URL url = new URL(wsdlLocation);
-        QName qname = new QName("http://ec.gob.sri.ws.recepcion", "RecepcionComprobantesService");
-        service = new RecepcionComprobantesService(url, qname);
+        QName qname = new QName("http://ec.gob.sri.ws.recepcion", "RecepcionComprobantesOfflineService");
+        service = new RecepcionComprobantesOfflineService(url, qname);
     }
 
     public static final Object webService(String wsdlLocation) {
         try {
-            QName qname = new QName("http://ec.gob.sri.ws.recepcion", "RecepcionComprobantesService");
+            QName qname = new QName("http://ec.gob.sri.ws.recepcion", "RecepcionComprobantesOfflineService");
             URL url = new URL(wsdlLocation);
-            service = new RecepcionComprobantesService(url, qname);
+            service = new RecepcionComprobantesOfflineService(url, qname);
             return null;
         } catch (MalformedURLException ex) {
             log.error(ex);
@@ -62,21 +55,17 @@ public class EnvioComprobantesWs {
     }
 
     /**
-     * Consume el WS para env�o de un componente
-     *
-     * @param ruc
+     * Consume el WS para envio de un comprobante
+     * 
      * @param xmlFile
-     * @param tipoComprobante
-     * @param versionXsd
-     * @param url
      * @return
      */
     public RespuestaSolicitud enviarComprobante(File xmlFile) {
 
         RespuestaSolicitud response = null;
         try {
-            RecepcionComprobantes port = service.getRecepcionComprobantesPort();
-            response = port.validarComprobante(archivoToByte(xmlFile));
+            RecepcionComprobantesOffline port = service.getRecepcionComprobantesOfflinePort();
+            response = port.validarComprobante(FileUtils.archivoToByte(xmlFile));
 
         } catch (Exception e) {
             log.error(e);
@@ -93,40 +82,34 @@ public class EnvioComprobantesWs {
      * comprobante
      *
      * @param archivo
-     * @param urlWsdl
      * @return
      */
     public static RespuestaSolicitud obtenerRespuestaEnvio(File archivo, String urlWsdl) {
 
         RespuestaSolicitud respuesta = new RespuestaSolicitud();
-        EnvioComprobantesWs cliente = null;
+        EnvioWs cliente = null;
         try {
-            cliente = new EnvioComprobantesWs(urlWsdl);
-            respuesta = cliente.enviarComprobante(archivo);
+            cliente = new EnvioWs(urlWsdl);
         } catch (Exception ex) {
             log.error(ex);
             respuesta.setEstado(ex.getMessage());
             return respuesta;
         }
+        respuesta = cliente.enviarComprobante(archivo);
 
         return respuesta;
     }
 
     /**
      * Consume el WS para envio de comprobantes por lotes
-     *
-     * @param ruc
      * @param xml
-     * @param tipoComprobante
-     * @param versionXsd
-     * @param url
      * @return
      */
     public RespuestaSolicitud enviarComprobanteLotes(byte[] xml) {
 
         RespuestaSolicitud response = null;
         try {
-            RecepcionComprobantes port = service.getRecepcionComprobantesPort();
+            RecepcionComprobantesOffline port = service.getRecepcionComprobantesOfflinePort();
 
             response = port.validarComprobante(xml);
 
@@ -148,13 +131,13 @@ public class EnvioComprobantesWs {
     public static String obtenerMensajeRespuesta(RespuestaSolicitud respuesta) {
 
         StringBuilder mensajeDesplegable = new StringBuilder();
-        if (respuesta.getEstado().equals(EnvioComprobantesWs.ESTADO_DEVUELTA) == true) {
+        if (respuesta.getEstado().equals(EnvioWs.ESTADO_DEVUELTA) == true) {
 
             RespuestaSolicitud.Comprobantes comprobantes = (RespuestaSolicitud.Comprobantes) respuesta.getComprobantes();
             for (Comprobante comp : comprobantes.getComprobante()) {
                 mensajeDesplegable.append(comp.getClaveAcceso());
                 mensajeDesplegable.append("\n");
-                for (MensajeXml m : comp.getMensajes().getMensaje()) {
+                for (Mensaje m : comp.getMensajes().getMensaje()) {
                     mensajeDesplegable.append(m.getMensaje()).append(" :\n");
                     mensajeDesplegable.append(m.getInformacionAdicional() != null ? m.getInformacionAdicional() : "");
                     mensajeDesplegable.append("\n");
@@ -164,35 +147,6 @@ public class EnvioComprobantesWs {
 
         }
         return mensajeDesplegable.toString();
-    }
-
-    /**
-     * Transforma un archivo (File) a bytes
-     *
-     * @param file
-     * @return
-     * @throws IOException
-     */
-    public byte[] archivoToByte(File file) throws IOException {
-
-        byte[] buffer = new byte[(int) file.length()];
-        InputStream ios = null;
-        try {
-            ios = new FileInputStream(file);
-            if (ios.read(buffer) == -1) {
-                throw new IOException("EOF reached while trying to read the whole file");
-            }
-        } finally {
-            try {
-                if (ios != null) {
-                    ios.close();
-                }
-            } catch (IOException e) {
-                //TODO LOGGER
-            }
-        }
-
-        return buffer;
     }
 
 }

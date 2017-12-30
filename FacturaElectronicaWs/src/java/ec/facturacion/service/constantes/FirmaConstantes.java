@@ -13,4 +13,6 @@ package ec.facturacion.service.constantes;
 public class FirmaConstantes {
     
     public static final String DEVUELTA="DEVUELTA";
+    public static final String RECIBIDA="RECIBIDA";
+    
 }

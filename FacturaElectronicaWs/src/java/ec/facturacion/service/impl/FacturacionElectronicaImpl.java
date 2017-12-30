@@ -7,43 +7,52 @@ package ec.facturacion.service.impl;
 
 import ec.facturacion.app.ComprobanteEnviado;
 import ec.facturacion.autorizacion.AutorizacionComprobantesWs;
-import ec.facturacion.autorizacion.EnvioComprobantesWs;
 import ec.facturacion.exception.FacturaFirmaException;
-import ec.facturacion.firmaxades.util.FirmaPKCS12;
 import ec.facturacion.firmaxades.util.FirmarInterno;
+import ec.facturacion.firmaxades.util.RecursosServices;
 import ec.facturacion.firmaxades.util.xml.FileUtils;
+import ec.facturacion.service.AutorizacionWs;
+import ec.facturacion.service.EnvioWs;
 import ec.facturacion.service.IFacturaElectronica;
 import ec.facturacion.service.constantes.FirmaConstantes;
+import ec.facturacion.ws.FirmaEnvio;
+import ec.facturacionelectronica.aut.Autorizacion;
+import ec.facturacionelectronica.aut.RespuestaComprobante;
+import ec.facturacionelectronica.rec.Mensaje;
+import ec.facturacionelectronica.rec.RespuestaSolicitud;
 import ec.facturaelectronica.exception.ServicesException;
 import ec.facturaelectronica.model.CertificadoTipoComprobante;
-import ec.facturaelectronica.model.Cliente;
 import ec.facturaelectronica.model.Comprobante;
 import ec.facturaelectronica.model.Empresa;
 import ec.facturaelectronica.model.TipoComprobante;
 import ec.facturaelectronica.model.constantes.ComprobanteConstantes;
 import ec.facturaelectronica.service.AdministracionService;
+import ec.facturaelectronica.service.CertificadoService;
 import ec.facturaelectronica.service.CertificadoTipoComprobanteService;
 import ec.facturaelectronica.service.FacturaService;
-import ec.gob.sri.comprobantes.ws.MensajeXml;
-import ec.gob.sri.comprobantes.ws.RespuestaSolicitud;
-import ec.gob.sri.comprobantes.ws.aut.Autorizacion;
-import ec.gob.sri.comprobantes.ws.aut.RespuestaComprobante;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Properties;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.jms.Connection;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.Queue;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.Session;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 /**
  *
  * @author Christian
  */
 @Stateless
-public class FacturacionElectronicaImpl implements IFacturaElectronica {
+public class FacturacionElectronicaImpl extends RecursosServices implements IFacturaElectronica {
 
     @EJB
     AdministracionService service;
@@ -54,28 +63,30 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
     @EJB
     FacturaService facturaService;
 
+    @EJB
+    CertificadoService certificado;
+
     private int ambiente;
     private String pathArchivoPKCS12;
     private String clavePKCS12;
     private String pathDirectorioSalida;
     private String urlWsdlRecepcion;
     private String urlWsdlAutorizacion;
-    private ResourceBundle recursos = ResourceBundle.getBundle("resources.config");
 
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(FacturacionElectronicaImpl.class.getName());
 
     @Override
-    public ComprobanteEnviado firmarEnviarAutorizar(byte[] archivoAFirmar) throws Exception {
+    public ComprobanteEnviado firmarEnviarAutorizar(byte[] archivoAFirmar, String email, String codigoEmpresa) throws Exception {
         ComprobanteEnviado respuesta = null;
 
         try {
-
-            FileUtils.byteToFile(archivoAFirmar, "temp.xml");
-            File archivoXML = new File("temp.xml");
+            String tmp = recurso.getProperty("path.certificados.tmp").concat(certificado.obtenerArchivoTemporal()).trim();
+            FileUtils.byteToFile(archivoAFirmar, tmp);
+            File archivoXML = new File(tmp);
 
             if (archivoXML.exists() == true) {
 
-                respuesta = firmarEnviarAutorizarComprobante(archivoXML);
+                respuesta = firmarEnviarAutorizarComprobante(archivoXML, email, codigoEmpresa);
 
             }
 
@@ -88,12 +99,12 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
     }
 
     @Override
-    public Autorizacion consultaAutorizacion(String claveDeAcceso, int ambiente, int numeroIntentos) {
+    public Autorizacion consultaAutorizacion(String claveDeAcceso)  throws FacturaFirmaException{
 
         Autorizacion respuesta;
 
         obtenerParametrosSistema(ambiente);
-        respuesta = consultaAutorizacion(claveDeAcceso, numeroIntentos);
+        respuesta = consultaAutorizacionSRI(claveDeAcceso);
 
         return respuesta;
     }
@@ -126,7 +137,7 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
      * autorizado
      * @throws ec.facturacion.exception.FacturaFirmaException
      */
-    private ComprobanteEnviado firmarEnviarAutorizarComprobante(File archivoXML) throws FacturaFirmaException {
+    private ComprobanteEnviado firmarEnviarAutorizarComprobante(File archivoXML, String emailNotificacion, String codigoEmpresa) throws FacturaFirmaException {
 
         ComprobanteEnviado comprobante = new ComprobanteEnviado();
         TipoComprobante tipoComprobante;
@@ -136,7 +147,7 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
         Integer amb = Integer.valueOf(FileUtils.obtenerValorXML(archivoXML, "/*/infoTributaria/ambiente"));
         String ruc = FileUtils.obtenerValorXML(archivoXML, "/*/infoTributaria/ruc");
         String codDoc = FileUtils.obtenerValorXML(archivoXML, "/*/infoTributaria/codDoc");
-        String nombreArchivoFirmado = recursos.getString("path.certificados") + claveAcceso + ".xml";
+        String nombreArchivoFirmado = recurso.getProperty("path.certificados.firmados") + claveAcceso + ".xml";
         String nombreArchivoFirma = claveAcceso + ".xml";
         String identificacion = null;
         String secuencial = FileUtils.obtenerValorXML(archivoXML, "/*/infoTributaria/secuencial");
@@ -144,8 +155,6 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
         //String numAutorizacion;
         BigDecimal total = BigDecimal.ZERO;
         String razonSocial = null;
-        String email = null;
-        StringBuilder novedadesFirma = new StringBuilder();
 
         obtenerParametrosSistema(amb);
 
@@ -153,7 +162,7 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
         Empresa valEmpresa;
         try {
 
-            valEmpresa = service.buscaEmpresaActiva(ruc);
+            valEmpresa = service.buscaEmpresaActiva(ruc, codigoEmpresa);
 
             //valida empresa
             if (valEmpresa == null) {
@@ -175,8 +184,7 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
                 totalStr = FileUtils.obtenerValorXML(archivoXML, "/*/infoFactura/totalSinImpuestos");
                 total = new BigDecimal(totalStr);
                 razonSocial = FileUtils.obtenerValorXML(archivoXML, "/*/infoFactura/razonSocialComprador");
-                email = FileUtils.obtenerValorXML(archivoXML, "/*/infoAdicional/campoAdicional[@nombre='Email'] ");
-                
+
             }
 
             //buscar certificado para la emresa y el certificado
@@ -189,88 +197,55 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
             }
 
             //guardar comprobante a firmar
-            comprobanteFirma = new Comprobante();
-            comprobanteFirma.setAmbienteComprobante(this.ambiente == 1 ? "PRODUCCION" : "PRUEBAS");
-            comprobanteFirma.setArchivoComprobante(nombreArchivoFirma);
-            comprobanteFirma.setClaveComprobante(claveAcceso);
-            comprobanteFirma.setEstadoComprobante("ENVIADO");
-            comprobanteFirma.setFechaAutorizacionComprobante(null);
-            comprobanteFirma.setFechaComprobante(new Date());
-            comprobanteFirma.setFechaSistemaComprobante(new Date());
-            comprobanteFirma.setIdEmpresa(valEmpresa);
-            comprobanteFirma.setIdTipoComprobante(tipoComprobante);
-            comprobanteFirma.setIdentificadorComprobante(identificacion);
-            comprobanteFirma.setMensajeComprobante("ENVIO...");
-            comprobanteFirma.setNumeroAutorizacionComprobante(null);
-            comprobanteFirma.setSecuencialComprobante(secuencial);
-            comprobanteFirma.setTotalComprobante(total);
-            comprobanteFirma.setTipoMensajeComprobante(null);
-
-            facturaService.guardarComprobanteWS(comprobanteFirma);
             //firmar archivo
             File archivoFirmado;
             try {
                 archivoFirmado = firmarArchivo(archivoXML, nombreArchivoFirmado, certificado);
+
+                comprobanteFirma = new Comprobante();
+                comprobanteFirma.setAmbienteComprobante(amb == 2 ? "PRODUCCION" : "PRUEBAS");
+                comprobanteFirma.setArchivoComprobante(nombreArchivoFirma);
+                comprobanteFirma.setClaveComprobante(claveAcceso);
+
+                comprobanteFirma.setFechaComprobante(new Date());
+                comprobanteFirma.setFechaSistemaComprobante(new Date());
+                comprobanteFirma.setIdEmpresa(valEmpresa);
+                comprobanteFirma.setIdTipoComprobante(tipoComprobante);
+                comprobanteFirma.setIdentificadorComprobante(identificacion);
+
+                comprobanteFirma.setNumeroAutorizacionComprobante(null);
+                comprobanteFirma.setSecuencialComprobante(secuencial);
+                comprobanteFirma.setTotalComprobante(total);
+                comprobanteFirma.setTipoMensajeComprobante(null);
+                comprobanteFirma.setEmail(emailNotificacion);
+                comprobanteFirma.setNotificaEmail(Boolean.FALSE);
+
             } catch (Exception ex) {
                 throw new FacturaFirmaException(ex.getMessage());
             }
             log.debug("Tamaño archivo firmado: " + archivoFirmado.length());
 
-            // envio para comprobante al SRI
-            RespuestaSolicitud respuesta = EnvioComprobantesWs.obtenerRespuestaEnvio(archivoFirmado, this.urlWsdlRecepcion);
-
-            //guardar estado recibido
-            comprobanteFirma.setEstadoComprobante(respuesta.getEstado());
-            facturaService.actualizarComprobanteWS(comprobanteFirma);
+            RespuestaSolicitud respuesta = EnvioWs.obtenerRespuestaEnvio(archivoFirmado, this.urlWsdlRecepcion);
 
             if (respuesta.getEstado().equals(FirmaConstantes.DEVUELTA)) {
-
-                comprobante.setNovedades(respuesta.getComprobantes().getComprobante().get(0).getMensajes().getMensaje().get(0).getMensaje());
-
-                for (ec.gob.sri.comprobantes.ws.Comprobante comp : respuesta.getComprobantes().getComprobante()) {
-                    for (MensajeXml men : comp.getMensajes().getMensaje()) {
-                        novedadesFirma.append(men.getMensaje()).append("-").append(men.getTipo());
-                    }
-                }
-                comprobante.setNovedades(novedadesFirma.toString());
+                comprobante.setNovedades(armarNovedades(respuesta));
+                comprobante.setEstadoComprobante(respuesta.getEstado());
 
                 return comprobante;
             }
 
             log.debug("Novedades de WS Recepcion: " + respuesta);
+            if (respuesta.getEstado().equals(FirmaConstantes.RECIBIDA)) {
 
-            // consulto si ya fue autorizado, devuelve el FILE ya con la autorizacion
-            AutorizacionComprobantesWs.RespuestaAutorizacion respuestaAuto = AutorizacionComprobantesWs.autorizarComprobanteIndividual(claveAcceso,
-                    archivoFirmado.getName(), this.urlWsdlAutorizacion);
-            log.debug("Novedades de WS Autorizacion: " + respuestaAuto.novedades);
-
-            // numAutorizacion = FileUtils.obtenerValorXML(archivoFirmado, "/*/numeroAutorizacion");
-            if ("".equals(respuestaAuto.respuesta.getAutorizaciones().getAutorizacion().get(0).getNumeroAutorizacion())) {
-                comprobanteFirma.setEstadoComprobante("NO AUTORIZADO");
-            } else {
-                comprobanteFirma.setEstadoComprobante(respuestaAuto.respuesta.getAutorizaciones().getAutorizacion().get(0).getEstado());
-                comprobanteFirma.setNumeroAutorizacionComprobante(respuestaAuto.respuesta.getAutorizaciones().getAutorizacion().get(0).getNumeroAutorizacion());
+                comprobanteFirma.setEstadoComprobante(respuesta.getEstado());
                 comprobanteFirma.setFechaAutorizacionComprobante(new Date());
-                //generar cliente
-                if (comprobanteFirma.getEstadoComprobante().equals("AUTORIZADO")) {
-                    if (!service.verificarCliente(ruc)) {
-                        Cliente cliente = new Cliente();
-                        cliente.setEmailCliente(email);
-                        cliente.setEstadoCliente("R");
-                        cliente.setIdEmpresa(valEmpresa);
-                        cliente.setNombresCliente(razonSocial);
-                        cliente.setRucCliente(ruc);
-                    }
-                }
+                facturaService.guardarComprobanteWS(comprobanteFirma);
+                comprobante.setEstadoComprobante(comprobanteFirma.getEstadoComprobante());
 
+            } else {
+                comprobante.setNovedades(armarNovedades(respuesta));
+                comprobante.setEstadoComprobante(respuesta.getEstado());
             }
-            System.err.println(respuestaAuto.novedades);
-
-            comprobanteFirma.setMensajeComprobante(respuestaAuto.novedades);
-
-            facturaService.actualizarComprobanteWS(comprobanteFirma);
-
-            log.debug("Estado comprobante:" + comprobante.getEstadoComprobante());
 
         } catch (ServicesException ex) {
             comprobante.setNovedades(ex.getMessage());
@@ -279,39 +254,71 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
         return comprobante;
     }
 
+    public void notificaEmail(Comprobante comprobante) {
+        try {
+            //TODO write your implementation code here:
+            InitialContext context = new InitialContext();
+            QueueConnectionFactory cF = (QueueConnectionFactory) context.lookup("jms/queueFactoryFactura");
+            Queue queue = (Queue) context.lookup("jms/QueueFactura");
+
+            Connection cnn = cF.createConnection();
+            Session sess = cnn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            MessageProducer messProd = sess.createProducer(queue);
+
+            messProd.send(sess.createObjectMessage(comprobante));
+
+            messProd.close();
+            sess.close();
+            cnn.close();
+            System.err.println("El mensaje se envio correctamente");
+
+        } catch (NamingException ex) {
+            Logger.getLogger(FirmaEnvio.class.getName()).log(Level.SEVERE, null, ex);
+
+        } catch (JMSException ex) {
+            Logger.getLogger(FirmaEnvio.class.getName()).log(Level.SEVERE, null, ex);
+
+        }
+
+    }
+
+    private String armarNovedades(RespuestaSolicitud respuesta) {
+        StringBuilder novedadesFirma = new StringBuilder();
+        for (ec.facturacionelectronica.rec.Comprobante comp : respuesta.getComprobantes().getComprobante()) {
+            for (Mensaje men : comp.getMensajes().getMensaje()) {
+                novedadesFirma.append(men.getMensaje()).append("-").append(men.getTipo());
+            }
+        }
+
+        return novedadesFirma.toString();
+    }
+
     /**
      * Funcion que realiza la consulta del estado de autorizacion a los WS del
      * SRI de un comprobante previamente enviado
      *
      * @param claveDeAcceso
-     * @param numeroIntentos
      * @return un objeto tipo Autorizacion con los datos del comprobante
      * autorizado o no autorizado
      */
-    private Autorizacion consultaAutorizacion(String claveDeAcceso, int numeroIntentos) {
+    private Autorizacion consultaAutorizacionSRI(String claveDeAcceso) throws FacturaFirmaException {
 
         // consulto si ya fue autorizado, devuelve el FILE ya con la autorizacion
         RespuestaComprobante respuesta = null;
         Autorizacion autorizacion = null;
 
-        // llama al WS de autorizacion y hace N intentos hasta que llegue lleno el objeto RespuestaComprobante
-        for (int i = 0; i < numeroIntentos; i++) {
-            respuesta = new AutorizacionComprobantesWs(this.urlWsdlAutorizacion).llamadaWSAutorizacionInd(claveDeAcceso);
+        respuesta = new AutorizacionWs(this.urlWsdlAutorizacion).llamadaWSAutorizacionInd(claveDeAcceso);
 
-            if (respuesta.getAutorizaciones().getAutorizacion().isEmpty() == false) {
-                break;
-            }
-            try {
-                Thread.currentThread().sleep(500);
-            } catch (InterruptedException ex) {
-                log.error("Excepcion debida a función: Thread.currentThread().sleep(500)/n  ", ex);
-            }
-        }
-
-        if (respuesta != null) {
+        if (null == respuesta) {
+            throw new FacturaFirmaException("Error en el procedimiento de consulta");
+        } else {
             for (Autorizacion item : respuesta.getAutorizaciones().getAutorizacion()) {
                 autorizacion = item;
             }
+        }
+
+        if (null == autorizacion) {
+            throw new FacturaFirmaException("Error en el procedimiento de autorizacion");
         }
         return autorizacion;
     }
@@ -330,19 +337,31 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
         pathArchivoTemporalDeployado = archivoXML.getParent();
 
         // firmo el documento
-        pathArchivoPKCS12 = recursos.getString("path.certificados") + certificado.getCertificado().getNombreArchivoCertificado();
+        pathArchivoPKCS12 = recurso.getProperty("path.certificados") + certificado.getCertificado().getNombreArchivoCertificado();
         System.err.println(pathArchivoPKCS12);
         clavePKCS12 = service.devolverClavePk12(certificado.getCertificado().getClaveCertificado());
         FirmarInterno firmador = new FirmarInterno(pathArchivoPKCS12,
                 clavePKCS12, pathArchivoTemporalDeployado, archivoXML.getPath(),
                 nombreArchivoFirmado);
-//aqui me quede
 
         firmador.execute();
         //File archivoFirmado = new File(pathArchivoTemporalDeployado + "/" + nombreArchivoFirmado);
         File archivoFirmado = new File(nombreArchivoFirmado);
 
         return archivoFirmado;
+    }
+
+    @Override
+    public boolean validarP12(String filenameP12, String clave) {
+        FirmarInterno firma = new FirmarInterno(filenameP12, clave);
+
+        return firma.validar();
+
+    }
+
+    @Override
+    public ComprobanteEnviado generarAutorizacion(String claveDeAcceso, int ambiente, int numeroIntentos) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     /**
@@ -444,28 +463,6 @@ public class FacturacionElectronicaImpl implements IFacturaElectronica {
      */
     public static void setLog(org.apache.log4j.Logger aLog) {
         log = aLog;
-    }
-
-    /**
-     * @return the recursos
-     */
-    public ResourceBundle getRecursos() {
-        return recursos;
-    }
-
-    /**
-     * @param recursos the recursos to set
-     */
-    public void setRecursos(ResourceBundle recursos) {
-        this.recursos = recursos;
-    }
-
-    @Override
-    public boolean validarP12(String filenameP12, String clave) {
-        FirmarInterno firma = new FirmarInterno(filenameP12, clave);
-
-        return firma.validar();
-
     }
 
 }

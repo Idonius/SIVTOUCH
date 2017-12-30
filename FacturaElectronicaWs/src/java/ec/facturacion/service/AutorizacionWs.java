@@ -1,10 +1,4 @@
-/*
- * www.facturacionelectronica.ec
- *
- * © Gabriel Eguiguren P. 2012-2014 
- * Todos los derechos reservados
- */
-package ec.facturacion.autorizacion;
+package ec.facturacion.service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,18 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.namespace.QName;
-
 import com.thoughtworks.xstream.XStream;
-import ec.facturacion.firmaxades.util.RecursosServices;
-
 import ec.facturacion.firmaxades.util.xml.FileUtils;
 import ec.facturacion.firmaxades.util.xml.XStreamUtil;
-import ec.gob.sri.comprobantes.ws.aut.Autorizacion;
-import ec.gob.sri.comprobantes.ws.aut.AutorizacionComprobantes;
-import ec.gob.sri.comprobantes.ws.aut.AutorizacionComprobantesService;
-import ec.gob.sri.comprobantes.ws.aut.MensajeXml;
-import ec.gob.sri.comprobantes.ws.aut.RespuestaComprobante;
-import ec.gob.sri.comprobantes.ws.aut.RespuestaLote;
+import ec.facturacionelectronica.aut.Autorizacion;
+import ec.facturacionelectronica.aut.AutorizacionComprobantesOffline;
+import ec.facturacionelectronica.aut.AutorizacionComprobantesOfflineService;
+import ec.facturacionelectronica.aut.Mensaje;
+import ec.facturacionelectronica.aut.RespuestaLote;
+import java.net.MalformedURLException;
 import org.apache.log4j.Logger;
 
 /**
@@ -35,33 +26,38 @@ import org.apache.log4j.Logger;
  *
  * @author Gabriel Eguiguren
  */
-public class AutorizacionComprobantesWs {
+public class AutorizacionWs {
 
-    static Logger log = Logger.getLogger(AutorizacionComprobantesWs.class.getName());
+    static Logger log = Logger.getLogger(AutorizacionWs.class.getName());
 
-    private AutorizacionComprobantesService service;
+    private AutorizacionComprobantesOfflineService service;
     public static final String ESTADO_AUTORIZADO = "AUTORIZADO";
     public static final String ESTADO_NO_AUTORIZADO = "NO AUTORIZADO";
     public static final String AUTORIDAD_CERT_NO_DISPONIBLE = "61";
     public static final String COD_UTF8 = "UTF-8";
     public static final int INTENTOS_RESPUESTA_AUTORIZACION_WS = 5;
 
-    public AutorizacionComprobantesWs(String wsdlLocation) {
+    public AutorizacionWs(String wsdlLocation) {
         try {
-            this.service = new AutorizacionComprobantesService(new URL(wsdlLocation),
-                    new QName("http://ec.gob.sri.ws.autorizacion", "AutorizacionComprobantesService"));
+            this.service = new AutorizacionComprobantesOfflineService(new URL(wsdlLocation),
+                    new QName("http://ec.gob.sri.ws.autorizacion", "AutorizacionComprobantesOfflineService"));
 
-        } catch (Exception ex) {
+        } catch (MalformedURLException ex) {
             log.error(ex);
         }
     }
 
-   
-    public RespuestaComprobante llamadaWSAutorizacionInd(String claveDeAcceso) {
+    /**
+     * Consume el WS para la recepción de la autorización de un comprobante
+     *
+     * @param claveDeAcceso
+     * @return un objeto tipo RespuestaComprobante propio del WS
+     */
+    public ec.facturacionelectronica.aut.RespuestaComprobante llamadaWSAutorizacionInd(String claveDeAcceso) {
 
-        RespuestaComprobante response = null;
+        ec.facturacionelectronica.aut.RespuestaComprobante response = null;
         try {
-            AutorizacionComprobantes port = service.getAutorizacionComprobantesPort();
+            AutorizacionComprobantesOffline port = service.getAutorizacionComprobantesOfflinePort();
             response = port.autorizacionComprobante(claveDeAcceso);
 
         } catch (Exception e) {
@@ -72,13 +68,19 @@ public class AutorizacionComprobantesWs {
         return response;
     }
 
-   
+    /**
+     * Consume el WS para envío de comprobantes por lotes
+     *
+     *
+     * @param claveDeAcceso a ser consultada en el WS de autorizacion
+     * @return un objeto tipo RespuestaLote propio del WS para ser procesado por
+     * el desarrollador
+     */
     public RespuestaLote llamadaWsAutorizacionLote(String claveDeAcceso) {
 
         RespuestaLote response = null;
         try {
-            AutorizacionComprobantes port = service
-                    .getAutorizacionComprobantesPort();
+            AutorizacionComprobantesOffline port = service.getAutorizacionComprobantesOfflinePort();
             response = port.autorizacionComprobanteLote(claveDeAcceso);
 
         } catch (Exception e) {
@@ -89,109 +91,6 @@ public class AutorizacionComprobantesWs {
     }
 
     
-    public static RespuestaAutorizacion autorizarComprobanteIndividual(String claveDeAcceso,
-            String nombreArchivo, String urlWsdlAutorizacion) {
-        StringBuilder mensaje = new StringBuilder();
-        AutorizacionComprobantesWs.RespuestaAutorizacion resp = new AutorizacionComprobantesWs.RespuestaAutorizacion();
-        RecursosServices recurso = new RecursosServices();
-        try {
-
-            String dirAutorizados = recurso.getRecurso().getProperty("path.certificados.autorizados");
-            String dirNoAutorizados = recurso.getRecurso().getProperty("path.certificados.noautorizados");
-
-            RespuestaComprobante respuesta = null;
-
-            // llama al WS de autorizacion y hace N intentos hasta que llegue
-            // lleno el objeto RespuestaComprobante
-            for (int i = 0; i < INTENTOS_RESPUESTA_AUTORIZACION_WS; i++) {
-                respuesta = new AutorizacionComprobantesWs(urlWsdlAutorizacion)
-                        .llamadaWSAutorizacionInd(claveDeAcceso);
-
-                if (respuesta.getAutorizaciones().getAutorizacion().isEmpty() == false) {
-                    break;
-                }
-                Thread.currentThread().sleep(500);
-            }
-
-            if (respuesta != null) {
-                resp.respuesta = respuesta;
-
-                int i = 0;
-                for (Autorizacion item : respuesta.getAutorizaciones()
-                        .getAutorizacion()) {
-                    mensaje.append(item.getEstado());
-
-                    // se modifica para que el comprobante vaya dentro de un
-                    // CDATA
-                    item.setComprobante("<![CDATA[" + item.getComprobante()
-                            + "]]>");
-
-                    XStream xstream = XStreamUtil.getRespuestaXStream();
-                    Writer writer = null;
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    writer = new OutputStreamWriter(outputStream, COD_UTF8);
-                    writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
-
-                    xstream.toXML(item, writer);
-                    String xmlAutorizacion = outputStream.toString(COD_UTF8);
-
-                    // logica de copiado del archivo a directorio segunfue autorizado o no
-                    if (i == 0 && item.getEstado().equals(ESTADO_AUTORIZADO)) {
-                        FileUtils.stringToArchivo(dirAutorizados
-                                + File.separator + nombreArchivo,
-                                xmlAutorizacion);
-
-                    } else if (item.getEstado().equals(ESTADO_NO_AUTORIZADO)) {
-                        FileUtils.stringToArchivo(dirNoAutorizados
-                                + File.separator + nombreArchivo,
-                                xmlAutorizacion);
-                        mensaje.append("|" + obtieneMensajesAutorizacion(item));
-
-                        verificarOCSP(item);
-
-                        break; // 06-02-12 se solicita que solo se
-                        // procese(grabe) el primer item del array de
-                        // autorizaciones
-                    }
-                    i++;
-                }
-
-            }
-           
-            
-            if (respuesta == null
-                    || respuesta.getAutorizaciones().getAutorizacion()
-                    .isEmpty() == true) {
-                mensaje.append("TRANSMITIDO SIN RESPUESTA| ERROR_TRANSMITIDO");
-
-//                // TODO
-//                String dirFirmados = ".";
-//                // TODO
-//                String dirTransmitidos = ".";
-//
-//                File transmitidos = new File(dirTransmitidos);
-//                if (transmitidos.exists() == false) {
-//                    new File(dirTransmitidos).mkdir();
-//                }
-//
-//                File archivoFirmado = new File(new File(dirFirmados),
-//                        nombreArchivo);
-//                if (FileUtils.copiarArchivo(archivoFirmado, transmitidos.getPath()
-//                        + File.separator + nombreArchivo) == false) {
-//                    // TODO mensaje.append(Mensajes.ERROR_MOVER_TRANSM);
-//                } else {
-//                    //archivoFirmado.delete();
-//                }
-            }
-
-        } catch (Exception ex) {
-            log.error(ex);
-        }
-        resp.novedades = mensaje.toString();
-        return resp;
-
-    }
-
     /**
      * Obtiene la clave de accesso presente en una clase tipo Autorizacion
      *
@@ -219,7 +118,18 @@ public class AutorizacionComprobantesWs {
         return claveAcceso;
     }
 
-   
+    /**
+     * @TODO Funcion que consulta un lote de varios tipos de comprobantes al WS de
+     * autorizacion
+     *
+     * @param claveDeAcceso
+     * @param nombreArchivoLote
+     * @param timeout
+     * @param cantidadArchivos
+     * @param tipoAmbiente
+     * @param urlWsdlAutorizacion
+     * @return
+     */
     public static List<Autorizacion> autorizarComprobanteLote(
             String claveDeAcceso, String nombreArchivoLote, int timeout,
             int cantidadArchivos, String tipoAmbiente, String urlWsdlAutorizacion) {
@@ -227,7 +137,7 @@ public class AutorizacionComprobantesWs {
         RespuestaLote respuestaAutorizacion = null;
         try {
 
-            // TODO
+            // TODO aMEJORAR DIRECTORIOS
             String dirAutorizados = ".";
             String dirRechazados = ".";
             String dirFirmados = ".";
@@ -238,7 +148,7 @@ public class AutorizacionComprobantesWs {
             // llama al WS de autorizacion y realiza varios intentos hasta que
             // el vector de autorizaciones venga lleno
             for (int i = 0; i < INTENTOS_RESPUESTA_AUTORIZACION_WS; i++) {
-                respuestaAutorizacion = new AutorizacionComprobantesWs(urlWsdlAutorizacion)
+                respuestaAutorizacion = new AutorizacionWs(urlWsdlAutorizacion)
                         .llamadaWsAutorizacionLote(claveDeAcceso);
 
                 if (respuestaAutorizacion.getAutorizaciones().getAutorizacion()
@@ -302,7 +212,7 @@ public class AutorizacionComprobantesWs {
      */
     public static String obtieneMensajesAutorizacion(Autorizacion autorizacion) {
         StringBuilder mensaje = new StringBuilder();
-        for (MensajeXml m : autorizacion.getMensajes().getMensaje()) {
+        for (Mensaje m : autorizacion.getMensajes().getMensaje()) {
             if (m.getInformacionAdicional() != null) {
                 mensaje.append("\n" + m.getMensaje() + ": "
                         + m.getInformacionAdicional());
@@ -325,7 +235,7 @@ public class AutorizacionComprobantesWs {
             throws SQLException, ClassNotFoundException {
         boolean respuesta = true;
 
-        for (MensajeXml m : autorizacion.getMensajes().getMensaje()) {
+        for (Mensaje m : autorizacion.getMensajes().getMensaje()) {
             if (m.getIdentificador().equals(AUTORIDAD_CERT_NO_DISPONIBLE)) {
                 log.info("No se puede validar el certificado digital."
                         + "\n Desea emitir en contingencia?");
@@ -333,13 +243,6 @@ public class AutorizacionComprobantesWs {
             }
         }
         return respuesta;
-    }
-
-    public static class RespuestaAutorizacion {
-
-        public RespuestaComprobante respuesta;
-        public String novedades;
-
     }
 
 }
